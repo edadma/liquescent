@@ -88,19 +88,19 @@ case class TagElement( tag: String, s: String ) extends Element
 
 class FluidicParser extends RegexParsers {
 
-  def source: Parser[SourceAST] = opt(elements) ^^ {
-    case None => SourceAST( Nil )
-    case Some( elems ) => SourceAST( elems )
-  }
-
-  def elements: Parser[List[ElementAST]] =
-    element.+
-//    element ~ elements ^^ {case e ~ l => e :: l}
-
-  def element: Parser[ElementAST] =
-    log(liquidQbject)("object") | log(text)("text")
-
-  def text: Parser[TextElementAST] = """.+?(?=\{\{|\{%|\z)""".r ^^ TextElementAST
+//  def source: Parser[SourceAST] = opt(elements) ^^ {
+//    case None => SourceAST( Nil )
+//    case Some( elems ) => SourceAST( elems )
+//  }
+//
+//  def elements: Parser[List[ElementAST]] =
+//    element.+
+////    element ~ elements ^^ {case e ~ l => e :: l}
+//
+//  def element: Parser[ElementAST] =
+//    log(liquidQbject)("object") | log(text)("text")
+//
+//  def text: Parser[TextElementAST] = """.+?(?=\{\{|\{%|\z)""".r ^^ TextElementAST
 
   def liquidQbject: Parser[ObjectElementAST] = "{{" ~> objectSyntax <~ "}}"
 
@@ -112,8 +112,8 @@ class FluidicParser extends RegexParsers {
     "\"" ~> """[^"]*""".r <~ "\"" ^^ StringAST |
     rep1sep(ident, ".") ^^ VariableAST
 
-  def apply( input: String ) =
-    parseAll( source, input ) match {
+  def apply[T]( grammar: Parser[T], input: String ) =
+    parseAll( grammar, input ) match {
       case Success( result, _ ) => result
       case NoSuccess( msg, r ) => s"$msg (${r.pos})\n${r.pos.longString}"
     }
