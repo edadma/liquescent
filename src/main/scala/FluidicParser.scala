@@ -17,15 +17,24 @@ object FluidicParser {
   def elements( src: String ): List[Element] = {
     val buf = new ListBuffer[Element]
     val it = templateRegex.findAllIn( src )
+    var after = 0
 
     while (it.hasNext) {
       it.next
+
+      if (it.start != after)
+        buf += TextElement( src.substring(after, it.start) )
+
       buf +=
         (src.charAt( it.start + 1 ) match {
           case '{' => ObjectElement( it.matched.substring(2, it.matched.length - 2) )
           case '%' => TagElement( it.matched.substring(2, it.matched.length - 2) )
         })
+      after = it.end
     }
+
+    if (after != src.length)
+      buf += TextElement( src.substring(after, src.length) )
 
     buf.toList
   }

@@ -4,9 +4,9 @@ package xyz.hyperreal.fluidic
 object Main extends App {
 
 //  val parser = new FluidicParser
-  val input = """asdf {{ title }} zxcv {% tag1 %} qwer {% tag2 %}"""
+  val input = """asdf {{ title }} zxcv {% tag1 %} qwer {% tag2 %} poiu"""
 
 //  println( parser( input ) )
 
-  println( FluidicParser.elements( input ) )
+  println( FluidicParser.elements(input) )
 }
