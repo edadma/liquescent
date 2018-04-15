@@ -1,8 +1,42 @@
 //@
 package xyz.hyperreal.fluidic
 
+import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
+
+object FluidicParser {
+
+//  val objectRegex = """\{\{.*}}"""r
+//  val tagRegex = """\{%.*%}"""r
+//  val textBeforeElementRegex = """.+?(?=\{\{|\{%)"""r
+//  val textRegex = """.*"""r
+
+  def templateRegex = """\{\{.*?}}|\{%.*?%}"""r
+
+  def elements( src: String ): List[Element] = {
+    val buf = new ListBuffer[Element]
+    val it = templateRegex.findAllIn( src )
+
+    while (it.hasNext) {
+      it.next
+      buf +=
+        (src.charAt( it.start + 1 ) match {
+          case '{' => ObjectElement( it.matched.substring(2, it.matched.length - 2) )
+          case '%' => TagElement( it.matched.substring(2, it.matched.length - 2) )
+        })
+    }
+
+    buf.toList
+  }
+
+}
+
+trait Element
+
+case class TextElement( text: String ) extends Element
+case class ObjectElement( expr: String ) extends Element
+case class TagElement( tag: String ) extends Element
 
 class FluidicParser extends RegexParsers {
 
@@ -12,13 +46,13 @@ class FluidicParser extends RegexParsers {
   }
 
   def elements: Parser[List[ElementAST]] =
-    element ^^ (List( _ )) |
-    element ~ elements ^^ {case e ~ l => e :: l}
+    element.+
+//    element ~ elements ^^ {case e ~ l => e :: l}
 
   def element: Parser[ElementAST] =
-    log(text)("text") | liquidQbject
+    log(liquidQbject)("object") | log(text)("text")
 
-  def text: Parser[TextElementAST] = """.+(?=\{\{|\{%|)""".r ^^ TextElementAST
+  def text: Parser[TextElementAST] = """.+?(?=\{\{|\{%|\z)""".r ^^ TextElementAST
 
   def liquidQbject: Parser[ObjectElementAST] = "{{" ~> objectSyntax <~ "}}"
 
@@ -28,12 +62,12 @@ class FluidicParser extends RegexParsers {
 
   def primary: Parser[ExpressionAST] =
     "\"" ~> """[^"]*""".r <~ "\"" ^^ StringAST |
-    ident.+ ^^ VariableAST
+    rep1sep(ident, ".") ^^ VariableAST
 
-  def apply( input: String ): SourceAST =
+  def apply( input: String ) =
     parseAll( source, input ) match {
       case Success( result, _ ) => result
-      case failure : NoSuccess => sys.error( failure.msg )
+      case NoSuccess( msg, r ) => s"$msg (${r.pos})\n${r.pos.longString}"
     }
 
 }
