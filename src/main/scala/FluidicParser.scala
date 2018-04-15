@@ -1,6 +1,7 @@
 //@
 package xyz.hyperreal.fluidic
 
+import java.util.Scanner
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
@@ -12,7 +13,9 @@ object FluidicParser {
 //  val textBeforeElementRegex = """.+?(?=\{\{|\{%)"""r
 //  val textRegex = """.*"""r
 
-  def templateRegex = """\{\{.*?}}|\{%.*?%}"""r
+  val templateRegex = """\{\{.*?}}|\{%.*?%}"""r
+  val delimiterPattern = """[\s%{}]+""".r.pattern
+  val tagPattern = """[a-zA-Z]+[a-zA-Z0-9]*""".r.pattern
 
   def elements( src: String ): List[Element] = {
     val buf = new ListBuffer[Element]
@@ -27,8 +30,12 @@ object FluidicParser {
 
       buf +=
         (src.charAt( it.start + 1 ) match {
-          case '{' => ObjectElement( it.matched.substring(2, it.matched.length - 2) )
-          case '%' => TagElement( it.matched.substring(2, it.matched.length - 2) )
+          case '{' => ObjectElement( it.matched )//.substring(2, it.matched.length - 2)
+          case '%' =>
+            val matched = it.matched
+            val scanner = new Scanner( matched ) useDelimiter delimiterPattern
+
+            TagElement( scanner.next(tagPattern), matched )
         })
       after = it.end
     }
@@ -41,11 +48,43 @@ object FluidicParser {
 
 }
 
+class CommentFilter extends (Element => Boolean) {
+  var dropping = false
+
+  def apply( elem: Element ) =
+    elem match {
+      case TagElement( "comment", _ ) if !dropping =>
+        dropping = true
+        true
+      case TagElement( "endcomment", _ ) if dropping =>
+        dropping = false
+        true
+      case _ => dropping
+    }
+}
+
+class RawTransform extends (Element => Seq[Element]) {
+  var raw = false
+
+  def apply( elem: Element ) =
+    elem match {
+      case TagElement( "raw", _ ) if !raw =>
+        raw = true
+        Nil
+      case TagElement( "endraw", _ ) if raw =>
+        raw = false
+        Nil
+      case TagElement( _, s ) if raw => List( TextElement(s) )
+      case ObjectElement( s ) if raw => List( TextElement(s) )
+      case _ => List( elem )
+    }
+}
+
 trait Element
 
-case class TextElement( text: String ) extends Element
-case class ObjectElement( expr: String ) extends Element
-case class TagElement( tag: String ) extends Element
+case class TextElement( s: String ) extends Element
+case class ObjectElement( s: String ) extends Element
+case class TagElement( tag: String, s: String ) extends Element
 
 class FluidicParser extends RegexParsers {
 
