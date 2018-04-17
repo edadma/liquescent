@@ -47,7 +47,7 @@ object FluidicParser {
 
   def parse( template: String ) = {
     elements( template ) filterNot new CommentFilter flatMap new RawTransform map {
-      case TextElement( s ) => OutputAST( StringExpressionAST(s) )
+      case TextElement( s ) => OutputAST( LiteralExpressionAST(s) )
       case ObjectElement( s ) =>
         val parser = new ObjectParser
 
@@ -120,17 +120,37 @@ class ObjectParser extends RegexParsers with PackratParsers {
 
   lazy val objectGrammar: PackratParser[OutputAST] = "{{" ~> expression <~ "}}" ^^ OutputAST
 
-  lazy val expression: PackratParser[ExpressionAST] = applyExpression
+  lazy val expression: PackratParser[ExpressionAST] =
+    orExpression
+
+  lazy val orExpression: PackratParser[ExpressionAST] =
+    orExpression ~ ("or" ~> andExpression) ^^ { case l ~ r => OrExpressionAST( l, r ) } |
+    andExpression
+
+  lazy val andExpression: PackratParser[ExpressionAST] =
+    andExpression ~ ("and" ~> comparisonExpression) ^^ { case l ~ r => AndExpressionAST( l, r ) } |
+    comparisonExpression
+
+  lazy val comparisonExpression: PackratParser[ExpressionAST] =
+    applyExpression ~ ("==" ~> applyExpression) ^^ { case l ~ r => EqExpressionAST( l, r ) } |
+    applyExpression ~ ("!=" ~> applyExpression) ^^ { case l ~ r => NeqExpressionAST( l, r ) } |
+    applyExpression ~ ("<" ~> applyExpression) ^^ { case l ~ r => LtExpressionAST( l, r ) } |
+    applyExpression ~ ("<=" ~> applyExpression) ^^ { case l ~ r => LteExpressionAST( l, r ) } |
+    applyExpression ~ (">" ~> applyExpression) ^^ { case l ~ r => GtExpressionAST( l, r ) } |
+    applyExpression ~ (">=" ~> applyExpression) ^^ { case l ~ r => GteExpressionAST( l, r ) } |
+    applyExpression
 
   lazy val applyExpression: PackratParser[ExpressionAST] =
-    applyExpression ~ ("." ~> ident) ^^ { case e ~ n => ArrayExpressionAST( e, StringExpressionAST(n) ) } |
+    applyExpression ~ ("." ~> ident) ^^ { case e ~ n => ArrayExpressionAST( e, LiteralExpressionAST(n) ) } |
     applyExpression ~ ("[" ~> expression <~ "]") ^^ { case e ~ n => ArrayExpressionAST( e, n ) } |
     primaryExpression
 
   lazy val primaryExpression: Parser[ExpressionAST] =
-    "\"" ~> """[^"]*""".r <~ "\"" ^^ StringExpressionAST |
+    "\"" ~> """[^"]*""".r <~ "\"" ^^ LiteralExpressionAST |
     ident ^^ VariableExpressionAST |
-    """\d+(\.\d*)?""".r ^^ { n => NumberExpressionAST( n.toDouble ) }
+    """\d+(\.\d*)?""".r ^^ { n => LiteralExpressionAST( n.toDouble ) } |
+    "true" ^^^ LiteralExpressionAST( true ) |
+    "false" ^^^ LiteralExpressionAST( false )
 
   def apply[T]( grammar: Parser[T], input: String ) =
     parseAll( grammar, input ) match {
@@ -145,11 +165,17 @@ trait AST
 case class SourceAST( elems: List[OperationAST]) extends AST
 
 trait OperationAST extends AST
-
 case class OutputAST( expr: ExpressionAST ) extends OperationAST
 
 trait ExpressionAST extends AST
 case class ArrayExpressionAST( expr: ExpressionAST, name: ExpressionAST ) extends ExpressionAST
-case class StringExpressionAST( s: String ) extends ExpressionAST
-case class NumberExpressionAST( n: Double ) extends ExpressionAST
+case class LiteralExpressionAST( o: Any ) extends ExpressionAST
 case class VariableExpressionAST( name: String ) extends ExpressionAST
+case class OrExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class AndExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class EqExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class NeqExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class LtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class LteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class GtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
+case class GteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
