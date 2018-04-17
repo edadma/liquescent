@@ -5,7 +5,6 @@ import java.util.Scanner
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
-
 object FluidicParser {
 
 //  val objectRegex = """\{\{.*}}"""r
@@ -44,6 +43,21 @@ object FluidicParser {
       buf += TextElement( src.substring(after, src.length) )
 
     buf.toList
+  }
+
+  def parse( template: String ) = {
+    elements( template ) filterNot new CommentFilter flatMap new RawTransform map {
+      case TextElement( s ) => OutputAST( StringExpressionAST(s) )
+      case ObjectElement( s ) =>
+        val parser = new ObjectParser
+
+        parser.parseAll( parser.objectGrammar, s ) match {
+          case parser.Success( result, _ ) => result//.asInstanceOf[OutputAST]
+          case parser.NoSuccess( msg, r ) =>
+            println( s"$msg (${r.pos})\n${r.pos.longString}" )
+            sys.exit( 1 )
+        }
+    }
   }
 
 }
@@ -86,7 +100,7 @@ case class TextElement( s: String ) extends Element
 case class ObjectElement( s: String ) extends Element
 case class TagElement( tag: String, s: String ) extends Element
 
-class ObjectParser extends RegexParsers {
+class ObjectParser extends RegexParsers with PackratParsers {
 
 //  def source: Parser[SourceAST] = opt(elements) ^^ {
 //    case None => SourceAST( Nil )
@@ -102,13 +116,21 @@ class ObjectParser extends RegexParsers {
 //
 //  def text: Parser[TextElementAST] = """.+?(?=\{\{|\{%|\z)""".r ^^ TextElementAST
 
-  def ident: Parser[String] = """[a-zA-Z]+\w*""".r
+  lazy val ident: Parser[String] = """[a-zA-Z]+\w*""".r
 
-  def objectGrammar: Parser[ObjectElementAST] = primary ^^ ObjectElementAST
+  lazy val objectGrammar: PackratParser[OutputAST] = "{{" ~> expression <~ "}}" ^^ OutputAST
 
-  def primary: Parser[ExpressionAST] =
-    "\"" ~> """[^"]*""".r <~ "\"" ^^ StringAST |
-    rep1sep(ident, ".") ^^ VariableAST
+  lazy val expression: PackratParser[ExpressionAST] = applyExpression
+
+  lazy val applyExpression: PackratParser[ExpressionAST] =
+    applyExpression ~ ("." ~> ident) ^^ { case e ~ n => ArrayExpressionAST( e, StringExpressionAST(n) ) } |
+    applyExpression ~ ("[" ~> expression <~ "]") ^^ { case e ~ n => ArrayExpressionAST( e, n ) } |
+    primaryExpression
+
+  lazy val primaryExpression: Parser[ExpressionAST] =
+    "\"" ~> """[^"]*""".r <~ "\"" ^^ StringExpressionAST |
+    ident ^^ VariableExpressionAST |
+    """\d+(\.\d*)?""".r ^^ { n => NumberExpressionAST( n.toDouble ) }
 
   def apply[T]( grammar: Parser[T], input: String ) =
     parseAll( grammar, input ) match {
@@ -120,13 +142,14 @@ class ObjectParser extends RegexParsers {
 
 trait AST
 
-case class SourceAST( elems: List[ElementAST]) extends AST
+case class SourceAST( elems: List[OperationAST]) extends AST
 
-trait ElementAST extends AST
+trait OperationAST extends AST
 
-case class TextElementAST( s: String ) extends ElementAST
-case class ObjectElementAST( expr: ExpressionAST ) extends ElementAST
+case class OutputAST( expr: ExpressionAST ) extends OperationAST
 
 trait ExpressionAST extends AST
-case class StringAST( s: String ) extends ExpressionAST
-case class VariableAST( ids: List[String] ) extends ExpressionAST
+case class ArrayExpressionAST( expr: ExpressionAST, name: ExpressionAST ) extends ExpressionAST
+case class StringExpressionAST( s: String ) extends ExpressionAST
+case class NumberExpressionAST( n: Double ) extends ExpressionAST
+case class VariableExpressionAST( name: String ) extends ExpressionAST
