@@ -17,7 +17,7 @@ abstract class NumericFilter( name: String, dottable: Boolean = false ) extends 
 
   def parameters: List[List[Type]]
 
-  val invoke = perform
+  lazy val invoke = perform
 
   val perform: List[Any] => Number
 
