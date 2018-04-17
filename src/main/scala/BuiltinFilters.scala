@@ -6,7 +6,7 @@ import math._
 
 object BuiltinFilters {
 
-  val list =
+  val map =
     List(
 
       new NumericFilter( "abs" ) {
@@ -26,6 +26,6 @@ object BuiltinFilters {
         }
       }
 
-    )
+    ) map {f => (f.name, f)} toMap
 
 }

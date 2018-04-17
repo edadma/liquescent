@@ -2,7 +2,10 @@
 package xyz.hyperreal.fluidic
 
 
-abstract class Filter( val name: String, dottable: Boolean = false ) {
+abstract class Filter( val name: String, val dottable: Boolean = false ) {
+
+  if (dottable)
+    require( parameters.forall(_.length == 1), s"dottable filter can only take one argument: $name" )
 
   def parameters: List[List[Type]]
 
@@ -10,11 +13,11 @@ abstract class Filter( val name: String, dottable: Boolean = false ) {
 
 }
 
-abstract class NumericFilter( val name: String, dottable: Boolean = false ) {
+abstract class NumericFilter( name: String, dottable: Boolean = false ) extends Filter( name, dottable ) {
 
   def parameters: List[List[Type]]
 
-  def invoke( args: List[Any] ) = perform( args )
+  val invoke = perform
 
   val perform: List[Any] => Number
 

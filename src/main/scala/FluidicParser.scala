@@ -47,7 +47,7 @@ object FluidicParser {
 
   def parse( template: String ) = {
     elements( template ) filterNot new CommentFilter flatMap new RawTransform map {
-      case TextElement( s ) => OutputAST( LiteralExpressionAST(s) )
+      case TextElement( s ) => PlainOutputAST( s )
       case ObjectElement( s ) =>
         val parser = new ObjectParser
 
@@ -118,7 +118,7 @@ class ObjectParser extends RegexParsers with PackratParsers {
 
   lazy val ident: Parser[String] = """[a-zA-Z]+\w*""".r
 
-  lazy val objectGrammar: PackratParser[OutputAST] = "{{" ~> expression <~ "}}" ^^ OutputAST
+  lazy val objectGrammar: PackratParser[ExpressionOutputAST] = "{{" ~> expression <~ "}}" ^^ ExpressionOutputAST
 
   lazy val expression: PackratParser[ExpressionAST] =
     orExpression
@@ -132,16 +132,22 @@ class ObjectParser extends RegexParsers with PackratParsers {
     comparisonExpression
 
   lazy val comparisonExpression: PackratParser[ExpressionAST] =
-    applyExpression ~ ("==" ~> applyExpression) ^^ { case l ~ r => EqExpressionAST( l, r ) } |
-    applyExpression ~ ("!=" ~> applyExpression) ^^ { case l ~ r => NeqExpressionAST( l, r ) } |
-    applyExpression ~ ("<" ~> applyExpression) ^^ { case l ~ r => LtExpressionAST( l, r ) } |
-    applyExpression ~ ("<=" ~> applyExpression) ^^ { case l ~ r => LteExpressionAST( l, r ) } |
-    applyExpression ~ (">" ~> applyExpression) ^^ { case l ~ r => GtExpressionAST( l, r ) } |
-    applyExpression ~ (">=" ~> applyExpression) ^^ { case l ~ r => GteExpressionAST( l, r ) } |
+    filterExpression ~ ("==" ~> filterExpression) ^^ { case l ~ r => EqExpressionAST( l, r ) } |
+    filterExpression ~ ("!=" ~> filterExpression) ^^ { case l ~ r => NeqExpressionAST( l, r ) } |
+    filterExpression ~ ("<" ~> filterExpression) ^^ { case l ~ r => LtExpressionAST( l, r ) } |
+    filterExpression ~ ("<=" ~> filterExpression) ^^ { case l ~ r => LteExpressionAST( l, r ) } |
+    filterExpression ~ (">" ~> filterExpression) ^^ { case l ~ r => GtExpressionAST( l, r ) } |
+    filterExpression ~ (">=" ~> filterExpression) ^^ { case l ~ r => GteExpressionAST( l, r ) } |
+    filterExpression
+
+  lazy val filterExpression: PackratParser[ExpressionAST] =
+    filterExpression ~ ("|" ~> ident <~ ":") ~ rep1sep(applyExpression, ",") ^^
+      { case o ~ f ~ a => FilterExpressionAST( o, f, a ) } |
+      filterExpression ~ ("|" ~> ident) ^^ { case o ~ f => FilterExpressionAST( o, f, Nil ) } |
     applyExpression
 
   lazy val applyExpression: PackratParser[ExpressionAST] =
-    applyExpression ~ ("." ~> ident) ^^ { case e ~ n => ArrayExpressionAST( e, LiteralExpressionAST(n) ) } |
+    applyExpression ~ ("." ~> ident) ^^ { case e ~ n => DotExpressionAST( e, n ) } |
     applyExpression ~ ("[" ~> expression <~ "]") ^^ { case e ~ n => ArrayExpressionAST( e, n ) } |
     primaryExpression
 
@@ -159,23 +165,3 @@ class ObjectParser extends RegexParsers with PackratParsers {
     }
 
 }
-
-trait AST
-
-case class SourceAST( elems: List[OperationAST]) extends AST
-
-trait OperationAST extends AST
-case class OutputAST( expr: ExpressionAST ) extends OperationAST
-
-trait ExpressionAST extends AST
-case class ArrayExpressionAST( expr: ExpressionAST, name: ExpressionAST ) extends ExpressionAST
-case class LiteralExpressionAST( o: Any ) extends ExpressionAST
-case class VariableExpressionAST( name: String ) extends ExpressionAST
-case class OrExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class AndExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class EqExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class NeqExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class LtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class LteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class GtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
-case class GteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
