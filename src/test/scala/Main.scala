@@ -6,12 +6,12 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      {{ list | uniq | join: ", " }}
+      |{{ list | map: "a" | compact | join: ", " }}|
     """
 
 //  println( parser( input ) )
 
-  val interp = new Interpreter( BuiltinFilters.map, Map("list" -> List(1, 3, 2, 3, 4, 2)), Console.out )
+  val interp = new Interpreter( BuiltinFilters.map, Map("list" -> List(Map("a" -> "asdf"), 3, 2, Map("b" -> "oops"), 4, Map("a" -> "qwer"))), Console.out )
 
   FluidicParser.parse(input) foreach (op => interp.perform(op))
 }

@@ -10,13 +10,6 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 
-  def display( a: Any ): String =
-    a match {
-      case l: List[_] => l map display mkString
-      case m: Map[_, _] => m map { case (k, v) => display(k) + "=>" + display(v) } mkString ","
-      case s => s.toString
-    }
-
   def perform( op: OperationAST ): Unit =
     op match {
       case PlainOutputAST( s ) => out.print( s )

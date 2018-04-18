@@ -33,6 +33,30 @@ object BuiltinFilters {
         }
       },
 
+      new Filter( "capitalize" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s.head.toUpper + s.tail.toLowerCase
+        }
+      },
+
+      new Filter( "compact", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l filterNot (_ == nil)
+        }
+      },
+
+      new Filter( "concat" ) {
+        override def parameters = List( List(ArrayType, ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_], r: List[_] ) => l ++ r
+        }
+      },
+
       new Filter( "date" ) {
         val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?""" r
         val USUAL_DATETIME_REGEX = """[a-zA-Z]+ \d+, \d+""" r
@@ -52,6 +76,62 @@ object BuiltinFilters {
         }
       },
 
+      new Filter( "downcase" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s.toLowerCase
+        }
+      },
+
+      new Filter( "first", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
+        }
+      },
+
+      new Filter( "join" ) {
+        override def parameters = List( List(ArrayType, StringType) )
+
+        override val invoke = {
+          case List( l: List[_], s: String ) => l map display mkString s
+        }
+      },
+
+      new Filter( "last", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].last
+        }
+      },
+
+      new Filter( "lstrip" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s dropWhile (_.isWhitespace)
+        }
+      },
+
+      new Filter( "map" ) {
+        override def parameters = List( List(ArrayType, StringType) )
+
+        override val invoke = {
+          case List( l: List[_], k: String ) =>
+            l map {
+              case m: Map[String, Any] =>
+                m get k match {
+                  case None => nil
+                  case Some( v ) => v
+                }
+              case _ => nil
+            }
+        }
+      },
+
       new Filter( "prepend" ) {
         override def parameters = List( List(StringType, StringType) )
 
@@ -68,60 +148,12 @@ object BuiltinFilters {
         }
       },
 
-      new Filter( "first", true ) {
-        override def parameters = List( List(ArrayType) )
+      new NumericFilter( "size", true ) {
+        override def parameters = List( List(ArrayType), List(StringType) )
 
-        override val invoke = {
-          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
-        }
-      },
-
-      new Filter( "last", true ) {
-        override def parameters = List( List(ArrayType) )
-
-        override val invoke = {
-          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].last
-        }
-      },
-
-      new Filter( "compact", true ) {
-        override def parameters = List( List(ArrayType) )
-
-        override val invoke = {
-          case List( l: List[_] ) => l filterNot (_ == nil)
-        }
-      },
-
-      new Filter( "join" ) {
-        override def parameters = List( List(ArrayType, StringType) )
-
-        override val invoke = {
-          case List( l: List[_], s: String ) => l mkString s
-        }
-      },
-
-      new Filter( "uniq", true ) {
-        override def parameters = List( List(ArrayType) )
-
-        override val invoke = {
-          case List( l: List[_] ) =>
-            val set = new mutable.HashSet[Any]
-
-            l filter { e =>
-              if (!set(e)) {
-                set += e
-                true
-              } else
-                false
-            }
-        }
-      },
-
-      new Filter( "concat" ) {
-        override def parameters = List( List(ArrayType, ArrayType) )
-
-        override val invoke = {
-          case List( l: List[_], r: List[_] ) => l ++ r
+        override val compute = {
+          case List( l: List[_] ) => l.length
+          case List( s: String ) => s.length
         }
       },
 
@@ -133,12 +165,11 @@ object BuiltinFilters {
 //        }
 //      },
 
-      new NumericFilter( "size", true ) {
-        override def parameters = List( List(ArrayType), List(StringType) )
+      new Filter( "uniq", true ) {
+        override def parameters = List( List(ArrayType) )
 
-        override val compute = {
-          case List( l: List[_] ) => l.length
-          case List( s: String ) => s.length
+        override val invoke = {
+          case List( l: List[_] ) => l.asInstanceOf[List[Any]].distinct
         }
       }
 
