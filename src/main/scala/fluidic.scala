@@ -10,10 +10,11 @@ package object fluidic {
 
   def typeof( a: Any ) =
     a match {
+      case _: Seq[_] => ArrayType
       case _: Long | _: Double => NumberType
       case _: String => StringType
       case _: Boolean => BooleanType
-      case nil => NilType
+      case `nil` => NilType
     }
 
 }

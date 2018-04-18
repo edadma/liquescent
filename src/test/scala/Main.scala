@@ -6,12 +6,12 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      asdf {{ "March 14, 2016" | date: "%b %d, %y" }} zxcv
+      {{ list | uniq | join: ", " }}
     """
 
 //  println( parser( input ) )
 
-  val interp = new Interpreter( BuiltinFilters.map, Console.out )
+  val interp = new Interpreter( BuiltinFilters.map, Map("list" -> List(1, 3, 2, 3, 4, 2)), Console.out )
 
   FluidicParser.parse(input) foreach (op => interp.perform(op))
 }

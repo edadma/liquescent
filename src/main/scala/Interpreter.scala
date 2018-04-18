@@ -6,14 +6,27 @@ import java.io.PrintStream
 import scala.collection.mutable
 
 
-class Interpreter( filters: Map[String, Filter], out: PrintStream, strict: Boolean = true ) {
+class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out: PrintStream, strict: Boolean = true ) {
 
-  val vars = new mutable.HashMap[String, Any]
+  val vars = new mutable.HashMap[String, Any] ++ assigns
+
+  def display( a: Any ): String =
+    a match {
+      case l: List[_] => l map display mkString
+      case m: Map[_, _] => m map { case (k, v) => display(k) + "=>" + display(v) } mkString ","
+      case s => s.toString
+    }
 
   def perform( op: OperationAST ): Unit =
     op match {
       case PlainOutputAST( s ) => out.print( s )
-      case ExpressionOutputAST( expr ) => out.print( eval(expr) )
+      case ExpressionOutputAST( expr ) =>
+        out.print(
+          eval( expr ) match {
+            case l: List[_] => l.mkString
+            case s => s
+          }
+        )
     }
 
 //  def assignable( arg: Type, parameter: Type ) =

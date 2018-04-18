@@ -7,6 +7,9 @@ import java.time.format.DateTimeFormatter
 import math._
 import xyz.hyperreal.strftime.Strftime
 
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+
 
 object BuiltinFilters {
 
@@ -61,7 +64,7 @@ object BuiltinFilters {
         override def parameters = List( List(ArrayType) )
 
         override val invoke = {
-          case List( l: List[_] ) => l.reverse
+          case List( l: List[_] ) => l.asInstanceOf[List[Any]].reverse
         }
       },
 
@@ -69,7 +72,7 @@ object BuiltinFilters {
         override def parameters = List( List(ArrayType) )
 
         override val invoke = {
-          case List( l: List[_] ) => l.head
+          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
         }
       },
 
@@ -77,7 +80,7 @@ object BuiltinFilters {
         override def parameters = List( List(ArrayType) )
 
         override val invoke = {
-          case List( l: List[_] ) => l.last
+          case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].last
         }
       },
 
@@ -89,13 +92,28 @@ object BuiltinFilters {
         }
       },
 
+      new Filter( "join" ) {
+        override def parameters = List( List(ArrayType, StringType) )
+
+        override val invoke = {
+          case List( l: List[_], s: String ) => l mkString s
+        }
+      },
+
       new Filter( "uniq", true ) {
         override def parameters = List( List(ArrayType) )
 
         override val invoke = {
           case List( l: List[_] ) =>
-            l.
-            for (e <- l)
+            val set = new mutable.HashSet[Any]
+
+            l filter { e =>
+              if (!set(e)) {
+                set += e
+                true
+              } else
+                false
+            }
         }
       },
 
