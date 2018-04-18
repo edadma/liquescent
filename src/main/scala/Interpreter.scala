@@ -46,8 +46,8 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
     expr match {
       case DotExpressionAST( expr, name ) =>
         eval( expr ) match {
-          case m: Map[String, Any] =>
-            m get name match {
+          case m: collection.Map[_, _] =>
+            m.asInstanceOf[collection.Map[String, Any]] get name match {
               case None => nil
               case Some( v ) => v
             }

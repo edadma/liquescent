@@ -229,6 +229,14 @@ object BuiltinFilters {
 //        }
 //      },
 
+      new Filter( "split" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r: String ) => l split Matcher.quoteReplacement(r) toList
+        }
+      },
+
       new Filter( "uniq", true ) {
         override def parameters = List( List(ArrayType) )
 
