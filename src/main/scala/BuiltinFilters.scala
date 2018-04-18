@@ -3,12 +3,10 @@ package xyz.hyperreal.fluidic
 
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
+import java.util.regex.Matcher
 
 import math._
 import xyz.hyperreal.strftime.Strftime
-
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 
 object BuiltinFilters {
@@ -122,13 +120,53 @@ object BuiltinFilters {
         override val invoke = {
           case List( l: List[_], k: String ) =>
             l map {
-              case m: Map[String, Any] =>
-                m get k match {
+              case m: collection.Map[_, _] =>
+                m.asInstanceOf[collection.Map[String, Any]] get k match {
                   case None => nil
                   case Some( v ) => v
                 }
               case _ => nil
             }
+        }
+      },
+
+      new Filter( "newline_to_br" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s replace ("\n", "<br>")
+        }
+      },
+
+      new Filter( "remove" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r: String ) => l replace (r, "")
+        }
+      },
+
+      new Filter( "remove_first" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r: String ) => l replaceFirst (Matcher.quoteReplacement(r), "")
+        }
+      },
+
+      new Filter( "replace" ) {
+        override def parameters = List( List(StringType, StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r1: String, r2: String ) => l replace (r1, r2)
+        }
+      },
+
+      new Filter( "replace_first" ) {
+        override def parameters = List( List(StringType, StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r1: String, r2: String ) => l replaceFirst (Matcher.quoteReplacement(r1), r2)
         }
       },
 
@@ -148,6 +186,14 @@ object BuiltinFilters {
         }
       },
 
+      new Filter( "rstrip" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s.reverse dropWhile (_.isWhitespace) reverse
+        }
+      },
+
       new NumericFilter( "size", true ) {
         override def parameters = List( List(ArrayType), List(StringType) )
 
@@ -155,6 +201,24 @@ object BuiltinFilters {
           case List( l: List[_] ) => l.length
           case List( s: String ) => s.length
         }
+      },
+
+      new Filter( "slice" ) {
+        override def parameters = List( List(StringType, NumberType), List(StringType, NumberType, NumberType) )
+
+        def index( s: String, idx: Int ) =
+          if (idx < 0)
+            s.length + idx
+          else
+            idx
+
+        override val invoke = {
+          case List( s: String, idx: Number ) => s(index(s, idx.intValue)) toString
+          case List( s: String, idx: Number, len: Number ) =>
+            val i = index( s, idx.intValue )
+
+            s slice (i, i + len.intValue)
+       }
       },
 
 //      new Filter( "sort", true ) {

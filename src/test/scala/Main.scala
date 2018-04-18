@@ -6,7 +6,7 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      |{{ list | map: "a" | compact | join: ", " }}|
+      |{{ "Liquid" | slice: -3, 2 }}|
     """
 
 //  println( parser( input ) )
