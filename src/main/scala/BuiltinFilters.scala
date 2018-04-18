@@ -16,7 +16,7 @@ object BuiltinFilters {
       new NumericFilter( "abs" ) {
         override def parameters = List( List(NumberType) )
 
-        override val perform = {
+        override val compute = {
           case List( a: Long ) => abs( a )
           case List( a: Double ) => abs( a )
         }
@@ -31,21 +31,96 @@ object BuiltinFilters {
       },
 
       new Filter( "date" ) {
-        val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?"""r
-        val USUAL_DATETIME_REGEX = """[a-zA-Z]+ \d+, \d+"""r
-        val USUAL_DATETIME_FORMAT = DateTimeFormatter.ofPattern( "MMMM dd, yyyy" )
+        val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?""" r
+        val USUAL_DATETIME_REGEX = """[a-zA-Z]+ \d+, \d+""" r
+        val USUAL_DATETIME_FORMAT = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
 
-        override def parameters = List( List(StringType, StringType), List(DateTimeType, StringType) )
+        override def parameters = List(List(StringType, StringType), List(DateTimeType, StringType))
 
         override val invoke = {
-          case List( "now"|"today", f: String ) => Strftime.format( f )
-          case List( t: String, f: String ) =>
-            if (ISO_DATETIME_REGEX.pattern.matcher( t ).matches)
-              Strftime.format( f, LocalDateTime.parse(t) )
-            else if (USUAL_DATETIME_REGEX.pattern.matcher( t ).matches)
-              Strftime.format( f, LocalDate.parse(t, USUAL_DATETIME_FORMAT) )
+          case List("now" | "today", f: String) => Strftime.format(f)
+          case List(t: String, f: String) =>
+            if (ISO_DATETIME_REGEX.pattern.matcher(t).matches)
+              Strftime.format(f, LocalDateTime.parse(t))
+            else if (USUAL_DATETIME_REGEX.pattern.matcher(t).matches)
+              Strftime.format(f, LocalDate.parse(t, USUAL_DATETIME_FORMAT))
             else
-              sys.error( s"unrecognized date/time format: $t" )
+              sys.error(s"unrecognized date/time format: $t")
+        }
+      },
+
+      new Filter( "prepend" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( l: String, r: String ) => r + l
+        }
+      },
+
+      new Filter( "reverse", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l.reverse
+        }
+      },
+
+      new Filter( "first", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l.head
+        }
+      },
+
+      new Filter( "last", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l.last
+        }
+      },
+
+      new Filter( "compact", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) => l filterNot (_ == nil)
+        }
+      },
+
+      new Filter( "uniq", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_] ) =>
+            l.
+            for (e <- l)
+        }
+      },
+
+      new Filter( "concat" ) {
+        override def parameters = List( List(ArrayType, ArrayType) )
+
+        override val invoke = {
+          case List( l: List[_], r: List[_] ) => l ++ r
+        }
+      },
+
+//      new Filter( "sort", true ) {
+//        override def parameters = List( List(ArrayType) )
+//
+//        override val invoke = {
+//          case List( l: List[_] ) => l.sortBy
+//        }
+//      },
+
+      new NumericFilter( "size", true ) {
+        override def parameters = List( List(ArrayType), List(StringType) )
+
+        override val compute = {
+          case List( l: List[_] ) => l.length
+          case List( s: String ) => s.length
         }
       }
 
