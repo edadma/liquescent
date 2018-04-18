@@ -58,7 +58,7 @@ class Interpreter( filters: Map[String, Filter], out: PrintStream, strict: Boole
       case FilterExpressionAST( operand, name, args ) =>
         filters get name match {
           case None => sys.error( s"unknown filter: $name" )
-          case Some( f ) => applyFilter( eval(operand), f, args )
+          case Some( f ) => applyFilter( eval(operand), f, args map eval )
         }
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) =>

@@ -31,6 +31,11 @@ libraryDependencies ++= Seq(
 //  "com.typesafe" % "config" % "1.3.1"
 //)
 
+libraryDependencies ++= Seq(
+	"xyz.hyperreal" %% "strftime" % "0.1",
+	"xyz.hyperreal" %% "json" % "0.7"
+)
+
 mainClass in (Compile, run) := Some( "xyz.hyperreal." + name.value.replace('-', '_') + ".Main" )
 
 mainClass in assembly := Some( "xyz.hyperreal." + name.value.replace('-', '_') + ".Main" )

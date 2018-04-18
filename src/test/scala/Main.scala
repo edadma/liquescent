@@ -6,7 +6,7 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      asdf {{ -5 | abs }} zxcv
+      asdf {{ "2007-12-03T10:15:30" | date: "%Y-%m-%d %H:%M" }} zxcv
     """
 
 //  println( parser( input ) )
