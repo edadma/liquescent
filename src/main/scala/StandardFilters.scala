@@ -9,7 +9,7 @@ import math._
 import xyz.hyperreal.strftime.Strftime
 
 
-object BuiltinFilters {
+object StandardFilters {
 
   val map =
     List(
@@ -234,6 +234,30 @@ object BuiltinFilters {
 
         override val invoke = {
           case List( l: String, r: String ) => l split Matcher.quoteReplacement(r) toList
+        }
+      },
+
+      new Filter( "strip" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s.trim
+        }
+      },
+
+      new Filter( "strip_html" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s replaceAll ("""</?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[\^'">\s]+))?)+\s*|\s*)/?>""", "")
+        }
+      },
+
+      new Filter( "strip_newlines" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s replace ("\n", "")
         }
       },
 
