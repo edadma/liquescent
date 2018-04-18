@@ -261,6 +261,45 @@ object StandardFilters {
         }
       },
 
+      new Filter( "truncate" ) {
+        override def parameters = List( List(StringType, NumberType), List(StringType, NumberType, StringType) )
+
+        def truncate( s: String, len: Int, ellipsis: String ) =
+          if (s.length <= len)
+            s
+          else
+            s.substring( 0, len - ellipsis.length ) + ellipsis
+
+        override val invoke = {
+          case List( s: String, n: Number ) => truncate( s, n.intValue, "..." )
+          case List( s: String, n: Number, ellipsis: String ) => truncate( s, n.intValue, ellipsis )
+        }
+      },
+
+      new Filter( "truncatewords" ) {
+        override def parameters = List( List(StringType, NumberType), List(StringType, NumberType, StringType) )
+
+        def truncate( s: String, len: Int, ellipsis: String ) = {
+          val words = s split """\s+"""
+
+          if (words.length <= len)
+            s
+          else {
+            val it = """\w+""".r.findAllIn( s )
+
+            for (_ <- 1 to len)
+              it.next
+
+            s.substring( 0, it.end ) + ellipsis
+          }
+        }
+
+        override val invoke = {
+          case List( s: String, n: Number ) => truncate( s, n.intValue, "..." )
+          case List( s: String, n: Number, ellipsis: String ) => truncate( s, n.intValue, ellipsis )
+        }
+      },
+
       new Filter( "uniq", true ) {
         override def parameters = List( List(ArrayType) )
 
