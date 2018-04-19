@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
 
 import math._
+import xyz.hyperreal.lia.Math
 import xyz.hyperreal.strftime.Strftime
 
 
@@ -18,8 +19,7 @@ object StandardFilters {
         override def parameters = List( List(NumberType) )
 
         override val compute = {
-          case List( a: Long ) => abs( a )
-          case List( a: Double ) => abs( a )
+          case List( a: Number ) => Math.absFunction( a )
         }
       },
 
@@ -28,6 +28,22 @@ object StandardFilters {
 
         override val invoke = {
           case List( l: String, r: String ) => l + r
+        }
+      },
+
+      new NumericFilter( "at_least" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => if (Math.predicate( '<, a, b )) b else a
+        }
+      },
+
+      new NumericFilter( "at_most" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => if (Math.predicate( '>, a, b )) b else a
         }
       },
 

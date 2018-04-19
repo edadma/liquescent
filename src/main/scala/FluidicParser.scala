@@ -156,7 +156,13 @@ class ObjectParser extends RegexParsers with PackratParsers {
     ident ^^ VariableExpressionAST |
     """-?\d+(\.\d*)?""".r ^^ {
       case n if n contains '.' => LiteralExpressionAST( n.toDouble )
-      case n => LiteralExpressionAST( n.toLong ) } |
+      case n =>
+        val x = BigInt( n )
+
+        if (x.isValidInt)
+          LiteralExpressionAST( x.toInt )
+        else
+          LiteralExpressionAST( x ) } |
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false )
 

@@ -6,7 +6,7 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      |{{ "Ground control to Major Tom." | truncatewords: 3, "--" }}|
+      |{{ 4 | at_most: 5 }}|
     """
 
 //  println( parser( input ) )
