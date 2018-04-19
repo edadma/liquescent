@@ -222,6 +222,14 @@ object StandardFilters {
         }
       },
 
+      new NumericFilter( "plus" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => Math( '+, a, b ).asInstanceOf[Number]
+        }
+      },
+
       new Filter( "remove" ) {
         override def parameters = List( List(StringType, StringType) )
 
@@ -342,6 +350,14 @@ object StandardFilters {
 
         override val invoke = {
           case List( s: String ) => s replace ("\n", "")
+        }
+      },
+
+      new NumericFilter( "times" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => Math( '*, a, b ).asInstanceOf[Number]
         }
       },
 
