@@ -6,7 +6,7 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      |{{ product_price | default: 2.99 }}|
+      |{{ 183.357 | modulo: 12 }}|
     """
 
 //  println( parser( input ) )

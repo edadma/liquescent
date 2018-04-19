@@ -26,7 +26,7 @@ package object fluidic {
   def typeof( a: Any ) =
     a match {
       case _: Seq[_] => ArrayType
-      case _: Int | _: BigInt | _: Double => NumberType
+      case _: Int | _: BigInt | _: BigDecimal => NumberType
       case _: String => StringType
       case _: Boolean => BooleanType
       case `nil` => NilType

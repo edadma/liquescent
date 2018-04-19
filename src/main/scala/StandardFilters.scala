@@ -114,16 +114,16 @@ object StandardFilters {
       },
 
       new NumericFilter( "divided_by" ) {
-        override def parameters = List( List(NumberType), List(NumberType) )
+        override def parameters = List( List(NumberType, NumberType) )
 
         override val compute = {
           case List( a: Number, b: Number ) =>
-            val quo = Math( '/, a, b ).asInstanceOf[Number]
+            val quo = Math( '/, a, b )
 
             if (integer( b ))
               Math.floorFunction( quo )
             else
-              quo
+              quo.asInstanceOf[Number]
         }
       },
 
@@ -140,6 +140,21 @@ object StandardFilters {
 
         override val invoke = {
           case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
+        }
+      },
+
+      new NumericFilter( "floor" ) {
+        override def parameters = List( List(NumberType), List(StringType) )
+
+        override val compute = {
+          case List( a: Number ) => Math.floorFunction( a )
+          case List( a: String ) =>
+            if (integer( a ))
+              Math.floorFunction( BigInt(a) )
+            else if (float( a ))
+              Math.floorFunction( a.toDouble )
+            else
+              0
         }
       },
 
@@ -180,6 +195,22 @@ object StandardFilters {
                 }
               case _ => nil
             }
+        }
+      },
+
+      new NumericFilter( "minus" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => Math( '-, a, b ).asInstanceOf[Number]
+        }
+      },
+
+      new NumericFilter( "modulo" ) {
+        override def parameters = List( List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) => Math( '%, a, b ).asInstanceOf[Number]
         }
       },
 
