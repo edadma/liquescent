@@ -154,6 +154,7 @@ class ObjectParser extends RegexParsers with PackratParsers {
   lazy val primaryExpression: Parser[ExpressionAST] =
     "\"" ~> """[^"]*""".r <~ "\"" ^^ LiteralExpressionAST |
     ident ^^ VariableExpressionAST |
+    floatRegex ^^ { n => LiteralExpressionAST( n.toDouble ) } |
     integerRegex ^^ { n =>
       val x = BigInt( n )
 
@@ -161,7 +162,6 @@ class ObjectParser extends RegexParsers with PackratParsers {
         LiteralExpressionAST( x.toInt )
       else
         LiteralExpressionAST( x ) } |
-    floatRegex ^^ { n => LiteralExpressionAST( n.toDouble ) }
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false )
 

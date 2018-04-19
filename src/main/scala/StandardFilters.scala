@@ -105,17 +105,27 @@ object StandardFilters {
         }
       },
 
-//      new Filter( "default" ) {
-//        override def parameters = List( List(ArrayType), List(NumberType), List(BooleanType), List(NilType), List(StringType) )
-//
-//        override val invoke = {
-//          case List( a: Any ) =>
-//            if (truthy( a ) && a != "")
-//              a
-//            else
-//
-//        }
-//      },
+      new Filter( "default" ) {
+        override def parameters = List( List(AnyType, AnyType) )
+
+        override val invoke = {
+          case List( a: Any, b: Any ) => if (truthy( a ) && a != "") a else b
+        }
+      },
+
+      new NumericFilter( "divided_by" ) {
+        override def parameters = List( List(NumberType), List(NumberType) )
+
+        override val compute = {
+          case List( a: Number, b: Number ) =>
+            val quo = Math( '/, a, b ).asInstanceOf[Number]
+
+            if (integer( b ))
+              Math.floorFunction( quo )
+            else
+              quo
+        }
+      },
 
       new Filter( "downcase" ) {
         override def parameters = List( List(StringType) )

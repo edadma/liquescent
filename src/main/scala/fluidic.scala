@@ -1,6 +1,8 @@
 //@
 package xyz.hyperreal
 
+import java.time.temporal.TemporalAccessor
+
 
 package object fluidic {
 
@@ -19,6 +21,8 @@ package object fluidic {
 
   def integer( a: String ) = integerRegex.pattern.matcher( a ).matches
 
+  def integer( a: Number ) = a.isInstanceOf[Int] || a.isInstanceOf[BigInt]
+
   def typeof( a: Any ) =
     a match {
       case _: Seq[_] => ArrayType
@@ -26,6 +30,7 @@ package object fluidic {
       case _: String => StringType
       case _: Boolean => BooleanType
       case `nil` => NilType
+      case _: TemporalAccessor => DateTimeType
     }
 
   def display( a: Any ): String =

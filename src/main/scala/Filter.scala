@@ -9,7 +9,7 @@ abstract class Filter( val name: String, val dottable: Boolean = false ) {
 
   def parameters: List[List[Type]]
 
-  val invoke: List[Any] => AnyRef
+  val invoke: List[Any] => Any
 
 }
 

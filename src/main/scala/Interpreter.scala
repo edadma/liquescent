@@ -29,11 +29,23 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
     val fargs = operand :: args
     val types = fargs map typeof
 
+    def assignable( args: List[Type], parms: List[Type] ): Boolean =
+      (args, parms) match {
+        case (Nil, Nil) => true
+        case (Nil, List(_)) => false
+        case (List(_), Nil) => false
+        case (ah :: at, ph :: pt) =>
+          if (ah == ph || ph == AnyType)
+            assignable( at, pt )
+          else
+            false
+      }
+
     def applyFilter( parameters: List[List[Type]] ): Any =
       parameters match {
         case Nil => sys.error( s"filter ${filter.name} not applicable to [${fargs mkString ", "}]" )
         case head :: tail =>
-          if (types == head)
+          if (assignable( types, head ))
             filter.invoke( fargs )
           else
             applyFilter( tail )
