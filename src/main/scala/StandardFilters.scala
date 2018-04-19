@@ -55,6 +55,21 @@ object StandardFilters {
         }
       },
 
+      new NumericFilter( "ceil" ) {
+        override def parameters = List( List(NumberType), List(StringType) )
+
+        override val compute = {
+          case List( a: Number ) => Math.ceilFunction( a )
+          case List( a: String ) =>
+            if (integer( a ))
+              Math.ceilFunction( BigInt(a) )
+            else if (float( a ))
+              Math.ceilFunction( a.toDouble )
+            else
+              0
+        }
+      },
+
       new Filter( "compact", true ) {
         override def parameters = List( List(ArrayType) )
 
@@ -89,6 +104,18 @@ object StandardFilters {
               sys.error(s"unrecognized date/time format: $t")
         }
       },
+
+//      new Filter( "default" ) {
+//        override def parameters = List( List(ArrayType), List(NumberType), List(BooleanType), List(NilType), List(StringType) )
+//
+//        override val invoke = {
+//          case List( a: Any ) =>
+//            if (truthy( a ) && a != "")
+//              a
+//            else
+//
+//        }
+//      },
 
       new Filter( "downcase" ) {
         override def parameters = List( List(StringType) )

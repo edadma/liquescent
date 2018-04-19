@@ -4,9 +4,20 @@ package xyz.hyperreal
 
 package object fluidic {
 
+  val floatRegex = """-?\d+\.\d*""".r
+  val integerRegex = """-?\d+""".r
+
   case object nil {
     override def toString = ""
   }
+
+  def truthy( a: Any ) = a != nil && a != false
+
+  def falsy( a: Any ) = !truthy( a )
+
+  def float( a: String ) = floatRegex.pattern.matcher( a ).matches
+
+  def integer( a: String ) = integerRegex.pattern.matcher( a ).matches
 
   def typeof( a: Any ) =
     a match {

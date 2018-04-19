@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
 	"xyz.hyperreal" %% "strftime" % "0.1",
-	"xyz.hyperreal" %% "lia" % "0.22",
+	"xyz.hyperreal" %% "lia" % "0.22.1",
 	"xyz.hyperreal" %% "json" % "0.7"
 )
 
