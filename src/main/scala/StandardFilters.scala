@@ -12,7 +12,7 @@ import xyz.hyperreal.strftime.Strftime
 
 object StandardFilters {
 
-  val nonWordCharacterRegex = """([^\w ])"""r
+  val nonWordCharacterRegex = """([^\w _.])"""r
 
   def escape( s: String ) =
     nonWordCharacterRegex.replaceSomeIn( s,
