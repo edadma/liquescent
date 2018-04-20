@@ -16,10 +16,17 @@ object StandardFilters {
     List(
 
       new NumericFilter( "abs" ) {
-        override def parameters = List( List(NumberType) )
+        override def parameters = List( List(NumberType), List(StringType) )
 
         override val compute = {
           case List( a: Number ) => Math.absFunction( a )
+          case List( a: String ) =>
+            if (integer( a ))
+              Math.absFunction( BigInt(a) )
+            else if (float( a ))
+              Math.absFunction( BigDecimal(a) )
+            else
+              0
         }
       },
 
@@ -64,7 +71,7 @@ object StandardFilters {
             if (integer( a ))
               Math.ceilFunction( BigInt(a) )
             else if (float( a ))
-              Math.ceilFunction( a.toDouble )
+              Math.ceilFunction( BigDecimal(a) )
             else
               0
         }
@@ -162,7 +169,7 @@ object StandardFilters {
             if (integer( a ))
               Math.floorFunction( BigInt(a) )
             else if (float( a ))
-              Math.floorFunction( a.toDouble )
+              Math.floorFunction( BigDecimal(a) )
             else
               0
         }
