@@ -12,6 +12,32 @@ import xyz.hyperreal.strftime.Strftime
 
 object StandardFilters {
 
+  val nonWordCharacterRegex = """([^\w ])"""r
+
+  def escape( s: String ) =
+    nonWordCharacterRegex.replaceSomeIn( s,
+      { m =>
+        val c = m group 1 head
+
+        val entity =
+          c match {
+            case '<' => "lt"
+            case '>' => "gt"
+            case '&' => "amp"
+            case '"' => "quot"
+            case '\'' => "apos"
+            case '¢' => "cent"
+            case '£' => "pound"
+            case '¥' => "yen"
+            case '€' => "euro"
+            case '©' => "copy"
+            case '®' => "reg"
+            case _ => s"#${c.toInt}"
+          }
+
+        Some(s"&$entity;")
+      } )
+
   val map =
     List(
 
@@ -145,10 +171,32 @@ object StandardFilters {
       new Filter( "escape" ) {
         override def parameters = List( List(StringType) )
 
-        val regex = """([^\w])"""r
+        override val invoke = {
+          case List( s: String ) => escape( s )
+        }
+      },
+
+      new Filter( "escape_once" ) {
+        override def parameters = List( List(StringType) )
+
+        val regex = """&#?\w+;"""r
 
         override val invoke = {
-          case List( s: String ) => regex.replaceAllIn( s, m => s"&#${(m group 1 head).toInt toString};" )
+          case List( s: String ) =>
+            val it = regex.findAllIn( s )
+            var last = 0
+            val buf = new StringBuilder
+
+            while (it hasNext) {
+              val m = it.next
+
+              buf ++= escape( s.substring(last, it.start) )
+              buf ++= it.matched
+              last = it.end
+            }
+
+            buf ++= escape( s.substring(last, s.length) )
+            buf.toString
         }
       },
 
