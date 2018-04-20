@@ -1,7 +1,7 @@
 //@
 package xyz.hyperreal.fluidic
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
 
@@ -94,7 +94,7 @@ object StandardFilters {
       },
 
       new Filter( "date" ) {
-        val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?""" r
+        val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?(?:Z|(?:\+|-)\d\d:\d\d)""" r
         val USUAL_DATETIME_REGEX = """[a-zA-Z]+ \d+, \d+""" r
         val USUAL_DATETIME_FORMAT = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
 
@@ -104,7 +104,7 @@ object StandardFilters {
           case List("now" | "today", f: String) => Strftime.format(f)
           case List(t: String, f: String) =>
             if (ISO_DATETIME_REGEX.pattern.matcher(t).matches)
-              Strftime.format(f, LocalDateTime.parse(t))
+              Strftime.format(f, ZonedDateTime.parse(t))
             else if (USUAL_DATETIME_REGEX.pattern.matcher(t).matches)
               Strftime.format(f, LocalDate.parse(t, USUAL_DATETIME_FORMAT))
             else

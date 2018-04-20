@@ -73,6 +73,40 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			""".stripMargin
 	}
 
+	"ceil" in {
+		test(
+			"""
+				|{{ 1.2 | ceil }}
+				|{{ 2.0 | ceil }}
+				|{{ 183.357 | ceil }}
+				|{{ "3.5" | ceil }}
+			""".stripMargin
+		) shouldBe
+			"""
+				|2
+				|2
+				|184
+				|4
+			""".stripMargin
+	}
+
+	"date" in {
+		test(
+			"""
+				|{{ 1.2 | ceil }}
+				|{{ 2.0 | ceil }}
+				|{{ 183.357 | ceil }}
+				|{{ "3.5" | ceil }}
+			""".stripMargin
+		) shouldBe
+			"""
+				|2
+				|2
+				|184
+				|4
+			""".stripMargin
+	}
+
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""" ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
