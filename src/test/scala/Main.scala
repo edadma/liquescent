@@ -6,7 +6,7 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
     """
-      |{{ 183.357 | modulo: 12 }}|
+      |{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}|
     """
 
 //  println( parser( input ) )

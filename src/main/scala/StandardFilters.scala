@@ -135,6 +135,16 @@ object StandardFilters {
         }
       },
 
+      new Filter( "escape" ) {
+        override def parameters = List( List(StringType) )
+
+        val regex = """([^\w])"""r
+
+        override val invoke = {
+          case List( s: String ) => regex.replaceAllIn( s, m => s"&#${(m group 1 head).toInt toString};" )
+        }
+      },
+
       new Filter( "first", true ) {
         override def parameters = List( List(ArrayType) )
 
@@ -313,13 +323,33 @@ object StandardFilters {
        }
       },
 
-//      new Filter( "sort", true ) {
-//        override def parameters = List( List(ArrayType) )
-//
-//        override val invoke = {
-//          case List( l: List[_] ) => l.sortBy
-//        }
-//      },
+      new Filter( "sort", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        def lt( a: Any, b: Any ) =
+          if (a.isInstanceOf[Number] && b.isInstanceOf[Number])
+            Math.predicate( '<, a, b )
+          else
+            a.toString < b.toString
+
+        override val invoke = {
+          case List( l: List[_] ) => l sortWith lt
+        }
+      },
+
+      new Filter( "sort_natural", true ) {
+        override def parameters = List( List(ArrayType) )
+
+        def lt( a: Any, b: Any ) =
+          if (a.isInstanceOf[Number] && b.isInstanceOf[Number])
+            Math.predicate( '<, a, b )
+          else
+            (a.toString compareToIgnoreCase b.toString) < 0
+
+        override val invoke = {
+          case List( l: List[_] ) => l sortWith lt
+        }
+      },
 
       new Filter( "split" ) {
         override def parameters = List( List(StringType, StringType) )
