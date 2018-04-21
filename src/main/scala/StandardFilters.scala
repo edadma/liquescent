@@ -123,6 +123,8 @@ object StandardFilters {
         val ISO_DATETIME_REGEX = """\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:.\d+)?(?:Z|(?:\+|-)\d\d:\d\d)""" r
         val USUAL_DATETIME_REGEX = """[a-zA-Z]+ \d+, \d+""" r
         val USUAL_DATETIME_FORMAT = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+        val ISO_DATE_REGEX = """\d\d\d\d-\d\d-\d\d""" r
+        val ISO_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         override def parameters = List(List(StringType, StringType), List(DateTimeType, StringType))
 
@@ -133,6 +135,8 @@ object StandardFilters {
               Strftime.format(f, ZonedDateTime.parse(t))
             else if (USUAL_DATETIME_REGEX.pattern.matcher(t).matches)
               Strftime.format(f, LocalDate.parse(t, USUAL_DATETIME_FORMAT))
+            else if (ISO_DATE_REGEX.pattern.matcher(t).matches)
+              Strftime.format(f, LocalDate.parse(t, ISO_DATE_FORMAT))
             else
               sys.error(s"unrecognized date/time format: $t")
         }

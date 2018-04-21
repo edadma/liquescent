@@ -93,17 +93,15 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 	"date" in {
 		test(
 			"""
-				|{{ 1.2 | ceil }}
-				|{{ 2.0 | ceil }}
-				|{{ 183.357 | ceil }}
-				|{{ "3.5" | ceil }}
+				|{{ article.published_at | date: "%a, %b %d, %y" }}
+				|{{ article.published_at | date: "%Y" }}
+				|{{ "March 14, 2016" | date: "%b %d, %y" }}
 			""".stripMargin
 		) shouldBe
 			"""
-				|2
-				|2
-				|184
-				|4
+				|Fri, Jul 17, 15
+				|2015
+				|Mar 14, 16
 			""".stripMargin
 	}
 
