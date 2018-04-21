@@ -10,7 +10,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 
-  def perform( op: OperationAST ): Unit =
+  def perform( op: StatementAST ): Unit =
     op match {
       case PlainOutputAST( s ) => out.print( s )
       case ExpressionOutputAST( expr ) =>
@@ -65,7 +65,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
             }
           case o =>
             filters get name match {
-              case None => sys.error( s"unknown filter: $name" )
+              case None => sys.error( s"non-existant property: $name" )
               case Some( f ) =>
                 if (!f.dottable)
                   sys.error( s"filter not dottable: $name" )

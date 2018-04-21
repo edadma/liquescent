@@ -4,11 +4,11 @@ package xyz.hyperreal.fluidic
 
 trait AST
 
-case class SourceAST( elems: List[OperationAST]) extends AST
+case class SourceAST( elems: List[StatementAST]) extends AST
 
-trait OperationAST extends AST
-case class PlainOutputAST( s: String ) extends OperationAST
-case class ExpressionOutputAST( expr: ExpressionAST ) extends OperationAST
+trait StatementAST extends AST
+case class PlainOutputAST( s: String ) extends StatementAST
+case class ExpressionOutputAST( expr: ExpressionAST ) extends StatementAST
 
 trait ExpressionAST extends AST
 case class DotExpressionAST( expr: ExpressionAST, name: String ) extends ExpressionAST
@@ -24,3 +24,5 @@ case class LteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends
 case class GtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
 case class GteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
 case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List[ExpressionAST] ) extends ExpressionAST
+
+case class IfStatementAST( cond: Seq[(ExpressionAST, ExpressionAST)], els: Option[StatementAST] ) extends StatementAST
