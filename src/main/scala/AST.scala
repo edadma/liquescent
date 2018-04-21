@@ -7,8 +7,8 @@ trait AST
 case class SourceAST( elems: List[StatementAST]) extends AST
 
 trait StatementAST extends AST
-case class PlainOutputAST( s: String ) extends StatementAST
-case class ExpressionOutputAST( expr: ExpressionAST ) extends StatementAST
+case class PlainOutputStatementAST( s: String ) extends StatementAST
+case class ExpressionOutputStatementAST( expr: ExpressionAST ) extends StatementAST
 
 trait ExpressionAST extends AST
 case class DotExpressionAST( expr: ExpressionAST, name: String ) extends ExpressionAST
@@ -25,4 +25,6 @@ case class GtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends 
 case class GteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
 case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List[ExpressionAST] ) extends ExpressionAST
 
-case class IfStatementAST( cond: Seq[(ExpressionAST, ExpressionAST)], els: Option[StatementAST] ) extends StatementAST
+case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
+case class BlockStatementAST( block: Seq[StatementAST] ) extends StatementAST
+case class AssignStatementAST( name: String, expr: ExpressionAST ) extends StatementAST

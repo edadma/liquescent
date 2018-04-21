@@ -12,14 +12,16 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
 
   def perform( op: StatementAST ): Unit =
     op match {
-      case PlainOutputAST( s ) => out.print( s )
-      case ExpressionOutputAST( expr ) =>
+      case PlainOutputStatementAST( s ) => out.print( s )
+      case ExpressionOutputStatementAST( expr ) =>
         out.print(
-          eval( expr ) match {
+					eval( expr ) match {
             case l: List[_] => l.mkString
             case s => s
           }
-        )
+				)
+			case AssignStatementAST( name, expr ) => vars(name) = eval( expr )
+			case BlockStatementAST( block ) => block foreach perform
     }
 
 //  def assignable( arg: Type, parameter: Type ) =

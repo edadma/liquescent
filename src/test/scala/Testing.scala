@@ -8,10 +8,10 @@ trait Testing {
 
 	def test( input: String ) = {
 		val bytes = new ByteArrayOutputStream
-		val out = new PrintStream(bytes)
+		val out = new PrintStream( bytes )
 		val interp = new Interpreter(StandardFilters.map, Map("article" -> Map("published_at" -> "2015-07-17"), "filename" -> "/index.html", "product_price" -> 1.49, "list" -> List(Map("a" -> "asdf"), 3, 2, Map("b" -> "oops"), 4, Map("a" -> "qwer"))), out )
 
-		FluidicParser.parse(input) foreach (op => interp.perform(op))
+		interp.perform( FluidicParser.parse(input) )
 		bytes.toString
 	}
 

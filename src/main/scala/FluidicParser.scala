@@ -13,7 +13,7 @@ object FluidicParser {
 //  val textRegex = """.*"""r
 
   val templateRegex = """\{\{.*?}}|\{%.*?%}"""r
-  val delimiterPattern = """[\s%{}]+""".r.pattern
+  val delimiterPattern = """[\s%{}-]+""".r.pattern
   val tagPattern = """[a-zA-Z]+[a-zA-Z0-9]*""".r.pattern
 
   def elements( src: String ): List[Element] = {
@@ -29,7 +29,7 @@ object FluidicParser {
 
       buf +=
         (src.charAt( it.start + 1 ) match {
-          case '{' => ObjectElement( it.matched )//.substring(2, it.matched.length - 2)
+          case '{' => ObjectElement( it.matched )
           case '%' =>
             val matched = it.matched
             val scanner = new Scanner( matched ) useDelimiter delimiterPattern
@@ -45,8 +45,18 @@ object FluidicParser {
     buf.toList
   }
 
+  def whitespace( elems: List[Element] ): List[Element] =
+    elems match {
+      case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if pre.forall( _.isWhitespace ) && tag.startsWith( "{%-" ) => whitespace( t :: tail )
+      case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if post.forall( _.isWhitespace ) && tag.endsWith( "-%}" ) => whitespace( t :: tail )
+      case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if pre.forall( _.isWhitespace ) && obj.startsWith( "{{-" ) => whitespace( o :: tail )
+      case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if post.forall( _.isWhitespace ) && obj.endsWith( "-}}" ) => whitespace( o :: tail )
+      case head :: tail => head :: whitespace( tail )
+      case Nil => Nil
+   }
+
   def parse( template: String ) = {
-    var tokens = elements( template ) filterNot new CommentFilter flatMap new RawTransform
+    var tokens = whitespace( elements( template ) filterNot new CommentFilter flatMap new RawTransform )
 
     def peek = tokens.head
 
@@ -66,37 +76,60 @@ object FluidicParser {
     def advance = tokens = tokens.tail
 
     def consume( tok: String ) =
-      if (atend) {
+      if (eoi) {
         println( s" expected '$tok' tag, but end of input encountered" )
         sys.exit( 1 )
       } else if (token( tok ))
         advance
       else {
-          println( s" expected '$tok' tag, but '$t' tag encountered" )
+          println( s" expected '$tok' tag, but '$tok' tag encountered" )
           sys.exit( 1 )
       }
 
-    def atend = tokens == Nil
+    def eoi = tokens == Nil
 
-    def parseBlock = {
-      val block = ListBuffer[StatementAST]
+    def parseIf( s: String ) = {
+      val parser = new ElementParser
+      val cond = parser( parser.ifTag, s )
+      val body = IfStatementAST( List(cond -> parseBlock), None )
 
-      while (!atend) {
-        pop match {
-          case TextElement( s ) => block += PlainOutputAST( s )
-          case ObjectElement( s ) =>
-            val parser = new ElementParser
-            val output = parser( parser.objectOutput, s )
+      consume( "endif" )
+      body
+    }
 
-            block += output
-          case TagElement( tag, s ) =>
-            if (tag == "if") {
+    def parseBlock: StatementAST = {
+      val block = new ListBuffer[StatementAST]
+
+      def _parseBlock {
+        if (!eoi) {
+          pop match {
+            case TextElement( s ) =>
+              block += PlainOutputStatementAST( s )
+              _parseBlock
+            case ObjectElement( s ) =>
               val parser = new ElementParser
-              val cond = parser( parser.ifTag, tag )
 
-            }
+              block += parser( parser.objectOutput, s )
+              _parseBlock
+            case TagElement( "if", s ) =>
+              block += parseIf( s )
+              _parseBlock
+            case TagElement( "assign", s ) =>
+              val parser = new ElementParser
+
+              block += parser( parser.assignTag, s )
+              _parseBlock
+            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture", _ ) =>
+          }
         }
       }
+
+      _parseBlock
+
+      if (block.length == 1)
+        block.head
+      else
+        BlockStatementAST( block toList )
     }
 
     parseBlock
@@ -165,11 +198,18 @@ class ElementParser extends RegexParsers with PackratParsers {
 //  lazy val tags: PackratParser[StatementAST] =
 //    ifTag
 
-  lazy val ifTag: PackratParser[ExpressionAST] = "{%" ~> "if" ~> expression <~ "%}"
+  lazy val tagStart = "\\{%-?"r
 
-  lazy val elsifTag: PackratParser[ExpressionAST] = "{%" ~> "elsif" ~> expression <~ "%}"
+  lazy val tagEnd = "-?%}"r
 
-  lazy val objectOutput: PackratParser[ExpressionOutputAST] = "{{" ~> expression <~ "}}" ^^ ExpressionOutputAST
+  lazy val assignTag: PackratParser[StatementAST] = tagStart ~> "assign" ~> ((ident <~ "=") ~ expression) <~ tagEnd ^^ {
+    case n ~ e => AssignStatementAST( n, e ) }
+
+  lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
+
+  lazy val elsifTag: PackratParser[ExpressionAST] = tagStart ~> "elsif" ~> expression <~ tagEnd
+
+  lazy val objectOutput: PackratParser[ExpressionOutputStatementAST] = """\{\{-?""".r ~> expression <~ "-?}}".r ^^ ExpressionOutputStatementAST
 
   lazy val expression: PackratParser[ExpressionAST] =
     orExpression
