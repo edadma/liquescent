@@ -47,10 +47,26 @@ object FluidicParser {
 
   def whitespace( elems: List[Element] ): List[Element] =
     elems match {
-      case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if pre.forall( _.isWhitespace ) && tag.startsWith( "{%-" ) => whitespace( t :: tail )
-      case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if post.forall( _.isWhitespace ) && tag.endsWith( "-%}" ) => whitespace( t :: tail )
-      case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if pre.forall( _.isWhitespace ) && obj.startsWith( "{{-" ) => whitespace( o :: tail )
-      case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if post.forall( _.isWhitespace ) && obj.endsWith( "-}}" ) => whitespace( o :: tail )
+      case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if tag.startsWith( "{%-" ) =>
+        if (pre.forall( _.isWhitespace ))
+          whitespace( t :: tail )
+        else
+          whitespace( TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: t :: tail )
+      case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if tag.endsWith( "-%}" ) =>
+        if (post.forall( _.isWhitespace ))
+          whitespace( t :: tail )
+        else
+          whitespace( t :: TextElement( post dropWhile (_.isWhitespace) ) :: tail )
+     case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj.startsWith( "{{-" ) =>
+        if (pre.forall( _.isWhitespace ))
+          whitespace( o :: tail )
+        else
+          whitespace( TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: o :: tail )
+      case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if obj.endsWith( "-}}" ) =>
+        if (post.forall( _.isWhitespace ))
+          whitespace( o :: tail )
+        else
+          whitespace( o :: TextElement( post dropWhile (_.isWhitespace) ) :: tail )
       case head :: tail => head :: whitespace( tail )
       case Nil => Nil
    }
@@ -234,7 +250,7 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val filterExpression: PackratParser[ExpressionAST] =
     filterExpression ~ ("|" ~> ident <~ ":") ~ rep1sep(applyExpression, ",") ^^
       { case o ~ f ~ a => FilterExpressionAST( o, f, a ) } |
-      filterExpression ~ ("|" ~> ident) ^^ { case o ~ f => FilterExpressionAST( o, f, Nil ) } |
+    filterExpression ~ ("|" ~> ident) ^^ { case o ~ f => FilterExpressionAST( o, f, Nil ) } |
     applyExpression
 
   lazy val applyExpression: PackratParser[ExpressionAST] =
