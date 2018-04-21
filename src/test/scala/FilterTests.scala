@@ -107,6 +107,32 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			""".stripMargin
 	}
 
+	"downcase" in {
+		test(
+			"""
+				|{{ "Parker Moore" | downcase }}
+				|{{ "apple" | downcase }}
+			""".stripMargin
+		) shouldBe
+			"""
+				|parker moore
+				|apple
+			""".stripMargin
+	}
+
+	"escape" in {
+		test(
+			"""
+				|{{ "Have you read 'James & the Giant Peach'?" | escape }}
+				|{{ "Tetsuro Takara" | escape }}
+			""".stripMargin
+		) shouldBe
+			"""
+				|Have you read &apos;James &amp; the Giant Peach&apos;?
+				|Tetsuro Takara
+			""".stripMargin
+	}
+
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""" ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
