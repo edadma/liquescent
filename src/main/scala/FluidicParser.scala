@@ -137,7 +137,7 @@ object FluidicParser {
     def parseBlock: StatementAST = {
       val block = new ListBuffer[StatementAST]
 
-      def _parseBlock {
+      def _parseBlock: Unit =
         if (!eoi) {
           peek match {
             case TextElement( s ) =>
@@ -160,10 +160,16 @@ object FluidicParser {
 
               block += parser( parser.assignTag, s )
               _parseBlock
+            case TagElement( "capture", s ) =>
+              advance
+              val parser = new ElementParser
+
+              block += CaptureStatementAST( parser(parser.captureTag, s), parseBlock )
+              consume( "endcapture" )
+              _parseBlock
             case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif", _ ) =>
           }
         }
-      }
 
       _parseBlock
 
@@ -250,6 +256,8 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val assignTag: PackratParser[StatementAST] = tagStart ~> "assign" ~> ((ident <~ "=") ~ expression) <~ tagEnd ^^ {
     case n ~ e => AssignStatementAST( n, e ) }
+
+  lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
 
   lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
 

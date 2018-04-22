@@ -1,16 +1,16 @@
 //@
 package xyz.hyperreal.fluidic
 
-import java.io.PrintStream
+import java.io.{ByteArrayOutputStream, PrintStream}
 
 import scala.collection.mutable
 
 
-class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out: PrintStream, strict: Boolean = true ) {
+class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], strict: Boolean = true ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 
-  def perform( op: StatementAST ): Unit =
+  def perform( op: StatementAST, out: PrintStream ): Unit =
     op match {
       case PlainOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
@@ -21,16 +21,21 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
           }
 				)
 			case AssignStatementAST( name, expr ) => vars(name) = eval( expr )
-			case BlockStatementAST( block ) => block foreach perform
+			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find {case (expr, _) => truthy( eval(expr) )} match {
 					case None =>
 						els match {
 							case None => 
-							case Some( elseStatement ) => perform( elseStatement )
+							case Some( elseStatement ) => perform( elseStatement, out )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement )
+					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
+			case CaptureStatementAST( name, body ) =>
+				val bytes = new ByteArrayOutputStream
+
+				perform( body, new PrintStream(bytes) )
+				vars(name) = bytes.toString
     }
 
 //  def assignable( arg: Type, parameter: Type ) =
