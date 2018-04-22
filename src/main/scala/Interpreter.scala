@@ -3,6 +3,8 @@ package xyz.hyperreal.liquescent
 
 import java.io.{ByteArrayOutputStream, PrintStream}
 
+import xyz.hyperreal.lia.Math
+
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -156,6 +158,13 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
     applyFilter( filter.parameters )
   }
 
+	def compare( a: Any, b: Any ) =
+		(a, b) match {
+			case (x: Number, y: Number) => Math( '+, Math('-, x, y), BigDecimal(0) ).asInstanceOf[BigDecimal].signum
+			case (x: String, y: String) => x compareTo y
+			case _ => sys.error( s"expected two numbers or two strings: $a, $b" )
+		}
+
   def eval( expr: ExpressionAST ): Any =
     expr match {
 			case RangeExpressionAST( from, to ) =>
@@ -189,7 +198,14 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
         }
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) => getVar( name )
+			case OrExpressionAST( left, right ) => truthy( eval(left) ) || truthy( eval(right) )
+			case AndExpressionAST( left, right ) => truthy( eval(left) ) && truthy( eval(right) )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
+			case NeqExpressionAST( left, right ) => eval( left ) != eval( right )
+			case LtExpressionAST( left, right ) => compare( left, right ) < 0
+			case LteExpressionAST( left, right ) => compare( left, right ) <= 0
+			case GtExpressionAST( left, right ) => compare( left, right ) > 0
+			case GteExpressionAST( left, right ) => compare( left, right ) >= 0
 			case ContainsExpressionAST( left, right ) =>
 				(eval( left ), eval( right )) match {
 					case (seq: Seq[_], str: String) => seq contains str
