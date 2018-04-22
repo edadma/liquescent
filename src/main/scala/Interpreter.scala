@@ -22,6 +22,15 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
 				)
 			case AssignStatementAST( name, expr ) => vars(name) = eval( expr )
 			case BlockStatementAST( block ) => block foreach perform
+			case IfStatementAST( cond, els ) =>
+				cond find {case (expr, _) => truthy( eval(expr) )} match {
+					case None =>
+						els match {
+							case None => 
+							case Some( elseStatement ) => perform( elseStatement )
+						}
+					case Some( (_, thenStatement) ) => perform( thenStatement )
+				}
     }
 
 //  def assignable( arg: Type, parameter: Type ) =

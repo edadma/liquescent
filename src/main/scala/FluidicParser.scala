@@ -5,6 +5,7 @@ import java.util.Scanner
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
+
 object FluidicParser {
 
 //  val objectRegex = """\{\{.*}}"""r
@@ -72,7 +73,7 @@ object FluidicParser {
    }
 
   def parse( template: String ) = {
-    var tokens = whitespace( elements( template ) filterNot new CommentFilter flatMap new RawTransform )
+    var tokens = whitespace( elements(template) filterNot new CommentFilter flatMap new RawTransform )
 
     def peek = tokens.head
 
@@ -93,13 +94,11 @@ object FluidicParser {
 
     def consume( tok: String ) =
       if (eoi) {
-        println( s" expected '$tok' tag, but end of input encountered" )
-        sys.exit( 1 )
+        sys.error( s" expected '$tok' tag, but end of input encountered" )
       } else if (token( tok ))
         advance
       else {
-          println( s" expected '$tok' tag, but '$tok' tag encountered" )
-          sys.exit( 1 )
+        sys.error( s" expected '$tok' tag, but '${peek}' encountered" )
       }
 
     def eoi = tokens == Nil
@@ -118,19 +117,23 @@ object FluidicParser {
 
       def _parseBlock {
         if (!eoi) {
-          pop match {
+          peek match {
             case TextElement( s ) =>
+              advance
               block += PlainOutputStatementAST( s )
               _parseBlock
             case ObjectElement( s ) =>
+              advance
               val parser = new ElementParser
 
               block += parser( parser.objectOutput, s )
               _parseBlock
             case TagElement( "if", s ) =>
+              advance
               block += parseIf( s )
               _parseBlock
             case TagElement( "assign", s ) =>
+              advance
               val parser = new ElementParser
 
               block += parser( parser.assignTag, s )
@@ -260,6 +263,8 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val primaryExpression: Parser[ExpressionAST] =
     "\"" ~> """[^"]*""".r <~ "\"" ^^ LiteralExpressionAST |
+    "true" ^^^ LiteralExpressionAST( true ) |
+    "false" ^^^ LiteralExpressionAST( false ) |
     ident ^^ VariableExpressionAST |
     floatRegex ^^ { n => LiteralExpressionAST( BigDecimal(n) ) } |
     integerRegex ^^ { n =>
@@ -268,9 +273,7 @@ class ElementParser extends RegexParsers with PackratParsers {
       if (x.isValidInt)
         LiteralExpressionAST( x.toInt )
       else
-        LiteralExpressionAST( x ) } |
-    "true" ^^^ LiteralExpressionAST( true ) |
-    "false" ^^^ LiteralExpressionAST( false )
+        LiteralExpressionAST( x ) }
 
   def apply[T]( grammar: Parser[T], input: String ) =
     parseAll( grammar, input ) match {
