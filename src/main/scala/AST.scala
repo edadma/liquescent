@@ -27,6 +27,7 @@ case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List
 case class RangeExpressionAST( from: ExpressionAST, to: ExpressionAST ) extends ExpressionAST
 
 case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
+case class UnlessStatementAST( cond: ExpressionAST, body: StatementAST ) extends StatementAST
 case class BlockStatementAST( block: Seq[StatementAST] ) extends StatementAST
 case class AssignStatementAST( name: String, expr: ExpressionAST ) extends StatementAST
 case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST

@@ -134,6 +134,15 @@ object LiquescentParser {
       IfStatementAST( conds.toList, no )
     }
 
+    def parseUnless( s: String ) = {
+      val parser = new ElementParser
+      val cond = parser( parser.unlessTag, s )
+			val body = parseBlock
+
+      consume( "endunless" )
+      UnlessStatementAST( cond, body )
+    }
+
     def parseFor( s: String ) = {
       val parser = new ElementParser
       val ForGenerator( name, expr ) = parser( parser.forTag, s )
@@ -162,6 +171,10 @@ object LiquescentParser {
             case TagElement( "if", s ) =>
               advance
               block += parseIf( s )
+              _parseBlock
+            case TagElement( "unless", s ) =>
+              advance
+              block += parseUnless( s )
               _parseBlock
             case TagElement( "for", s ) =>
               advance
@@ -276,6 +289,8 @@ class ElementParser extends RegexParsers with PackratParsers {
     case n ~ e => ForGenerator( n, e ) }
 
   lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
+
+  lazy val unlessTag: PackratParser[ExpressionAST] = tagStart ~> "unless" ~> expression <~ tagEnd
 
   lazy val elsifTag: PackratParser[ExpressionAST] = tagStart ~> "elsif" ~> expression <~ tagEnd
 
