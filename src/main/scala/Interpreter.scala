@@ -83,7 +83,11 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 				perform( body, new PrintStream(bytes) )
 				setVar( name, bytes.toString )
 			case ForStatementAST( name, expr, parameters, body ) =>
-				var list = eval( expr ).asInstanceOf[Seq[Any]]
+				var list =
+					eval( expr ) match {
+						case s: Seq[_] => s
+						case x => sys.error( s"expected array: $x" )
+					}
 
 				parameters foreach {
 					case ReversedForParameter => list = list.reverse

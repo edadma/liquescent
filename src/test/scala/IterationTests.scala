@@ -45,4 +45,42 @@ class IterationTests extends FreeSpec with PropertyChecks with Matchers with Tes
 		) shouldBe "1 2 3 5"
 	}
 
+	"limit" in {
+		test(
+			"""
+				|{% for item in array limit:2 %}
+				|  {{ item }}
+				|{% endfor %}
+			""".stripMargin, true, "array" -> List( 1, 2, 3, 4, 5, 6 )
+		) shouldBe "1 2"
+	}
+
+	"offset" in {
+		test(
+			"""
+				|{% for item in array offset:2 %}
+				|  {{ item }}
+				|{% endfor %}
+			""".stripMargin, true, "array" -> List( 1, 2, 3, 4, 5, 6 )
+		) shouldBe "3 4 5 6"
+	}
+
+	"range" in {
+		test(
+			"""
+				|{% for i in (3..5) %}
+ 				|  {{ i }}
+				|{% endfor %}
+			""".stripMargin, true
+		) shouldBe "3 4 5"
+		test(
+			"""
+				|{% assign num = 4 %}
+				|{% for i in (1..num) %}
+ 				|  {{ i }}
+				|{% endfor %}
+			""".stripMargin, true
+		) shouldBe "1 2 3 4"
+	}
+
 }
