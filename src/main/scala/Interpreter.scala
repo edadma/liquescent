@@ -95,7 +95,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], out:
           case None => nil
           case Some( v ) => v
         }
-
+			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
     }
 
 }

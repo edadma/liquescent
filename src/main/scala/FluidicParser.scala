@@ -79,11 +79,16 @@ object FluidicParser {
 
     def token( tok: String ) =
       peek match {
-        case TagElement( `tok`, _ ) =>
-          advance
-          true
+        case TagElement( `tok`, _ ) => true
         case _ => false
       }
+
+    def tokenAdvance( tok: String ) =
+      if (token( tok )) {
+        advance
+        true
+      } else
+        false
 
     def pop = {
       val t = peek
@@ -92,13 +97,15 @@ object FluidicParser {
       t
     }
 
+    def popTag = pop.asInstanceOf[TagElement]
+
     def advance = tokens = tokens.tail
 
     def consume( tok: String ) =
       if (eoi) {
         sys.error( s" expected '$tok' tag, but end of input encountered" )
-      } else if (!token( tok )) {
-        sys.error( s" expected '$tok' tag, but '${peek}' encountered" )
+      } else if (!tokenAdvance( tok )) {
+        sys.error( s" expected '$tok' tag, but '$peek' encountered" )
       }
 
     def eoi = tokens == Nil
@@ -106,15 +113,25 @@ object FluidicParser {
     def parseIf( s: String ) = {
       val parser = new ElementParser
       val cond = parser( parser.ifTag, s )
-      val yes = cond -> parseBlock
+      val conds = new ListBuffer[(ExpressionAST, StatementAST)]
+
+        conds += cond -> parseBlock
+
+        while (token( "elsif" )) {
+          val parser = new ElementParser
+          val cond = parser( parser.elsifTag, popTag.s )
+
+          conds += cond -> parseBlock
+        }
+
       val no =
-        if (token( "else" ))
+        if (tokenAdvance( "else" ))
           Some( parseBlock )
         else
           None
 
       consume( "endif" )
-      IfStatementAST( List(yes), no )
+      IfStatementAST( conds.toList, no )
     }
 
     def parseBlock: StatementAST = {
@@ -156,7 +173,12 @@ object FluidicParser {
         BlockStatementAST( block toList )
     }
 
-    parseBlock
+    val block = parseBlock
+
+    if (!eoi)
+      sys.error( s"unexpected element $pop" )
+
+    block
   }
 
 }
