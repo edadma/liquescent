@@ -49,13 +49,24 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 			case AssignStatementAST( name, expr ) => setVar( name, eval(expr) )
 			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
-				cond find {case (expr, _) => truthy( eval(expr) )} match {
+				cond find { case (expr, _) => truthy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None => 
 							case Some( elseStatement ) => perform( elseStatement, out )
 						}
 					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+				}
+			case CaseStatementAST( expr, cases, els ) =>
+				val value = eval( expr )
+
+				cases find { case (expr, _) => eval( expr ) == value } match {
+					case None =>
+						els match {
+							case None =>
+							case Some( elseStatement ) => perform( elseStatement, out )
+						}
+					case Some( (_, whenStatement) ) => perform( whenStatement, out )
 				}
 			case UnlessStatementAST( cond, body ) =>
 				if (falsy( eval(cond) ))

@@ -124,14 +124,14 @@ object LiquescentParser {
           conds += cond -> parseBlock
         }
 
-      val no =
+      val els =
         if (tokenAdvance( "else" ))
           Some( parseBlock )
         else
           None
 
       consume( "endif" )
-      IfStatementAST( conds.toList, no )
+      IfStatementAST( conds.toList, els )
     }
 
     def parseUnless( s: String ) = {
@@ -141,6 +141,30 @@ object LiquescentParser {
 
       consume( "endunless" )
       UnlessStatementAST( cond, body )
+    }
+
+    def parseCase( s: String ) = {
+      val parser = new ElementParser
+      val expr = parser( parser.caseTag, s )
+      val cases = new ListBuffer[(ExpressionAST, StatementAST)]
+
+      parseBlock
+
+      while (token( "when" )) {
+        val parser = new ElementParser
+        val when = parser( parser.whenTag, popTag.s )
+
+        cases += when -> parseBlock
+      }
+
+      val els =
+        if (tokenAdvance( "else" ))
+          Some( parseBlock )
+        else
+          None
+
+     consume( "endcase" )
+      CaseStatementAST( expr, cases.toList, els )
     }
 
     def parseFor( s: String ) = {
@@ -176,6 +200,10 @@ object LiquescentParser {
               advance
               block += parseUnless( s )
               _parseBlock
+            case TagElement( "case", s ) =>
+              advance
+              block += parseCase( s )
+              _parseBlock
             case TagElement( "for", s ) =>
               advance
               block += parseFor( s )
@@ -193,7 +221,7 @@ object LiquescentParser {
               block += CaptureStatementAST( parser(parser.captureTag, s), parseBlock )
               consume( "endcapture" )
               _parseBlock
-            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif", _ ) =>
+            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif"|"when", _ ) =>
           }
         }
 
@@ -293,6 +321,10 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val unlessTag: PackratParser[ExpressionAST] = tagStart ~> "unless" ~> expression <~ tagEnd
 
   lazy val elsifTag: PackratParser[ExpressionAST] = tagStart ~> "elsif" ~> expression <~ tagEnd
+
+  lazy val caseTag: PackratParser[ExpressionAST] = tagStart ~> "case" ~> expression <~ tagEnd
+
+  lazy val whenTag: PackratParser[ExpressionAST] = tagStart ~> "when" ~> expression <~ tagEnd
 
   lazy val objectOutput: PackratParser[ExpressionOutputStatementAST] = """\{\{-?""".r ~> expression <~ "-?}}".r ^^ ExpressionOutputStatementAST
 
