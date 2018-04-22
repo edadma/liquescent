@@ -1,4 +1,4 @@
-package xyz.hyperreal.fluidic
+package xyz.hyperreal.liquescent
 
 
 object Main extends App {

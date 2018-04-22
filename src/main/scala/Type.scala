@@ -1,5 +1,5 @@
 //@
-package xyz.hyperreal.fluidic
+package xyz.hyperreal.liquescent
 
 
 trait Type

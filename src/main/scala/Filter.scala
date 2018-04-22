@@ -1,5 +1,5 @@
 //@
-package xyz.hyperreal.fluidic
+package xyz.hyperreal.liquescent
 
 
 abstract class Filter( val name: String, val dottable: Boolean = false ) {

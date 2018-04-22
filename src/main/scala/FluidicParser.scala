@@ -1,12 +1,12 @@
 //@
-package xyz.hyperreal.fluidic
+package xyz.hyperreal.liquescent
 
 import java.util.Scanner
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
 
-object FluidicParser {
+object LiquescentParser {
 
 //  val objectRegex = """\{\{.*}}"""r
 //  val tagRegex = """\{%.*%}"""r

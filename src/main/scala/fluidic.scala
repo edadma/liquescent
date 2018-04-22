@@ -4,7 +4,7 @@ package xyz.hyperreal
 import java.time.temporal.TemporalAccessor
 
 
-package object fluidic {
+package object liquescent {
 
   val floatRegex = """-?\d+\.\d*""".r
   val integerRegex = """-?\d+""".r

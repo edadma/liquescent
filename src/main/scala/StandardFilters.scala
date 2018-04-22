@@ -1,5 +1,5 @@
 //@
-package xyz.hyperreal.fluidic
+package xyz.hyperreal.liquescent
 
 import java.time.{LocalDate, ZonedDateTime}
 import java.time.format.DateTimeFormatter

@@ -1,4 +1,4 @@
-name := "fluidic"
+name := "liquescent"
 
 version := "0.1"
 
