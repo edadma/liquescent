@@ -154,9 +154,9 @@ object LiquescentParser {
               block += PlainOutputStatementAST( s )
               _parseBlock
             case ObjectElement( s ) =>
-              advance
               val parser = new ElementParser
 
+              advance
               block += parser( parser.objectOutput, s )
               _parseBlock
             case TagElement( "if", s ) =>
@@ -168,15 +168,15 @@ object LiquescentParser {
               block += parseFor( s )
               _parseBlock
             case TagElement( "assign", s ) =>
-              advance
               val parser = new ElementParser
 
+              advance
               block += parser( parser.assignTag, s )
               _parseBlock
             case TagElement( "capture", s ) =>
-              advance
               val parser = new ElementParser
 
+              advance
               block += CaptureStatementAST( parser(parser.captureTag, s), parseBlock )
               consume( "endcapture" )
               _parseBlock
