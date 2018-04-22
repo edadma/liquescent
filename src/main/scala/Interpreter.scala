@@ -82,8 +82,22 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 
 				perform( body, new PrintStream(bytes) )
 				setVar( name, bytes.toString )
-			case ForStatementAST( name, expr, body ) =>
-				val list = eval( expr ).asInstanceOf[Seq[Any]]
+			case ForStatementAST( name, expr, parameters, body ) =>
+				var list = eval( expr ).asInstanceOf[Seq[Any]]
+
+				parameters foreach {
+					case ReversedForParameter => list = list.reverse
+					case LimitForParameter( limit ) =>
+						eval( limit ) match {
+							case n: Number => list = list take n.intValue
+							case v => sys.error( s"number was expected: $v" )
+						}
+					case OffsetForParameter( offset ) =>
+						eval( offset ) match {
+							case n: Number => list = list drop n.intValue
+							case v => sys.error( s"number was expected: $v" )
+						}
+				}
 
 				enterScope( List(name) )
 

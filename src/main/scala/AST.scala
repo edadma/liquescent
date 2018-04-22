@@ -34,6 +34,11 @@ case class AssignStatementAST( name: String, expr: ExpressionAST ) extends State
 case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST
 case class IncrementStatementAST( name: String ) extends StatementAST
 case class DecrementStatementAST( name: String ) extends StatementAST
-case class ForStatementAST( name: String, expr: ExpressionAST, body: StatementAST ) extends StatementAST
+case class ForStatementAST( name: String, expr: ExpressionAST, parameters: List[ForParameter], body: StatementAST ) extends StatementAST
 
-case class ForGenerator( name: String, expr: ExpressionAST )
+case class ForGenerator( name: String, expr: ExpressionAST, parameters: List[ForParameter] )
+
+trait ForParameter
+case object ReversedForParameter extends ForParameter
+case class OffsetForParameter( offset: ExpressionAST ) extends ForParameter
+case class LimitForParameter( limit: ExpressionAST ) extends ForParameter

@@ -13,7 +13,7 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|  These shoes are not awesome.
 				|{% endunless %}
 				|blah
-			""".stripMargin, "product" -> Map("title" -> "Awefull Shoes")
+			""".stripMargin, false, "product" -> Map("title" -> "Awefull Shoes")
 		).trim shouldBe
 			"""
 				|These shoes are not awesome.
@@ -26,7 +26,7 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|  These shoes are not awesome.
 				|{% endunless %}
 				|blah
-			""".stripMargin, "product" -> Map("title" -> "Awesome Shoes")
+			""".stripMargin, false, "product" -> Map("title" -> "Awesome Shoes")
 		).trim shouldBe
 			"""
 				|blah
@@ -45,7 +45,7 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|  {% else %}
 				|     This is not a cake nor a cookie
 				|{% endcase %}
-			""".stripMargin
+			""".stripMargin, false
 		).trim shouldBe
 			"""
 				|This is a cake
@@ -61,7 +61,7 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|  {% else %}
 				|     This is not a cake nor a cookie
 				|{% endcase %}
-			""".stripMargin
+			""".stripMargin, false
 		).trim shouldBe
 			"""
 				|This is a cookie
@@ -77,7 +77,7 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|  {% else %}
 				|     This is not a cake nor a cookie
 				|{% endcase %}
-			""".stripMargin
+			""".stripMargin, false
 		).trim shouldBe
 			"""
 				|This is not a cake nor a cookie

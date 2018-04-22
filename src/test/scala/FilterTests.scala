@@ -12,7 +12,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|{{ -17 | abs }}
 				|{{ 4 | abs }}
 				|{{ "-19.86" | abs }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|17
@@ -26,7 +26,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ "/my/fancy/url" | append: ".html" }}
 				|{{ "website.com" | append: filename }}
-			""".stripMargin, "filename" -> "/index.html"
+			""".stripMargin, false, "filename" -> "/index.html"
 		) shouldBe
 			"""
 				|/my/fancy/url.html
@@ -39,7 +39,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ 4 | at_least: 5 }}
 				|{{ 4 | at_least: 3 }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|5
@@ -52,7 +52,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ 4 | at_most: 5 }}
 				|{{ 4 | at_most: 3 }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|4
@@ -65,7 +65,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ "title" | capitalize }}
 				|{{ "my great title" | capitalize }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|Title
@@ -80,7 +80,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|{{ 2.0 | ceil }}
 				|{{ 183.357 | ceil }}
 				|{{ "3.5" | ceil }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|2
@@ -96,7 +96,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|{{ article.published_at | date: "%a, %b %d, %y" }}
 				|{{ article.published_at | date: "%Y" }}
 				|{{ "March 14, 2016" | date: "%b %d, %y" }}
-			""".stripMargin, "article" -> Map("published_at" -> "2015-07-17")
+			""".stripMargin, false, "article" -> Map("published_at" -> "2015-07-17")
 		) shouldBe
 			"""
 				|Fri, Jul 17, 15
@@ -110,7 +110,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ "Parker Moore" | downcase }}
 				|{{ "apple" | downcase }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|parker moore
@@ -123,7 +123,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ "Have you read 'James & the Giant Peach'?" | escape }}
 				|{{ "Tetsuro Takara" | escape }}
-			""".stripMargin
+			""".stripMargin, false
 		) shouldBe
 			"""
 				|Have you read &apos;James &amp; the Giant Peach&apos;?
@@ -132,7 +132,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 	}
 
 	"sort_natural" in {
-		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""" ) shouldBe
+		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
 	}
 

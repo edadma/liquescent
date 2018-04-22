@@ -184,11 +184,11 @@ object LiquescentParser {
 
     def parseFor( s: String ) = {
       val parser = new ElementParser
-      val ForGenerator( name, expr ) = parser( parser.forTag, s )
+      val ForGenerator( name, expr, parameters ) = parser( parser.forTag, s )
 			val body = parseBlock
 
       consume( "endfor" )
-      ForStatementAST( name, expr, body )
+      ForStatementAST( name, expr, parameters, body )
     }
 
     def parseBlock: StatementAST = {
@@ -328,8 +328,13 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
 
-  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) <~ tagEnd ^^ {
-    case n ~ e => ForGenerator( n, e ) }
+  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) ~ rep(forParameters) <~ tagEnd ^^ {
+    case n ~ e ~ p => ForGenerator( n, e, p ) }
+
+  lazy val forParameters: PackratParser[ForParameter] =
+    "reversed" ^^^ ReversedForParameter |
+    "offset" ~> ":" ~> expression ^^ OffsetForParameter |
+    "limit" ~> ":" ~> expression ^^ LimitForParameter
 
   lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
 
