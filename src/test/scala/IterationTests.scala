@@ -83,4 +83,24 @@ class IterationTests extends FreeSpec with PropertyChecks with Matchers with Tes
 		) shouldBe "1 2 3 4"
 	}
 
+	"reversed" in {
+		test(
+			"""
+				|{% for item in array reversed %}
+				|  {{ item }}
+				|{% endfor %}
+			""".stripMargin, true, "array" -> List( 1, 2, 3, 4, 5, 6 )
+		) shouldBe "6 5 4 3 2 1"
+	}
+
+	"cycle" in {
+		test(
+			"""
+				|{% for item in (3..6) %}
+				|  {% cycle 'one', 'two', 'three' %}
+				|{% endfor %}
+			""".stripMargin, true
+		) shouldBe "one two three one"
+	}
+
 }

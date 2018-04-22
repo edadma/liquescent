@@ -42,8 +42,8 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
       case ExpressionOutputStatementAST( expr ) =>
         out.print(
 					eval( expr ) match {
-            case l: List[_] => l.mkString
-            case s => s
+            case l: List[_] => l map display mkString
+            case s => display( s )
           }
 				)
 			case AssignStatementAST( name, expr ) => setVar( name, eval(expr) )
@@ -103,12 +103,13 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 						}
 				}
 
-				enterScope( List(name) )
+				enterScope( List(name, "#idx") )
 
 				try {
-					for (elem <- list)
+					for ((elem, idx) <- list zipWithIndex)
 						try {
 							setVar( name, elem )
+							setVar( "#idx", idx )
 							perform( body, out )
 						} catch {
 							case _: ContinueException =>
@@ -118,6 +119,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 				}
 
 				exitScope
+			case CycleStatementAST( items ) => out.print( display(eval(items(getVar("#idx").asInstanceOf[Int]%items.length))) )
 			case BreakStatementAST => throw new BreakException
 			case ContinueStatementAST => throw new ContinueException
     }

@@ -215,6 +215,12 @@ object LiquescentParser {
               advance
               block += ContinueStatementAST
               _parseBlock
+            case TagElement( "cycle", s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.cycleTag, s )
+              _parseBlock
             case TagElement( "if", s ) =>
               advance
               block += parseIf( s )
@@ -333,6 +339,8 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val assignTag: PackratParser[StatementAST] = tagStart ~> "assign" ~> ((ident <~ "=") ~ expression) <~ tagEnd ^^ {
     case n ~ e => AssignStatementAST( n, e ) }
+
+  lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector ) }
 
   lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
 

@@ -37,6 +37,7 @@ case class DecrementStatementAST( name: String ) extends StatementAST
 case class ForStatementAST( name: String, expr: ExpressionAST, parameters: List[ForParameter], body: StatementAST ) extends StatementAST
 case object BreakStatementAST extends StatementAST
 case object ContinueStatementAST extends StatementAST
+case class CycleStatementAST( items: Vector[ExpressionAST] ) extends StatementAST
 
 case class ForGenerator( name: String, expr: ExpressionAST, parameters: List[ForParameter] )
 
