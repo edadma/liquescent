@@ -6,9 +6,9 @@ import java.io.{ByteArrayOutputStream, PrintStream}
 
 trait Testing {
 
-	def test( input: String ) = {
+	def test( input: String, assigns: (String, Any)* ) = {
 		val bytes = new ByteArrayOutputStream
-		val interp = new Interpreter(StandardFilters.map, Map("article" -> Map("published_at" -> "2015-07-17"), "filename" -> "/index.html", "product_price" -> 1.49, "list" -> List(Map("a" -> "asdf"), 3, 2, Map("b" -> "oops"), 4, Map("a" -> "qwer"))) )
+		val interp = new Interpreter(StandardFilters.map, assigns toMap )
 
 		interp.perform( LiquescentParser.parse(input), new PrintStream(bytes) )
 		bytes.toString

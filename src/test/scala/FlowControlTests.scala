@@ -9,16 +9,14 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 	"unless" in {
 		test(
 			"""
-				|{{ -17 | abs }}
-				|{{ 4 | abs }}
-				|{{ "-19.86" | abs }}
-			""".stripMargin
-		) shouldBe
+				|{% unless product.title == 'Awesome Shoes' %}
+				|  These shoes are not awesome.
+				|{% endunless %}
+			""".stripMargin, "product" -> Map("title" -> "Awefull Shoes")
+		).trim shouldBe
 			"""
-				|17
-				|4
-				|19.86
-			""".stripMargin
+				|These shoes are not awesome.
+			""".stripMargin.trim
 	}
 
 }

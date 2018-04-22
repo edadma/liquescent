@@ -26,7 +26,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|{{ "/my/fancy/url" | append: ".html" }}
 				|{{ "website.com" | append: filename }}
-			""".stripMargin
+			""".stripMargin, "filename" -> "/index.html"
 		) shouldBe
 			"""
 				|/my/fancy/url.html
@@ -96,7 +96,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|{{ article.published_at | date: "%a, %b %d, %y" }}
 				|{{ article.published_at | date: "%Y" }}
 				|{{ "March 14, 2016" | date: "%b %d, %y" }}
-			""".stripMargin
+			""".stripMargin, "article" -> Map("published_at" -> "2015-07-17")
 		) shouldBe
 			"""
 				|Fri, Jul 17, 15

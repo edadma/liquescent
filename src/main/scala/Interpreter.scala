@@ -57,6 +57,9 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 						}
 					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
+			case UnlessStatementAST( cond, body ) =>
+				if (falsy( eval(cond) ))
+					perform( body, out )
 			case CaptureStatementAST( name, body ) =>
 				val bytes = new ByteArrayOutputStream
 
@@ -114,6 +117,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 					case (a: Int, b: Int) => a to b
 					case (a: BigDecimal, b: BigDecimal) => a to b by 1
 					case (a: BigInt, b: BigInt) => a to b by 1
+					case (a, b) => sys.error( s"invalid range limits: $a, $b" )
 				}) toList
       case DotExpressionAST( expr, name ) =>
         eval( expr ) match {

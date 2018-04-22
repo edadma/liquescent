@@ -332,7 +332,7 @@ class ElementParser extends RegexParsers with PackratParsers {
 		primaryExpression
 
   lazy val primaryExpression: Parser[ExpressionAST] =
-    "\"" ~> """[^"]*""".r <~ "\"" ^^ LiteralExpressionAST |
+    """('([^']*)')|("([^"]*)")""".r ^^ (s => LiteralExpressionAST( s.substring(1, s.length - 1) )) |
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false ) |
     ident ^^ VariableExpressionAST |
