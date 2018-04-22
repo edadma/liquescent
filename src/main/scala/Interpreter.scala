@@ -190,6 +190,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) => getVar( name )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
+			case ContainsExpressionAST( left, right ) => eval( left ).toString contains eval( right ).toString
     }
 
 	class BreakException extends RuntimeException

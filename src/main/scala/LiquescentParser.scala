@@ -376,6 +376,7 @@ class ElementParser extends RegexParsers with PackratParsers {
     comparisonExpression
 
   lazy val comparisonExpression: PackratParser[ExpressionAST] =
+    filterExpression ~ ("contains" ~> filterExpression) ^^ { case l ~ r => ContainsExpressionAST( l, r ) } |
     filterExpression ~ ("==" ~> filterExpression) ^^ { case l ~ r => EqExpressionAST( l, r ) } |
     filterExpression ~ ("!=" ~> filterExpression) ^^ { case l ~ r => NeqExpressionAST( l, r ) } |
     filterExpression ~ ("<" ~> filterExpression) ^^ { case l ~ r => LtExpressionAST( l, r ) } |
