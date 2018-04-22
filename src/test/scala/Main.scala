@@ -6,9 +6,11 @@ object Main extends App {
 //  val parser = new FluidicParser
   val input =
 		"""
-			{% assign a = false %}
+			{% assign a = true %}
 	 		{% if a %}
 				yes
+			{% else %}
+	 			no
 			{% endif %}
 			asdf
     """

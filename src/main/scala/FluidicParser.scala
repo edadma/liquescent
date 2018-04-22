@@ -79,7 +79,9 @@ object FluidicParser {
 
     def token( tok: String ) =
       peek match {
-        case TagElement( `tok`, _ ) => true
+        case TagElement( `tok`, _ ) =>
+          advance
+          true
         case _ => false
       }
 
@@ -95,9 +97,7 @@ object FluidicParser {
     def consume( tok: String ) =
       if (eoi) {
         sys.error( s" expected '$tok' tag, but end of input encountered" )
-      } else if (token( tok ))
-        advance
-      else {
+      } else if (!token( tok )) {
         sys.error( s" expected '$tok' tag, but '${peek}' encountered" )
       }
 
@@ -106,10 +106,15 @@ object FluidicParser {
     def parseIf( s: String ) = {
       val parser = new ElementParser
       val cond = parser( parser.ifTag, s )
-      val body = IfStatementAST( List(cond -> parseBlock), None )
+      val yes = cond -> parseBlock
+      val no =
+        if (token( "else" ))
+          Some( parseBlock )
+        else
+          None
 
       consume( "endif" )
-      body
+      IfStatementAST( List(yes), no )
     }
 
     def parseBlock: StatementAST = {
@@ -138,7 +143,7 @@ object FluidicParser {
 
               block += parser( parser.assignTag, s )
               _parseBlock
-            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture", _ ) =>
+            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif", _ ) =>
           }
         }
       }
