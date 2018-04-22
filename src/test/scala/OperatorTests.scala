@@ -24,6 +24,13 @@ class OperatorTests extends FreeSpec with PropertyChecks with Matchers with Test
 				|{% endif %}
 			""".stripMargin, true, "product" -> Map("title" -> "Packs and bags")
 		) shouldBe "no asdf"
+		test(
+			"""
+				|{% if product.tags contains 'Hello' %}
+				|  This product has been tagged with 'Hello'.
+				|{% endif %}
+			""".stripMargin, true, "product" -> Map("tags" -> List("wow", "Hello", "lala"))
+		) shouldBe "This product has been tagged with 'Hello'."
 	}
 
 }

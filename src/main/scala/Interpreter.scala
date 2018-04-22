@@ -190,7 +190,12 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) => getVar( name )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
-			case ContainsExpressionAST( left, right ) => eval( left ).toString contains eval( right ).toString
+			case ContainsExpressionAST( left, right ) =>
+				(eval( left ), eval( right )) match {
+					case (seq: Seq[_], str: String) => seq contains str
+					case (s1: String, s2: String) => s1 contains s2
+					case (a, b) => sys.error( s"expected string/array contains string: $a, $b" )
+				}
     }
 
 	class BreakException extends RuntimeException
