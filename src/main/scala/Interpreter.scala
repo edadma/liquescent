@@ -57,8 +57,8 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 						}
 					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
-			case CaseStatementAST( expr, cases, els ) =>
-				val value = eval( expr )
+			case CaseStatementAST( exp, cases, els ) =>
+				val value = eval( exp )
 
 				cases find { case (expr, _) => eval( expr ) == value } match {
 					case None =>
@@ -68,9 +68,15 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 						}
 					case Some( (_, whenStatement) ) => perform( whenStatement, out )
 				}
-			case UnlessStatementAST( cond, body ) =>
-				if (falsy( eval(cond) ))
-					perform( body, out )
+			case UnlessStatementAST( cond, els ) =>
+				cond find { case (expr, _) => falsy( eval(expr) ) } match {
+					case None =>
+						els match {
+							case None =>
+							case Some( elseStatement ) => perform( elseStatement, out )
+						}
+					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+				}
 			case CaptureStatementAST( name, body ) =>
 				val bytes = new ByteArrayOutputStream
 

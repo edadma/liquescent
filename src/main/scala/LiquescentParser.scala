@@ -115,14 +115,14 @@ object LiquescentParser {
       val cond = parser( parser.ifTag, s )
       val conds = new ListBuffer[(ExpressionAST, StatementAST)]
 
+      conds += cond -> parseBlock
+
+      while (token( "elsif" )) {
+        val parser = new ElementParser
+        val cond = parser( parser.elsifTag, popTag.s )
+
         conds += cond -> parseBlock
-
-        while (token( "elsif" )) {
-          val parser = new ElementParser
-          val cond = parser( parser.elsifTag, popTag.s )
-
-          conds += cond -> parseBlock
-        }
+      }
 
       val els =
         if (tokenAdvance( "else" ))
@@ -137,10 +137,25 @@ object LiquescentParser {
     def parseUnless( s: String ) = {
       val parser = new ElementParser
       val cond = parser( parser.unlessTag, s )
-			val body = parseBlock
+      val conds = new ListBuffer[(ExpressionAST, StatementAST)]
+
+      conds += cond -> parseBlock
+
+      while (token( "elsif" )) {
+        val parser = new ElementParser
+        val cond = parser( parser.elsifTag, popTag.s )
+
+        conds += cond -> parseBlock
+      }
+
+      val els =
+        if (tokenAdvance( "else" ))
+          Some( parseBlock )
+        else
+          None
 
       consume( "endunless" )
-      UnlessStatementAST( cond, body )
+      UnlessStatementAST( conds.toList, els )
     }
 
     def parseCase( s: String ) = {
