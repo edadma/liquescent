@@ -1,3 +1,4 @@
+//@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
@@ -14,6 +15,9 @@ class IterationTests extends FreeSpec with PropertyChecks with Matchers with Tes
 				|{% endfor %}
 			""".stripMargin, true, "collection" -> Map("products" -> List(Map("title" -> "hat"), Map("title" -> "shirt"), Map("title" -> "pants")))
 		) shouldBe "hat shirt pants"
+	}
+
+	"break" in {
 		test(
 			"""
 				|{% for i in (1..5) %}
@@ -25,6 +29,9 @@ class IterationTests extends FreeSpec with PropertyChecks with Matchers with Tes
 				|{% endfor %}
 			""".stripMargin, true
 		) shouldBe "1 2 3"
+	}
+
+	"continue" in {
 		test(
 			"""
 				|{% for i in (1..5) %}
