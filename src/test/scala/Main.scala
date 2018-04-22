@@ -6,20 +6,25 @@ object Main extends App {
 //  val parser = new LiquescentParser
   val input =
 		"""
-		  {% capture my_variable %}
-				{% assign a = 3 %}
-				{% if a == 1 %}
-					one
-				{% elsif a == 2 %}
-					two
-				{% elsif a == 3 %}
-					three
-				{% else %}
-					something else
-				{% endif %}
-	 		{% endcapture %}
-			asdf {{ my_variable }}
-    """
+			|{% for item in "one, two, three" | split: ", " %}
+			|  {{ item }}
+			|{% endfor %}
+		""".stripMargin
+//		"""
+//		  {% capture my_variable %}
+//				{% assign a = 3 %}
+//				{% if a == 1 %}
+//					one
+//				{% elsif a == 2 %}
+//					two
+//				{% elsif a == 3 %}
+//					three
+//				{% else %}
+//					something else
+//				{% endif %}
+//	 		{% endcapture %}
+//			asdf {{ my_variable }}
+//    """
 
 //  println( parser( input ) )
 

@@ -134,6 +134,15 @@ object LiquescentParser {
       IfStatementAST( conds.toList, no )
     }
 
+    def parseFor( s: String ) = {
+      val parser = new ElementParser
+      val ForGenerator( name, expr ) = parser( parser.forTag, s )
+			val body = parseBlock
+
+      consume( "endfor" )
+      ForStatementAST( name, expr, body )
+    }
+
     def parseBlock: StatementAST = {
       val block = new ListBuffer[StatementAST]
 
@@ -153,6 +162,10 @@ object LiquescentParser {
             case TagElement( "if", s ) =>
               advance
               block += parseIf( s )
+              _parseBlock
+            case TagElement( "for", s ) =>
+              advance
+              block += parseFor( s )
               _parseBlock
             case TagElement( "assign", s ) =>
               advance
@@ -258,6 +271,9 @@ class ElementParser extends RegexParsers with PackratParsers {
     case n ~ e => AssignStatementAST( n, e ) }
 
   lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
+
+  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) <~ tagEnd ^^ {
+    case n ~ e => ForGenerator( n, e ) }
 
   lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
 

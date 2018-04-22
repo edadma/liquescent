@@ -31,3 +31,6 @@ case class AssignStatementAST( name: String, expr: ExpressionAST ) extends State
 case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST
 case class IncrementStatementAST( name: String ) extends StatementAST
 case class DecrementStatementAST( name: String ) extends StatementAST
+case class ForStatementAST( name: String, expr: ExpressionAST, body: StatementAST ) extends StatementAST
+
+case class ForGenerator( name: String, expr: ExpressionAST )

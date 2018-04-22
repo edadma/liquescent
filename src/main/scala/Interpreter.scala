@@ -36,6 +36,13 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 
 				perform( body, new PrintStream(bytes) )
 				vars(name) = bytes.toString
+			case ForStatementAST( name, expr, body ) =>
+				val list = eval( expr ).asInstanceOf[Seq[Any]]
+
+				for (elem <- list) {
+					vars(name) = elem
+					perform( body, out )
+				}
     }
 
 //  def assignable( arg: Type, parameter: Type ) =
