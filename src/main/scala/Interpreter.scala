@@ -4,11 +4,37 @@ package xyz.hyperreal.liquescent
 import java.io.{ByteArrayOutputStream, PrintStream}
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 
 class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], strict: Boolean = true ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
+	var scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
+
+	def setVar( name: String, value: Any ): Unit =
+		scopes.view.reverse find (_ contains name) match {
+			case None => vars(name) = value
+			case Some( scope ) => scope(name) = value
+		}
+
+	def getVar( name: String ) =
+		scopes.view.reverse find (_ contains name) match {
+			case None =>
+				vars get name match {
+					case None => nil
+					case Some( v ) => v
+				}
+			case Some( scope ) => scope(name)
+		}
+
+	def enterScope( locals: List[String] ): Unit = {
+		scopes += mutable.HashMap( locals map (_ -> nil): _* )
+	}
+
+	def exitScope: Unit = {
+		scopes remove scopes.length - 1
+	}
 
   def perform( op: StatementAST, out: PrintStream ): Unit =
     op match {
@@ -20,7 +46,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
             case s => s
           }
 				)
-			case AssignStatementAST( name, expr ) => vars(name) = eval( expr )
+			case AssignStatementAST( name, expr ) => setVar( name, eval(expr) )
 			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find {case (expr, _) => truthy( eval(expr) )} match {
@@ -35,14 +61,18 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 				val bytes = new ByteArrayOutputStream
 
 				perform( body, new PrintStream(bytes) )
-				vars(name) = bytes.toString
+				setVar( name, bytes.toString )
 			case ForStatementAST( name, expr, body ) =>
 				val list = eval( expr ).asInstanceOf[Seq[Any]]
 
+				enterScope( List(name) )
+
 				for (elem <- list) {
-					vars(name) = elem
+					setVar( name, elem )
 					perform( body, out )
 				}
+
+				exitScope
     }
 
 //  def assignable( arg: Type, parameter: Type ) =
@@ -108,11 +138,7 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
           case Some( f ) => applyFilter( eval(operand), f, args map eval )
         }
       case LiteralExpressionAST( o ) => o
-      case VariableExpressionAST( name ) =>
-        vars get name match {
-          case None => nil
-          case Some( v ) => v
-        }
+      case VariableExpressionAST( name ) => getVar( name )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
     }
 
