@@ -16,15 +16,26 @@ class IterationTests extends FreeSpec with PropertyChecks with Matchers with Tes
 		) shouldBe "hat shirt pants"
 		test(
 			"""
-				|{% unless product.title == 'Awesome Shoes' %}
-				|  These shoes are not awesome.
-				|{% endunless %}
-				|blah
-			""".stripMargin, false, "product" -> Map("title" -> "Awesome Shoes")
-		).trim shouldBe
+				|{% for i in (1..5) %}
+				|  {% if i == 4 %}
+				|    {% break %}
+				|  {% else %}
+				|    {{ i }}
+				|  {% endif %}
+				|{% endfor %}
+			""".stripMargin, true
+		) shouldBe "1 2 3"
+		test(
 			"""
-				|blah
-			""".stripMargin.trim
+				|{% for i in (1..5) %}
+				|  {% if i == 4 %}
+				|    {% continue %}
+				|  {% else %}
+				|    {{ i }}
+				|  {% endif %}
+				|{% endfor %}
+			""".stripMargin, true
+		) shouldBe "1 2 3 5"
 	}
 
 }

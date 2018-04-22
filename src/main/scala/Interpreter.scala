@@ -101,12 +101,21 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 
 				enterScope( List(name) )
 
-				for (elem <- list) {
-					setVar( name, elem )
-					perform( body, out )
+				try {
+					for (elem <- list)
+						try {
+							setVar( name, elem )
+							perform( body, out )
+						} catch {
+							case _: ContinueException =>
+						}
+				} catch {
+					case _: BreakException =>
 				}
 
 				exitScope
+			case BreakStatementAST => throw new BreakException
+			case ContinueStatementAST => throw new ContinueException
     }
 
 //  def assignable( arg: Type, parameter: Type ) =
@@ -176,5 +185,9 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
       case VariableExpressionAST( name ) => getVar( name )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
     }
+
+	class BreakException extends RuntimeException
+
+	class ContinueException extends RuntimeException
 
 }

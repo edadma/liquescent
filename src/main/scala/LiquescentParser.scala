@@ -178,7 +178,7 @@ object LiquescentParser {
         else
           None
 
-     consume( "endcase" )
+      consume( "endcase" )
       CaseStatementAST( expr, cases.toList, els )
     }
 
@@ -206,6 +206,14 @@ object LiquescentParser {
 
               advance
               block += parser( parser.objectOutput, s )
+              _parseBlock
+            case TagElement( "break", _ ) =>
+              advance
+              block += BreakStatementAST
+              _parseBlock
+            case TagElement( "continue", _ ) =>
+              advance
+              block += ContinueStatementAST
               _parseBlock
             case TagElement( "if", s ) =>
               advance
