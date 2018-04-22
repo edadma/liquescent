@@ -6,7 +6,8 @@ object Main extends App {
 //  val parser = new LiquescentParser
   val input =
 		"""
-			|{% for item in "one, two, three" | split: ", " %}
+			|{% assign list = "one, two, three" | split: ", " %}
+			|{% for item in (1..3) %}
 			|  {{ item }}
 			|{% endfor %}
 		""".stripMargin

@@ -24,6 +24,7 @@ case class LteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends
 case class GtExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
 case class GteExpressionAST( left: ExpressionAST, right: ExpressionAST ) extends ExpressionAST
 case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List[ExpressionAST] ) extends ExpressionAST
+case class RangeExpressionAST( from: ExpressionAST, to: ExpressionAST ) extends ExpressionAST
 
 case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
 case class BlockStatementAST( block: Seq[StatementAST] ) extends StatementAST

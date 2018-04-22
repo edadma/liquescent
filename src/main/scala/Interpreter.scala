@@ -79,6 +79,12 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 
   def eval( expr: ExpressionAST ): Any =
     expr match {
+			case RangeExpressionAST( from, to ) =>
+				((eval( from ), eval( to )) match {
+					case (a: Int, b: Int) => a to b
+					case (a: BigDecimal, b: BigDecimal) => a to b by 1
+					case (a: BigInt, b: BigInt) => a to b by 1
+				}) toList
       case DotExpressionAST( expr, name ) =>
         eval( expr ) match {
           case m: collection.Map[_, _] =>

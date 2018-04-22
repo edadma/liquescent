@@ -310,7 +310,11 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val applyExpression: PackratParser[ExpressionAST] =
     applyExpression ~ ("." ~> ident) ^^ { case e ~ n => DotExpressionAST( e, n ) } |
     applyExpression ~ ("[" ~> expression <~ "]") ^^ { case e ~ n => ArrayExpressionAST( e, n ) } |
-    primaryExpression
+    rangeExpression
+
+	lazy val rangeExpression: PackratParser[ExpressionAST] =
+		("(" ~> primaryExpression <~ "..") ~ (primaryExpression <~ ")") ^^ { case from ~ to => RangeExpressionAST( from, to )} |
+		primaryExpression
 
   lazy val primaryExpression: Parser[ExpressionAST] =
     "\"" ~> """[^"]*""".r <~ "\"" ^^ LiteralExpressionAST |

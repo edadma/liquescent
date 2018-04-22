@@ -6,7 +6,7 @@ import java.time.temporal.TemporalAccessor
 
 package object liquescent {
 
-  val floatRegex = """-?\d+\.\d*""".r
+  val floatRegex = """-?\d+\.\d+""".r
   val integerRegex = """-?\d+""".r
 
   case object nil {
