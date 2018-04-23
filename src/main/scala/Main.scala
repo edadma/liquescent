@@ -36,9 +36,6 @@ object Main extends App {
 		usage
 
 	Options( args ) {
-		case List() =>
-			println( 123 )
-			Nil
 		case "-s" :: name :: s :: t =>
 			assigns(name) = s
 			t
