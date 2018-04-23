@@ -67,6 +67,7 @@ object Main extends App {
 		case "--" :: Nil =>
 			new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.stdin.mkString), Console.out )
 			Nil
+		case s :: _ if s startsWith "-" => sys.error( s"invalid switch $s" )
 		case file :: Nil =>
 			templateFile = new File( file )
 
