@@ -16,7 +16,7 @@ object Example extends App {
   val customtag =
     new Tag( "ol" ) {
       def apply(vars: mutable.Map[String, Any], out: PrintStream, args: List[Any]) =
-      out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
+        out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
     }
 
   new Interpreter( StandardFilters.map, Tag.map(customtag), Map() ).perform( LiquescentParser.parse(input), Console.out )
