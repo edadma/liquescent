@@ -21,7 +21,7 @@ package object liquescent {
 
   def integer( a: String ) = integerRegex.pattern.matcher( a ).matches
 
-  def integer( a: Number ) = a.isInstanceOf[Int] || a.isInstanceOf[BigInt]
+  def integer( a: Number ) = a.isInstanceOf[java.lang.Integer] || a.isInstanceOf[BigInt]
 
   def number( a: String ) =
     if (float( a ))
