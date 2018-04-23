@@ -90,6 +90,66 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			""".stripMargin
 	}
 
+	"concat" in {
+		test(
+			"""
+				|{% assign fruits = "apples, oranges, peaches" | split: ", " %}
+				|{% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
+				|
+				|{% assign everything = fruits | concat: vegetables %}
+				|
+				|{% for item in everything %}
+				|- {{ item }}
+				|{% endfor %}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|- apples
+				|
+				|- oranges
+				|
+				|- peaches
+				|
+				|- carrots
+				|
+				|- turnips
+				|
+				|- potatoes
+			""".trim.stripMargin
+		test(
+			"""
+				|{% assign fruits = "apples, oranges, peaches" | split: ", " %}
+				|{% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
+				|{% assign furniture = "chairs, tables, shelves" | split: ", " %}
+				|
+				|{% assign everything = fruits | concat: vegetables | concat: furniture %}
+				|
+				|{% for item in everything %}
+				|- {{ item }}
+				|{% endfor %}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|- apples
+				|
+				|- oranges
+				|
+				|- peaches
+				|
+				|- carrots
+				|
+				|- turnips
+				|
+				|- potatoes
+				|
+				|- chairs
+				|
+				|- tables
+				|
+				|- shelves
+			""".trim.stripMargin
+	}
+
 	"date" in {
 		test(
 			"""
@@ -103,6 +163,26 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|2015
 				|Mar 14, 16
 			""".stripMargin
+	}
+
+	"default" in {
+		test(
+			"""
+				|{{ product_price | default: 2.99 }}
+			""".stripMargin, true
+		) shouldBe "2.99"
+		test(
+			"""
+				|{% assign product_price = 4.99 %}
+				|{{ product_price | default: 2.99 }}
+			""".stripMargin, true
+		) shouldBe "4.99"
+		test(
+			"""
+				|{% assign product_price = "" %}
+				|{{ product_price | default: 2.99 }}
+			""".stripMargin, true
+		) shouldBe "2.99"
 	}
 
 	"downcase" in {
@@ -128,6 +208,17 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"""
 				|Have you read &apos;James &amp; the Giant Peach&apos;?
 				|Tetsuro Takara
+			""".stripMargin
+	}
+
+	"escape_once" in {
+		test(
+			"""
+				|{{ "1 < 2 & 3" | escape_once | escape_once }}
+			""".stripMargin, false
+		) shouldBe
+			"""
+				|1 &lt; 2 &amp; 3
 			""".stripMargin
 	}
 
