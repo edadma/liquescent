@@ -338,4 +338,14 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
 	}
 
+  "uniq" in {
+    test(
+      """
+        |{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
+        |
+        |{{ my_array | uniq | join: ", " }}
+      """.stripMargin, false
+    ).trim shouldBe "ants, bugs, bees"
+  }
+
 }
