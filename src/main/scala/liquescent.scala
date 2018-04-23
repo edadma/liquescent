@@ -23,6 +23,19 @@ package object liquescent {
 
   def integer( a: Number ) = a.isInstanceOf[Int] || a.isInstanceOf[BigInt]
 
+  def number( a: String ) =
+    if (float( a ))
+      Some( BigDecimal(a) )
+    else if (integer( a )) {
+      val x = BigInt( a )
+
+      if (x.isValidInt)
+        LiteralExpressionAST( x.toInt )
+      else
+        LiteralExpressionAST( x )
+    } else
+      None
+
   def typeof( a: Any ) =
     a match {
       case _: Seq[_] => ArrayType
