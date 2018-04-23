@@ -6,12 +6,7 @@ object Main extends App {
 //  val parser = new LiquescentParser
   val input =
 		"""
-			|{% for i in (1..3) %}
-			|  {% for i in (4..5) %}
-			|    {{ i }}
-			|  {% endfor %}
-			|  {{ i }}
-			|{% endfor %}
+			|{{ "as\ndf" }}
 		""".stripMargin
 //		"""
 //		  {% capture my_variable %}

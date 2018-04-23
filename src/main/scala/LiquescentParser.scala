@@ -417,7 +417,7 @@ class ElementParser extends RegexParsers with PackratParsers {
 		primaryExpression
 
   lazy val primaryExpression: Parser[ExpressionAST] =
-    """('([^']*)')|("([^"]*)")""".r ^^ (s => LiteralExpressionAST( s.substring(1, s.length - 1) )) |
+    """('([^']*)')|("([^"]*)")""".r ^^ (s => LiteralExpressionAST( escapes(s.substring(1, s.length - 1)) )) |
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false ) |
     ident ^^ VariableExpressionAST |
@@ -429,6 +429,22 @@ class ElementParser extends RegexParsers with PackratParsers {
         LiteralExpressionAST( x.toInt )
       else
         LiteralExpressionAST( x ) }
+
+  val unicodeRegex = "\\\\u[0-9a-fA-F]{4}".r
+
+  def escapes( s: String ) =
+    unicodeRegex.replaceAllIn(
+      s
+      .replace( """\b""", "\b" )
+      .replace( """\t""", "\t" )
+      .replace( """\f""", "\f" )
+      .replace( """\n""", "\n" )
+      .replace( """\r""", "\r" )
+      .replace( """\\""", "\\" )
+      .replace( """\"""", "\"" )
+      .replace( """\'""", "\'" ),
+      m => Integer.parseInt( m.matched.substring(2), 16 ).toChar.toString
+    )
 
   def apply[T]( grammar: Parser[T], input: String ) =
     parseAll( grammar, input ) match {
