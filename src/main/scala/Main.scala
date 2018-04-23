@@ -1,17 +1,17 @@
 package xyz.hyperreal.liquescent
 
 import java.io.File
-import java.nio
 
 import scala.collection.mutable
 
 import xyz.hyperreal.args.Options
+import xyz.hyperreal.json.DefaultJSONReader
 
 
 object Main extends App {
 
 	val assigns = new mutable.HashMap[String, Any]
-	var template: File = _
+	var templateFile: File = _
 
 	def usage {
 		"""
@@ -27,6 +27,10 @@ object Main extends App {
 		""".trim.stripMargin.lines foreach println
 		sys.exit
 	}
+
+	def json( src: io.Source ) =
+		for ((k: String, v) <- DefaultJSONReader.fromString( src mkString ))
+			assigns(k) = v
 
 	if (args isEmpty)
 		usage
@@ -45,6 +49,21 @@ object Main extends App {
 			}
 
 			t
+		case "-j" :: "--" :: t =>
+			json( io.Source.stdin )
+			t
+		case "-j" :: file :: t if !file.matches( """\s*\{.*""" ) =>
+			val jsonFile = new File( file )
+
+			if (jsonFile.exists && jsonFile.isFile && jsonFile.canRead) {
+				json( io.Source.fromFile(jsonFile) )
+			} else
+				sys.error( s"error reading file: $file" )
+
+			t
+		case "-j" :: s :: t =>
+			json( io.Source.fromString(s) )
+			t
 		case "--help" :: _ =>
 			usage
 			Nil
@@ -52,10 +71,10 @@ object Main extends App {
 			new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.stdin.mkString), Console.out )
 			Nil
 		case file :: Nil =>
-			template = new File( file )
+			templateFile = new File( file )
 
-			if (template.exists && template.isFile && template.canRead) {
-				new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.fromFile(template).mkString), Console.out )
+			if (templateFile.exists && templateFile.isFile && templateFile.canRead) {
+				new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.fromFile(templateFile).mkString), Console.out )
 				Nil
 			} else
 				sys.error( s"error reading file: $file" )

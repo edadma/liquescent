@@ -9,10 +9,12 @@ liquescent
 *liquescent* is an implementation of the [Liquid](https://shopify.github.io/liquid/) templating language for the [Scala](http://scala-lang.org) programming language.
 
 
-Example
--------
+Examples
+--------
 
-The following example program shows how to create a custom tag to output an HTML ordered list.
+### Library
+
+This example program shows how to create a custom tag to output an HTML ordered list.
 
 	import java.io.PrintStream
 
@@ -41,6 +43,17 @@ The following example program shows how to create a custom tag to output an HTML
 This program prints
 
 	<ol><li>stupid</li><li>stupider</li><li>stupidest</li></ol>
+
+
+### Command Line
+
+This next example shows how to use *liquescent* as an executable on the command line.
+
+	echo "{{ v | join: \", \" }}" | java -jar liquescent-0.1.jar -j "{v: [\"one\", \"two\", \"three\"]}" --
+
+The above command prints
+
+	one, two, three
 
 
 Usage
@@ -75,11 +88,13 @@ Building
 - SBT 1.1.4+
 - Scala 2.12.5+
 
-### Clone and Run the Tests
+### Clone and Assemble Executable
 
 	git clone git://github.com/edadma/liquescent.git
 	cd liquescent
-	sbt test
+	sbt assembly
+
+The command `sbt assembly` also runs all the unit tests.
 
 
 License
