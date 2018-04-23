@@ -23,19 +23,19 @@ The following example program shows how to create a custom tag to output an HTML
 
 	object Example extends App {
 
-	  val input =
-			"""
-				|{% assign variable = "stupider" %}
-				|{% ol "stupid", variable, "stupidest" %}
-			""".trim.stripMargin
+      val input =
+        """
+          |{% assign variable = "stupider" %}
+          |{% ol "stupid", variable, "stupidest" %}
+        """.trim.stripMargin
 
-		val customtag =
-			new Tag( "ol" ) {
-				def apply(vars: mutable.Map[String, Any], out: PrintStream, args: List[Any]) =
-					out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
-			}
+      val customtag =
+        new Tag( "ol" ) {
+          def apply(vars: mutable.Map[String, Any], out: PrintStream, args: List[Any]) =
+          out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
+        }
 
-		new Interpreter( StandardFilters.map, Tag.map(customtag), Map() ).perform( LiquescentParser.parse(input), Console.out )
+      new Interpreter( StandardFilters.map, Tag.map(customtag), Map() ).perform( LiquescentParser.parse(input), Console.out )
 	}
 
 This program prints

@@ -262,14 +262,13 @@ object LiquescentParser {
               block += CaptureStatementAST( parser(parser.captureTag, s), parseBlock )
               consume( "endcapture" )
               _parseBlock
+            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif"|"when", _ ) =>
             case TagElement( _, s ) =>
               val parser = new ElementParser
 
               advance
               block += parser( parser.customTag, s )
               _parseBlock
-
-            case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif"|"when", _ ) =>
           }
         }
 
