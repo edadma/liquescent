@@ -1,3 +1,4 @@
+//
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
@@ -77,6 +78,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 		test(
 			"""
 				|{{ 1.2 | ceil }}
+        |{{ -1.2 | ceil }}
 				|{{ 2.0 | ceil }}
 				|{{ 183.357 | ceil }}
 				|{{ "3.5" | ceil }}
@@ -84,6 +86,7 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 		) shouldBe
 			"""
 				|2
+        |-1
 				|2
 				|184
 				|4
@@ -221,6 +224,73 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 				|1 &lt; 2 &amp; 3
 			""".stripMargin
 	}
+
+	"first" in {
+		test(
+			"""
+        |{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+        |
+        |{{ my_array.first }}
+        |{{ my_array | first }}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|apples
+				|apples
+			""".trim.stripMargin
+	}
+
+  "floor" in {
+    test(
+      """
+        |{{ 1.2 | floor }}
+        |{{ -1.2 | floor }}
+        |{{ 2.0 | floor }}
+        |{{ 183.357 | floor }}
+        |{{ "3.5" | floor }}
+      """.stripMargin, false
+    ) shouldBe
+      """
+        |1
+        |-2
+        |2
+        |183
+        |3
+      """.stripMargin
+  }
+
+  "join" in {
+    test(
+      """
+        |{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+        |
+        |{{ beatles | join: " and " }}
+      """.stripMargin, true
+    ) shouldBe "John and Paul and George and Ringo"
+  }
+
+  "last" in {
+    test(
+      """
+        |{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+        |
+        |{{ my_array.last }}
+        |{{ my_array | last }}
+      """.stripMargin, false
+    ).trim shouldBe
+      """
+        |plums
+        |plums
+      """.trim.stripMargin
+  }
+
+//  "lstrip" in {
+//    test(
+//      """
+//        |( {{ "          So much room for activities!          " | lstrip }} )
+//      """.stripMargin, true
+//    ) shouldBe "( So much room for activities!           )"
+//  }
 
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe
