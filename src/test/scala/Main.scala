@@ -1,34 +1,23 @@
-package xyz.hyperreal.liquescent
+import java.io.PrintStream
+
+import scala.collection.mutable
+
+import xyz.hyperreal.liquescent._
 
 
-object Main extends App {
+object Example extends App {
 
-//  val parser = new LiquescentParser
   val input =
 		"""
-			|{{ "as\ndf" }}
-		""".stripMargin
-//		"""
-//		  {% capture my_variable %}
-//				{% assign a = 3 %}
-//				{% if a == 1 %}
-//					one
-//				{% elsif a == 2 %}
-//					two
-//				{% elsif a == 3 %}
-//					three
-//				{% else %}
-//					something else
-//				{% endif %}
-//	 		{% endcapture %}
-//			asdf {{ my_variable }}
-//    """
+			|{% assign variable = "stupider" %}
+			|{% ol "stupid", variable, "stupidest" %}
+		""".trim.stripMargin
 
-//  println( parser( input ) )
+	val customtag =
+		new Tag( "ol" ) {
+			def apply(vars: mutable.Map[String, Any], out: PrintStream, args: List[Any]) =
+				out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
+		}
 
-  val interp = new Interpreter( StandardFilters.map, Map("article" -> Map("published_at" -> "2015-07-17"), "product_price" -> 1.49, "list" -> List(Map("a" -> "asdf"), 3, 2, Map("b" -> "oops"), 4, Map("a" -> "qwer"))) )
-
-//	println( LiquescentParser.parse(input) )
-  interp.perform( LiquescentParser.parse(input), Console.out )
-	println
+	new Interpreter( StandardFilters.map, Tag.map(customtag), Map() ).perform( LiquescentParser.parse(input), Console.out )
 }

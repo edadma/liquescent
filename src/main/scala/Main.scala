@@ -49,13 +49,13 @@ object Main extends App {
 			usage
 			Nil
 		case "--" :: Nil =>
-			new Interpreter(StandardFilters.map, assigns toMap ).perform( LiquescentParser.parse(io.Source.stdin.mkString), Console.out )
+			new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.stdin.mkString), Console.out )
 			Nil
 		case file :: Nil =>
 			template = new File( file )
 
 			if (template.exists && template.isFile && template.canRead) {
-				new Interpreter(StandardFilters.map, assigns toMap ).perform( LiquescentParser.parse(io.Source.fromFile(template).mkString), Console.out )
+				new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.fromFile(template).mkString), Console.out )
 				Nil
 			} else
 				sys.error( s"error reading file: $file" )

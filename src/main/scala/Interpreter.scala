@@ -9,7 +9,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], strict: Boolean = true ) {
+class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns: Map[String, Any], strict: Boolean = true ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
@@ -72,6 +72,11 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
 						incdec(name) = res
 						res
 				} )
+			case CustomTagStatementAST( name, args ) =>
+				tags get name match {
+					case None => sys.error( s"unknown tag: $name" )
+					case Some( t ) => t( vars, out, args map eval )
+				}
 			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find { case (expr, _) => truthy( eval(expr) ) } match {

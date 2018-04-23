@@ -262,6 +262,13 @@ object LiquescentParser {
               block += CaptureStatementAST( parser(parser.captureTag, s), parseBlock )
               consume( "endcapture" )
               _parseBlock
+            case TagElement( _, s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.customTag, s )
+              _parseBlock
+
             case TagElement( "endif"|"endfor"|"endcase"|"endunless"|"endtablerow"|"endcapture"|"else"|"elsif"|"when", _ ) =>
           }
         }
@@ -363,6 +370,9 @@ class ElementParser extends RegexParsers with PackratParsers {
     "reversed" ^^^ ReversedForParameter |
     "offset" ~> ":" ~> expression ^^ OffsetForParameter |
     "limit" ~> ":" ~> expression ^^ LimitForParameter
+
+  lazy val customTag: PackratParser[CustomTagStatementAST] = tagStart ~> (ident ~ repsep(expression, ",")) <~ tagEnd ^^ {
+    case n ~ a => CustomTagStatementAST( n, a ) }
 
   lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
 
