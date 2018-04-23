@@ -284,13 +284,54 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
       """.trim.stripMargin
   }
 
-//  "lstrip" in {
-//    test(
-//      """
-//        |( {{ "          So much room for activities!          " | lstrip }} )
-//      """.stripMargin, true
-//    ) shouldBe "( So much room for activities!           )"
-//  }
+  "lstrip" in {
+    test(
+      """
+        |( {{ "          So much room for activities!          " | lstrip }} )
+      """.stripMargin, false
+    ).trim shouldBe "( So much room for activities!           )"
+  }
+
+  "minus" in {
+    test(
+      """
+        |{{ 7 | minus: 3 }}
+        |{{ 183.357 | minus: 12 }}
+      """.stripMargin, true
+    ) shouldBe "4 171.357"
+  }
+
+  "modulo" in {
+    test(
+      """
+        |{{ 3 | modulo: 2 }}
+        |{{ 24 | modulo: 7 }}
+        |{{ 183.357 | modulo: 12 }}
+      """.stripMargin, true
+    ) shouldBe "1 3 3.357"
+  }
+
+  "newline_to_br" in {
+    test(
+      """
+        |{% capture string_with_newlines %}
+        |Hello
+        |there
+        |{% endcapture %}
+        |
+        |{{ string_with_newlines | newline_to_br }}
+      """.stripMargin, false
+    ).trim shouldBe "<br />Hello<br />there<br />"
+  }
+
+  "plus" in {
+    test(
+      """
+        |{{ 4 | plus: 2 }}
+        |{{ 183.357 | plus: 12 }}
+      """.stripMargin, true
+    ) shouldBe "6 195.357"
+  }
 
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe

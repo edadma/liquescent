@@ -287,7 +287,7 @@ object StandardFilters {
         override def parameters = List( List(StringType) )
 
         override val invoke = {
-          case List( s: String ) => s replace ("\n", "<br>")
+          case List( s: String ) => s replace ("\n", "<br />")
         }
       },
 
