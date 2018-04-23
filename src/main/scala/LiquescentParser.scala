@@ -221,7 +221,19 @@ object LiquescentParser {
               advance
               block += parser( parser.cycleTag, s )
               _parseBlock
-            case TagElement( "if", s ) =>
+            case TagElement( "increment", s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.incrementTag, s )
+              _parseBlock
+             case TagElement( "decrement", s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.decrementTag, s )
+              _parseBlock
+           case TagElement( "if", s ) =>
               advance
               block += parseIf( s )
               _parseBlock
@@ -351,6 +363,10 @@ class ElementParser extends RegexParsers with PackratParsers {
     "reversed" ^^^ ReversedForParameter |
     "offset" ~> ":" ~> expression ^^ OffsetForParameter |
     "limit" ~> ":" ~> expression ^^ LimitForParameter
+
+  lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
+
+  lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ DecrementStatementAST
 
   lazy val ifTag: PackratParser[ExpressionAST] = tagStart ~> "if" ~> expression <~ tagEnd
 

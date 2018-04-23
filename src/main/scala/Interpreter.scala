@@ -12,7 +12,8 @@ import scala.collection.mutable.ArrayBuffer
 class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], strict: Boolean = true ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
-	var scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
+	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
+	val incdec = new mutable.HashMap[String, BigInt]
 
 	def setVar( name: String, value: Any ): Unit =
 		scopes.view.reverse find (_ contains name) match {
@@ -49,6 +50,28 @@ class Interpreter( filters: Map[String, Filter], assigns: Map[String, Any], stri
           }
 				)
 			case AssignStatementAST( name, expr ) => setVar( name, eval(expr) )
+			case IncrementStatementAST( name ) =>
+				out.print( incdec get name match {
+					case None =>
+						incdec(name) = 0
+						0
+					case Some( v ) =>
+						val res = v + 1
+
+						incdec(name) = res
+						res
+				} )
+			case DecrementStatementAST( name ) =>
+				out.print( incdec get name match {
+					case None =>
+						incdec(name) = -1
+						-1
+					case Some( v ) =>
+						val res = v - 1
+
+						incdec(name) = res
+						res
+				} )
 			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find { case (expr, _) => truthy( eval(expr) ) } match {
