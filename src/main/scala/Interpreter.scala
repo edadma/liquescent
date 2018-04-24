@@ -230,10 +230,10 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns
 			case AndExpressionAST( left, right ) => truthy( eval(left) ) && truthy( eval(right) )
 			case EqExpressionAST( left, right ) => eval( left ) == eval( right )
 			case NeqExpressionAST( left, right ) => eval( left ) != eval( right )
-			case LtExpressionAST( left, right ) => compare( left, right ) < 0
-			case LteExpressionAST( left, right ) => compare( left, right ) <= 0
-			case GtExpressionAST( left, right ) => compare( left, right ) > 0
-			case GteExpressionAST( left, right ) => compare( left, right ) >= 0
+			case LtExpressionAST( left, right ) => compare( eval(left), eval(right) ) < 0
+			case LteExpressionAST( left, right ) => compare( eval(left), eval(right) ) <= 0
+			case GtExpressionAST( left, right ) => compare( eval(left), eval(right) ) > 0
+			case GteExpressionAST( left, right ) => compare( eval(left), eval(right) ) >= 0
 			case ContainsExpressionAST( left, right ) =>
 				(eval( left ), eval( right )) match {
 					case (seq: Seq[_], str: String) => seq contains str

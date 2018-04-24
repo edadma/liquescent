@@ -396,6 +396,70 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
     ) shouldBe ".moT rojaM ot lortnoc dnuorG"
   }
 
+  "round" in {
+    test(
+      """
+        |{{ 1.2 | round }}
+        |{{ 2.7 | round }}
+        |{{ 183.357 | round: 2 }}
+      """.stripMargin, true
+    ) shouldBe "1 3 183.36"
+  }
+
+  "rstrip" in {
+    test(
+      """
+        |( {{ "          So much room for activities!          " | rstrip }} )
+      """.stripMargin, false
+    ).trim shouldBe "(           So much room for activities! )"
+  }
+
+  "size" in {
+    test(
+      """
+        |{{ "Ground control to Major Tom." | size }}
+      """.stripMargin, true
+    ) shouldBe "28"
+    test(
+      """
+        |{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+        |
+        |{{ my_array | size }}
+      """.stripMargin, true
+    ) shouldBe "4"
+    test(
+      """
+        |{% if site.pages.size > 10 %}
+        |  This is a big website!
+        |{% endif %}
+      """.stripMargin, true, "site" -> Map("pages" -> Map("size" -> 12))
+    ) shouldBe "This is a big website!"
+  }
+
+  "slice" in {
+    test(
+      """
+        |{{ "Liquid" | slice: 2 }}
+      """.stripMargin, true
+    ) shouldBe "q"
+    test(
+      """
+        |{{ "Liquid" | slice: 2, 5 }}
+      """.stripMargin, true
+    ) shouldBe "quid"
+    test(
+      """
+        |{{ "Liquid" | slice: -3, 2 }}
+      """.stripMargin, true
+    ) shouldBe "ui"
+  }
+
+  "sort" in {
+    test(
+      """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort | join: ", " }}""", false
+    ) shouldBe "1, 2, Sally Snake, giraffe, octopus, zebra"
+  }
+
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
@@ -420,6 +484,22 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
         |
         |  Ringo
       """.trim.stripMargin
+  }
+
+  "strip" in {
+    test(
+      """
+        |( {{ "          So much room for activities!          " | strip }} )
+      """.stripMargin, false
+    ).trim shouldBe "( So much room for activities! )"
+  }
+
+  "strip_html" in {
+    test(
+      """
+        |{{ "Have <em>you</em> read <strong>Ulysses</strong>?" | strip_html }}
+      """.stripMargin, false
+    ).trim shouldBe "Have you read Ulysses?"
   }
 
   "times" in {
