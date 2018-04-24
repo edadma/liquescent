@@ -72,8 +72,8 @@ object LiquescentParser {
       case Nil => Nil
    }
 
-  def parse( template: String ) = {
-    var tokens = whitespace( elements(template) filterNot new CommentFilter flatMap new RawTransform )
+  def parse( template: io.Source ) = {
+    var tokens = whitespace( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
 
     def peek = tokens.head
 

@@ -1,5 +1,6 @@
 //@
 package xyz.hyperreal.liquescent
+
 import java.io.PrintStream
 
 import scala.collection.mutable
@@ -13,6 +14,6 @@ abstract class Tag( val name: String ) {
 
 object Tag {
 
-	def map( tags: Tag* ) = tags map (t => (t.name -> t)) toMap
+	def apply( tags: Tag* ) = tags map (t => (t.name -> t)) toMap
 
 }
