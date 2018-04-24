@@ -3,7 +3,7 @@ liquescent
 
 [![Build Status](https://www.travis-ci.org/edadma/liquescent.svg?branch=master)](https://www.travis-ci.org/edadma/liquescent)
 [![Coverage Status](https://coveralls.io/repos/github/edadma/liquescent/badge.svg?branch=master)](https://coveralls.io/github/edadma/liquescent?branch=master)
-[![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/edadma/liquescent/blob/master/LICENSE)
 [![Version](https://img.shields.io/badge/latest_release-v0.1.1-orange.svg)](https://github.com/edadma/liquescent/releases/tag/v0.1.1)
 
 *liquescent* is an implementation of the [Liquid](https://shopify.github.io/liquid/) templating language for the [Scala](http://scala-lang.org) programming language.
