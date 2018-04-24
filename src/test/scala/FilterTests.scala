@@ -333,10 +333,73 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
     ) shouldBe "6 195.357"
   }
 
+  "prepend" in {
+    test(
+      """
+        |{{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
+      """.stripMargin, true
+    ) shouldBe "Some fruit: apples, oranges, and bananas"
+    test(
+      """
+        |{% assign url = "liquidmarkup.com" %}
+        |
+        |{{ "/index.html" | prepend: url }}
+      """.stripMargin, true
+    ) shouldBe "liquidmarkup.com/index.html"
+  }
+
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
 	}
+
+  "split" in {
+    test(
+      """
+        |{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
+        |
+        |{% for member in beatles %}
+        |  {{ member }}
+        |{% endfor %}
+      """.stripMargin, false
+    ).trim shouldBe
+      """
+        |John
+        |
+        |  Paul
+        |
+        |  George
+        |
+        |  Ringo
+      """.trim.stripMargin
+  }
+
+  "times" in {
+    test(
+      """
+        |{{ 3 | times: 2 }}
+        |{{ 183.357 | times: 12 }}
+      """.stripMargin, true
+    ) shouldBe "6 2200.284"
+  }
+
+  "truncatewords" in {
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncatewords: 3 }}
+      """.stripMargin, true
+    ) shouldBe "Ground control to..."
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncatewords: 3, "--" }}
+      """.stripMargin, true
+    ) shouldBe "Ground control to--"
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncatewords: 3, "" }}
+      """.stripMargin, true
+    ) shouldBe "Ground control to"
+  }
 
   "uniq" in {
     test(
