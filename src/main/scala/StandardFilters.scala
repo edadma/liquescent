@@ -1,6 +1,7 @@
 //@
 package xyz.hyperreal.liquescent
 
+import java.math.MathContext
 import java.time.{LocalDate, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
@@ -344,6 +345,17 @@ object StandardFilters {
 
         override val invoke = {
           case List( l: List[_] ) => l.asInstanceOf[List[Any]].reverse
+        }
+      },
+
+      new NumericFilter( "round", false ) {
+        override def parameters = List( List(NumberType), List(NumberType, NumberType) )
+
+        override val compute = {
+          case List( n: Number ) if integer( n ) => n
+          case List( n: Number, _ ) if integer( n ) => n
+          case List( n: BigDecimal ) => n.setScale( 0, BigDecimal.RoundingMode.HALF_EVEN )
+          case List( n: BigDecimal, scala: Integer ) => n.setScale( scala, BigDecimal.RoundingMode.HALF_EVEN )
         }
       },
 

@@ -348,6 +348,54 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
     ) shouldBe "liquidmarkup.com/index.html"
   }
 
+  "remove" in {
+    test(
+      """
+        |{{ "I strained to see the train through the rain" | remove: "rain" }}
+      """.stripMargin, true
+    ) shouldBe "I sted to see the t through the"
+  }
+
+  "remove_first" in {
+    test(
+      """
+        |{{ "I strained to see the train through the rain" | remove_first: "rain" }}
+      """.stripMargin, true
+    ) shouldBe "I sted to see the train through the rain"
+  }
+
+  "replace" in {
+    test(
+      """
+        |{{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
+      """.stripMargin, true
+    ) shouldBe "Take your protein pills and put your helmet on"
+  }
+
+  "replace_first" in {
+    test(
+      """
+        |{% assign my_string = "Take my protein pills and put my helmet on" %}
+        |{{ my_string | replace_first: "my", "your" }}
+      """.stripMargin, true
+    ) shouldBe "Take your protein pills and put my helmet on"
+  }
+
+  "reverse" in {
+    test(
+      """
+        |{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
+        |
+        |{{ my_array | reverse | join: ", " }}
+      """.stripMargin, true
+    ) shouldBe "plums, peaches, oranges, apples"
+    test(
+      """
+        |{{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
+      """.stripMargin, true
+    ) shouldBe ".moT rojaM ot lortnoc dnuorG"
+  }
+
 	"sort_natural" in {
 		test( """{{ "zebra, octopus, giraffe, 2, 1, Sally Snake" | split: ", " | sort_natural | join: ", " }}""", false ) shouldBe
 			"1, 2, giraffe, octopus, Sally Snake, zebra"
