@@ -15,9 +15,9 @@ object Main extends App {
 
 	def usage {
 		"""
-			|liquescent v0.1
+			|liquescent v0.1.1
 			|
-			|Usage:  java -jar liquescent-0.1.jar <options> <liquid template>
+			|Usage:  java -jar liquescent-0.1.1.jar <options> <liquid template>
 			|
 			|Options:  --help              display this help and exit
 			|          -s <name> <string>  assign <string> to variable <name>
