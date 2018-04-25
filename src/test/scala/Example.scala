@@ -9,7 +9,6 @@ object Example extends App {
 
   val input =
     """
-      |({{ user.name }})
       |{% assign variable = "stupider" %}
       |{% ol "stupid", variable, "stupidest" %}
     """.trim.stripMargin
