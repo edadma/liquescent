@@ -6,6 +6,33 @@ import prop.PropertyChecks
 
 class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with Testing {
 
+  "if" in {
+    test(
+      """
+        |{% if product.title == 'Awesome Shoes' %}
+        |  These shoes are awesome.
+        |{% endif %}
+        |blah
+      """.stripMargin, false, "product" -> Map("title" -> "Awesome Shoes")
+    ).trim shouldBe
+      """
+        |These shoes are awesome.
+        |
+        |blah
+      """.stripMargin.trim
+    test(
+      """
+        |{% if product.title == 'Awesome Shoes' %}
+        |  These shoes are awesome.
+        |{% endif %}
+        |blah
+      """.stripMargin, false, "product" -> Map("title" -> "Awefull Shoes")
+    ).trim shouldBe
+      """
+        |blah
+      """.stripMargin.trim
+  }
+
 	"unless" in {
 		test(
 			"""
@@ -32,6 +59,20 @@ class FlowControlTests extends FreeSpec with PropertyChecks with Matchers with T
 				|blah
 			""".stripMargin.trim
 	}
+
+  "elsif" in {
+    test(
+      """
+        |{% if customer.name == 'kevin' %}
+        |  Hey Kevin!
+        |{% elsif customer.name == 'anonymous' %}
+        |  Hey Anonymous!
+        |{% else %}
+        |  Hi Stranger!
+        |{% endif %}
+      """.stripMargin, true, "customer" -> Map("name" -> "anonymous")
+    ).trim shouldBe "Hey Anonymous!"
+  }
 
 	"case" in {
 		test(

@@ -1,4 +1,4 @@
-//
+//@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
