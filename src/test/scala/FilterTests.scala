@@ -188,6 +188,24 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 		) shouldBe "2.99"
 	}
 
+  "divided_by" in {
+    test(
+      """
+        |{{ 16 | divided_by: 4 }}
+        |{{ 5 | divided_by: 3 }}
+        |{{ 20 | divided_by: 7 }}
+        |{{ 20 | divided_by: 7.0 }}
+        |
+        |{% assign my_integer = 7 %}
+        |{{ 20 | divided_by: my_integer }}
+        |
+        |{% assign my_integer = 7 %}
+        |{% assign my_float = my_integer | times: 1.0 %}
+        |{{ 20 | divided_by: my_float }}
+      """.stripMargin, true
+    ) shouldBe "4 1 2 2.857142857142857 2 2.857142857142857"
+  }
+
 	"downcase" in {
 		test(
 			"""
@@ -290,6 +308,34 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
         |( {{ "          So much room for activities!          " | lstrip }} )
       """.stripMargin, false
     ).trim shouldBe "( So much room for activities!           )"
+  }
+
+  "map" in {
+    test(
+      """
+        |{% assign all_categories = site.pages | map: "category" %}
+        |
+        |{% for item in all_categories %}
+        |{{ item }}
+        |{% endfor %}
+      """.stripMargin, false, "site" -> Map( "pages" -> List(
+        Map("category" -> "business"),
+        Map("category" -> "celebrities"),
+        Map("category" -> "lifestyle"),
+        Map("category" -> "sports"),
+        Map("category" -> "technology")) )
+    ).trim shouldBe
+      """
+        |business
+        |
+        |celebrities
+        |
+        |lifestyle
+        |
+        |sports
+        |
+        |technology
+      """.trim.stripMargin
   }
 
   "minus" in {
@@ -502,6 +548,19 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
     ).trim shouldBe "Have you read Ulysses?"
   }
 
+  "strip_newlines" in {
+    test(
+      """
+        |{% capture string_with_newlines %}
+        |Hello
+        |there
+        |{% endcapture %}
+        |
+        |{{ string_with_newlines | strip_newlines }}
+      """.stripMargin, false
+    ).trim shouldBe "Hellothere"
+  }
+
   "times" in {
     test(
       """
@@ -509,6 +568,24 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
         |{{ 183.357 | times: 12 }}
       """.stripMargin, true
     ) shouldBe "6 2200.284"
+  }
+
+  "truncate" in {
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncate: 20 }}
+      """.stripMargin, true
+    ) shouldBe "Ground control to..."
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncate: 25, ", and so on" }}
+      """.stripMargin, true
+    ) shouldBe "Ground control, and so on"
+    test(
+      """
+        |{{ "Ground control to Major Tom." | truncate: 20, "" }}
+      """.stripMargin, true
+    ) shouldBe "Ground control to Ma"
   }
 
   "truncatewords" in {
