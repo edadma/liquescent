@@ -93,6 +93,36 @@ class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testin
 			""".stripMargin
 	}
 
+  "compact" in {
+    test(
+      """
+        |{% assign site_categories = site.pages | map: 'category' | compact %}
+        |
+        |{% for category in site_categories %}
+        |  {{ category }}
+        |{% endfor %}
+      """.stripMargin, false, "site" -> Map( "pages" -> List(
+        Map("category" -> "business"),
+        Map("category" -> "celebrities"),
+        Map("asdf" -> "asdf"),
+        Map("category" -> "lifestyle"),
+        Map("category" -> "sports"),
+        Map("asdf" -> "asdf"),
+        Map("category" -> "technology")) )
+    ).trim shouldBe
+      """
+        |business
+        |
+        |  celebrities
+        |
+        |  lifestyle
+        |
+        |  sports
+        |
+        |  technology
+      """.trim.stripMargin
+  }
+
 	"concat" in {
 		test(
 			"""
