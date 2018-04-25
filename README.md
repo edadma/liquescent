@@ -97,9 +97,11 @@ Building
 
 ### Clone and Assemble Executable
 
-    git clone git://github.com/edadma/liquescent.git
-    cd liquescent
-    sbt assembly
+```bash
+git clone git://github.com/edadma/liquescent.git
+cd liquescent
+sbt assembly
+```
 
 The command `sbt assembly` also runs all the unit tests.
 
