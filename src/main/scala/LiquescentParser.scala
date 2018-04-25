@@ -52,22 +52,22 @@ object LiquescentParser {
         if (pre.forall( _.isWhitespace ))
           whitespace( t :: tail )
         else
-          whitespace( TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: t :: tail )
+          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespace( t :: tail )
       case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if tag.endsWith( "-%}" ) =>
         if (post.forall( _.isWhitespace ))
           whitespace( t :: tail )
         else
-          whitespace( t :: TextElement( post dropWhile (_.isWhitespace) ) :: tail )
+          t :: whitespace( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
      case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj.startsWith( "{{-" ) =>
         if (pre.forall( _.isWhitespace ))
           whitespace( o :: tail )
         else
-          whitespace( TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: o :: tail )
+          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespace( o :: tail )
       case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if obj.endsWith( "-}}" ) =>
         if (post.forall( _.isWhitespace ))
           whitespace( o :: tail )
         else
-          whitespace( o :: TextElement( post dropWhile (_.isWhitespace) ) :: tail )
+          o :: whitespace( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
       case head :: tail => head :: whitespace( tail )
       case Nil => Nil
    }
