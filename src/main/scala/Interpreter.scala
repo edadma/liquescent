@@ -207,6 +207,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns
 				}) toList
       case DotExpressionAST( expr, name ) =>
         eval( expr ) match {
+          case `nil` => nil
           case m: collection.Map[_, _] =>
             m.asInstanceOf[collection.Map[String, Any]] get name match {
               case None => nil
