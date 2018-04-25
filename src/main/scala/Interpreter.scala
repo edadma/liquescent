@@ -4,6 +4,7 @@ package xyz.hyperreal.liquescent
 import java.io.{ByteArrayOutputStream, PrintStream}
 
 import xyz.hyperreal.lia.Math
+import xyz.hyperreal.numbers.BigDecimalMath
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -14,6 +15,8 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns
   val vars = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
 	val incdec = new mutable.HashMap[String, BigInt]
+
+  Math.bdmath = new BigDecimalMath( 16 )
 
 	def setVar( name: String, value: Any ): Unit =
 		scopes.view.reverse find (_ contains name) match {
