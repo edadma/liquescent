@@ -65,23 +65,26 @@ Usage
 
 Use the following definition to use Liquescent in your Maven project:
 
-    <repository>
-      <id>hyperreal</id>
-      <url>https://dl.bintray.com/edadma/maven</url>
-    </repository>
+```xml
+<repository>
+  <id>hyperreal</id>
+  <url>https://dl.bintray.com/edadma/maven</url>
+</repository>
 
-    <dependency>
-      <groupId>xyz.hyperreal</groupId>
-      <artifactId>liquescent</artifactId>
-      <version>0.1.4</version>
-    </dependency>
+<dependency>
+  <groupId>xyz.hyperreal</groupId>
+  <artifactId>liquescent</artifactId>
+  <version>0.1.4</version>
+</dependency>
+```
 
 Add the following to your `build.sbt` file to use Liquescent in your SBT project:
 
-    resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
+```sbt
+resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
-    libraryDependencies += "xyz.hyperreal" %% "liquescent" % "0.1.4"
-
+libraryDependencies += "xyz.hyperreal" %% "liquescent" % "0.1.4"
+```
 
 Building
 --------
