@@ -15,9 +15,9 @@ object Main extends App {
 
 	def usage {
 		"""
-			|liquescent v0.1.5
+			|liquescent v0.1.6
 			|
-			|Usage:  java -jar liquescent-0.1.5.jar <options> <liquid template>
+			|Usage:  java -jar liquescent-0.1.6.jar <options> <liquid template>
 			|
 			|Options:  --help              display this help and exit
 			|          -s <name> <string>  assign <string> to variable <name>
@@ -65,14 +65,14 @@ object Main extends App {
 			usage
 			Nil
 		case "--" :: Nil =>
-			new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.stdin), Console.out )
+			new Interpreter(StandardFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.stdin), Console.out )
 			Nil
 		case s :: _ if s startsWith "-" => sys.error( s"invalid switch $s" )
 		case file :: Nil =>
 			templateFile = new File( file )
 
 			if (templateFile.exists && templateFile.isFile && templateFile.canRead) {
-				new Interpreter(StandardFilters.map, Map(), assigns toMap ).perform( LiquescentParser.parse(io.Source.fromFile(templateFile)), Console.out )
+				new Interpreter(StandardFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.fromFile(templateFile)), Console.out )
 				Nil
 			} else
 				sys.error( s"error reading file: $file" )
