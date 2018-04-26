@@ -458,9 +458,7 @@ class ElementParser extends RegexParsers with PackratParsers {
   def apply[T]( grammar: Parser[T], input: String ) =
     parseAll( grammar, input ) match {
       case Success( result, _ ) => result
-      case NoSuccess( msg, r ) =>
-				println( s"$msg (${r.pos})\n${r.pos.longString}" )
-				sys.exit( 1 )
+      case NoSuccess( msg, r ) => sys.error( s"$msg (${r.pos})\n${r.pos.longString}" )
     }
 
 }
