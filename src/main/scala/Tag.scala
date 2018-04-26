@@ -10,6 +10,6 @@ abstract class Tag( val name: String ) extends ((mutable.Map[String, Any], Print
 
 object Tag {
 
-	def apply( tags: Tag* ) = tags map (t => (t.name -> t)) toMap
+	def apply( tags: Tag* ) = tags map (t => t.name -> t) toMap
 
 }
