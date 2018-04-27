@@ -205,8 +205,14 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns
 					case (a: BigInt, b: BigInt) => a to b by 1
 					case (a, b) => sys.error( s"invalid range limits: $a, $b" )
 				}) toList
-      case DotExpressionAST( expr, name ) =>
-        eval( expr ) match {
+      case ArrayExpressionAST( exp, index ) =>
+        (eval( exp ), eval( index )) match {
+          case (m: collection.Map[_, _], i: String) => m.asInstanceOf[collection.Map[String, Any]](i)
+          case (s: Seq[_], i: Number) => s.asInstanceOf[Seq[Any]]( i.intValue )
+          case (a, b) => sys.error( s"bracket syntax not applicable: $a, $b" )
+        }
+      case DotExpressionAST( exp, name ) =>
+        eval( exp ) match {
           case `nil` => nil
           case m: collection.Map[_, _] =>
             m.asInstanceOf[collection.Map[String, Any]] get name match {
