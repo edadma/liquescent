@@ -7,7 +7,6 @@ import java.security.MessageDigest
 object ExtraStringFilters {
 
   val nonWordRegex = """[^\w]+"""r
-
   val camelRegex = """-\w"""r
 
   val map =
@@ -49,12 +48,32 @@ object ExtraStringFilters {
       },
 
       new Filter( "md5" ) {
+        val md5 = MessageDigest.getInstance( "MD5" )
+
         override def parameters = List( List(StringType) )
 
         override val invoke = {
-          case List( s: String ) =>
+          case List( s: String ) => io.Codec.fromUTF8( md5.digest(io.Codec.toUTF8(s)) )
+        }
+      },
 
-            camelRegex.replaceAllIn( s.head.toUpper + s.tail.toLowerCase, m => m.matched(1).toUpper.toString )
+      new Filter( "sha1" ) {
+        val sha1 = MessageDigest.getInstance( "SHA-1" )
+
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => io.Codec.fromUTF8( sha1.digest(io.Codec.toUTF8(s)) )
+        }
+      },
+
+      new Filter( "sha256" ) {
+        val sha256 = MessageDigest.getInstance( "SHA-256" )
+
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => io.Codec.fromUTF8( sha256.digest(io.Codec.toUTF8(s)) )
         }
       }
 
