@@ -86,4 +86,46 @@ class ExtraStringFilterTests extends FreeSpec with PropertyChecks with Matchers 
 			""".trim.stripMargin
 	}
 
+	"pluralize" in {
+		test(
+			"""
+				|{{ cart.item_count }}
+        |{{ cart.item_count | pluralize: 'item', 'items' }}
+			""".stripMargin, true, "cart" -> Map("item_count" -> 3)
+		) shouldBe "3 items"
+		test(
+			"""
+				|{{ cart.item_count }}
+        |{{ cart.item_count | pluralize: 'item', 'items' }}
+			""".stripMargin, true, "cart" -> Map("item_count" -> 0)
+		) shouldBe "0 items"
+		test(
+			"""
+				|{{ cart.item_count }}
+        |{{ cart.item_count | pluralize: 'item', 'items' }}
+			""".stripMargin, true, "cart" -> Map("item_count" -> 1)
+		) shouldBe "1 item"
+	}
+
+	"upcase" in {
+		test(
+			"""
+				|{{ "i want this to be uppercase" | upcase }}
+			""".stripMargin, true
+		) shouldBe "I WANT THIS TO BE UPPERCASE"
+	}
+
+	"url_encode" in {
+		test(
+			"""
+				|{{ 'john@liquid.com' | url_encode }}
+			""".stripMargin, true
+		) shouldBe "john%40liquid.com"
+		test(
+			"""
+				|{{ 'Tetsuro Takara' | url_encode }}
+			""".stripMargin, true
+		) shouldBe "Tetsuro+Takara"
+	}
+
 }

@@ -4,6 +4,7 @@ package xyz.hyperreal.liquescent
 import java.security.MessageDigest
 import javax.crypto.spec.SecretKeySpec
 import javax.crypto.Mac
+import java.net.URLEncoder
 
 
 object ExtraStringFilters {
@@ -105,7 +106,33 @@ object ExtraStringFilters {
         override val invoke = {
           case List( s: String, key: String ) => hmac( s, key, "HmacSHA256" )
         }
+      },
+
+      new Filter( "pluralize" ) {
+        override def parameters = List( List(NumberType, StringType, StringType) )
+
+        override val invoke = {
+          case List( 1, singular: String, _ ) => singular
+          case List( _, _, plural: String ) => plural
+        }
+      },
+
+      new Filter( "upcase" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => s toUpperCase
+        }
+      },
+
+      new Filter( "url_encode" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) => URLEncoder.encode( s, "UTF-8" )
+        }
       }
+
 
     ) map {f => (f.name, f)} toMap
 }
