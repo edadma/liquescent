@@ -62,4 +62,28 @@ class ExtraStringFilterTests extends FreeSpec with PropertyChecks with Matchers 
 			""".trim.stripMargin
 	}
 
+	"hmac_sha1" in {
+		test(
+			"""
+				|{% assign my_secret_string = "ShopifyIsAwesome!" | hmac_sha1: "secret_key" %}
+        |My encoded string is: {{ my_secret_string }}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|My encoded string is: 30ab3459e46e7b209b45dba8378fcbba67297304
+			""".trim.stripMargin
+	}
+
+	"hmac_sha256" in {
+		test(
+			"""
+				|{% assign my_secret_string = "This is a test." | hmac_sha256: "Secret Key" %}
+        |My encoded string is: {{ my_secret_string }}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|My encoded string is: d28cda261fadb21e751aaab08e25de526b53c491117978bda57152e051e1bf3f
+			""".trim.stripMargin
+	}
+
 }

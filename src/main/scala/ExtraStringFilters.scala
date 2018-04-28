@@ -2,6 +2,8 @@
 package xyz.hyperreal.liquescent
 
 import java.security.MessageDigest
+import javax.crypto.spec.SecretKeySpec
+import javax.crypto.Mac
 
 
 object ExtraStringFilters {
@@ -9,7 +11,17 @@ object ExtraStringFilters {
   val nonWordRegex = """[^\w]+"""r
   val camelRegex = """-\w"""r
 
-  def hash( s: String, dig: MessageDigest ) = dig.digest(io.Codec.toUTF8(s)) map (b => "%02x".format(b&0xFF)) mkString
+  def hex( array: Array[Byte] ) = array map (b => "%02x".format(b&0xFF)) mkString
+
+  def hash( s: String, dig: MessageDigest ) = hex( dig.digest(io.Codec.toUTF8(s)) )
+
+  def hmac( s: String, key: String, alg: String ) = {
+    val signingKey = new SecretKeySpec( io.Codec.toUTF8(key), alg )
+    val mac = Mac.getInstance( alg )
+
+    mac init signingKey
+    hex( mac doFinal io.Codec.toUTF8(s) )
+  }
 
   val map =
     List(
@@ -76,6 +88,22 @@ object ExtraStringFilters {
 
         override val invoke = {
           case List( s: String ) => hash( s, sha256 )
+        }
+      },
+
+      new Filter( "hmac_sha1" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( s: String, key: String ) => hmac( s, key, "HmacSHA1" )
+        }
+      },
+
+      new Filter( "hmac_sha256" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override val invoke = {
+          case List( s: String, key: String ) => hmac( s, key, "HmacSHA256" )
         }
       }
 
