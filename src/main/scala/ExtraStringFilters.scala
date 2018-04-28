@@ -9,6 +9,8 @@ object ExtraStringFilters {
   val nonWordRegex = """[^\w]+"""r
   val camelRegex = """-\w"""r
 
+  def hash( s: String, dig: MessageDigest ) = dig.digest(io.Codec.toUTF8(s)) map (b => "%02x".format(b&0xFF)) mkString
+
   val map =
     List(
 
@@ -53,7 +55,7 @@ object ExtraStringFilters {
         override def parameters = List( List(StringType) )
 
         override val invoke = {
-          case List( s: String ) => io.Codec.fromUTF8( md5.digest(io.Codec.toUTF8(s)) )
+          case List( s: String ) => hash( s, md5 ) toUpperCase
         }
       },
 
@@ -63,7 +65,7 @@ object ExtraStringFilters {
         override def parameters = List( List(StringType) )
 
         override val invoke = {
-          case List( s: String ) => io.Codec.fromUTF8( sha1.digest(io.Codec.toUTF8(s)) )
+          case List( s: String ) => hash( s, sha1 )
         }
       },
 
@@ -73,7 +75,7 @@ object ExtraStringFilters {
         override def parameters = List( List(StringType) )
 
         override val invoke = {
-          case List( s: String ) => io.Codec.fromUTF8( sha256.digest(io.Codec.toUTF8(s)) )
+          case List( s: String ) => hash( s, sha256 )
         }
       }
 
