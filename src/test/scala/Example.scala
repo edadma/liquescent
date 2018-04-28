@@ -19,5 +19,5 @@ object Example extends App {
         out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
     }
 
-  new Interpreter( StandardFilters.map ++ ExtraStringFilters.map, Tag(customtag), Map(), null ).perform( LiquescentParser.parse(io.Source.fromString(input)), Console.out )
+  new Interpreter( StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Tag(customtag), Map(), null ).perform( LiquescentParser.parse(io.Source.fromString(input)), Console.out )
 }

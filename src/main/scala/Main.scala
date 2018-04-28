@@ -65,14 +65,14 @@ object Main extends App {
 			usage
 			Nil
 		case "--" :: Nil =>
-			new Interpreter(StandardFilters.map ++ ExtraStringFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.stdin), Console.out )
+			new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.stdin), Console.out )
 			Nil
 		case s :: _ if s startsWith "-" => sys.error( s"invalid switch $s" )
 		case file :: Nil =>
 			templateFile = new File( file )
 
 			if (templateFile.exists && templateFile.isFile && templateFile.canRead) {
-				new Interpreter(StandardFilters.map ++ ExtraStringFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.fromFile(templateFile)), Console.out )
+				new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), assigns toMap, null ).perform( LiquescentParser.parse(io.Source.fromFile(templateFile)), Console.out )
 				Nil
 			} else
 				sys.error( s"error reading file: $file" )

@@ -133,7 +133,6 @@ object ExtraStringFilters {
         }
       }
 
-
     ) map {f => (f.name, f)} toMap
 }
 
