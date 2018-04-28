@@ -7,6 +7,17 @@ import prop.PropertyChecks
 
 class ExtraStringFilterTests extends FreeSpec with PropertyChecks with Matchers with Testing {
 
+	"camelcase" in {
+		test(
+			"""
+				|{{ 'coming-soon' | camelcase }}
+			""".stripMargin, false
+		).trim shouldBe
+			"""
+				|ComingSoon
+			""".trim.stripMargin
+	}
+
 	"handleize" in {
 		test(
 			"""
