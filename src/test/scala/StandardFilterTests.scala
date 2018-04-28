@@ -5,7 +5,7 @@ import org.scalatest._
 import prop.PropertyChecks
 
 
-class FilterTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers with Testing {
 	
 	"abs" in {
 		test(

@@ -1,0 +1,51 @@
+//@
+package xyz.hyperreal.liquescent
+
+
+object ExtraStringFilters {
+
+  val nonWordRegex = """[^\w]+"""r
+
+  val map =
+    List(
+
+      new Filter( "handle" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) =>
+            val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
+            val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
+            val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
+
+            s3.toLowerCase
+        }
+      },
+
+      new Filter( "handleize" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( s: String ) =>
+            val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
+            val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
+            val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
+
+            s3.toLowerCase
+        }
+      }
+
+    ) map {f => (f.name, f)} toMap
+}
+
+/*
+
+      new Filter( "" ) {
+        override def parameters = List( List(StringType) )
+
+        override val invoke = {
+          case List( a: String ) =>
+        }
+      }
+
+ */
