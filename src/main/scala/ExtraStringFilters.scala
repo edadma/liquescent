@@ -30,36 +30,39 @@ object ExtraStringFilters {
       new Filter( "camelcase" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) =>
-            camelRegex.replaceAllIn( s.head.toUpper + s.tail.toLowerCase, m => m.matched(1).toUpper.toString )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) =>
+              camelRegex.replaceAllIn( s.head.toUpper + s.tail.toLowerCase, m => m.matched(1).toUpper.toString )
+          }
       },
 
       new Filter( "handle" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) =>
-            val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
-            val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
-            val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) =>
+              val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
+              val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
+              val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
 
-            s3.toLowerCase
-        }
+              s3.toLowerCase
+          }
       },
 
       new Filter( "handleize" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) =>
-            val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
-            val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
-            val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) =>
+              val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
+              val s2 = if (s1.startsWith( "-" )) s1.substring( 1 ) else s1
+              val s3 = if (s2.endsWith( "-" )) s2.substring( 0, s2.length - 1 ) else s2
 
-            s3.toLowerCase
-        }
+              s3.toLowerCase
+          }
       },
 
       new Filter( "md5" ) {
@@ -67,9 +70,10 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) => hash( s, md5 ) toUpperCase
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) => hash( s, md5 ) toUpperCase
+          }
       },
 
       new Filter( "sha1" ) {
@@ -77,9 +81,10 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) => hash( s, sha1 )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) => hash( s, sha1 )
+          }
       },
 
       new Filter( "sha256" ) {
@@ -87,50 +92,56 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) => hash( s, sha256 )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) => hash( s, sha256 )
+          }
       },
 
       new Filter( "hmac_sha1" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override val invoke = {
-          case List( s: String, key: String ) => hmac( s, key, "HmacSHA1" )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String, key: String ) => hmac( s, key, "HmacSHA1" )
+          }
       },
 
       new Filter( "hmac_sha256" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override val invoke = {
-          case List( s: String, key: String ) => hmac( s, key, "HmacSHA256" )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String, key: String ) => hmac( s, key, "HmacSHA256" )
+          }
       },
 
       new Filter( "pluralize" ) {
         override def parameters = List( List(NumberType, StringType, StringType) )
 
-        override val invoke = {
-          case List( 1, singular: String, _ ) => singular
-          case List( _, _, plural: String ) => plural
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( 1, singular: String, _ ) => singular
+            case List( _, _, plural: String ) => plural
+          }
       },
 
       new Filter( "upcase" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) => s toUpperCase
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) => s toUpperCase
+          }
       },
 
       new Filter( "url_encode" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
-          case List( s: String ) => URLEncoder.encode( s, "UTF-8" )
-        }
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
+            case List( s: String ) => URLEncoder.encode( s, "UTF-8" )
+          }
       }
 
     ) map {f => (f.name, f)} toMap
@@ -141,7 +152,8 @@ object ExtraStringFilters {
       new Filter( "" ) {
         override def parameters = List( List(StringType) )
 
-        override val invoke = {
+        override def apply( settings: Map[String, Any], args: List[Any] ) =
+          args match {
           case List( a: String ) =>
         }
       }

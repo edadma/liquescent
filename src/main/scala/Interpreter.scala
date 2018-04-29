@@ -10,7 +10,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns: Map[String, Any], context: AnyRef, strict: Boolean = true ) {
+class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[String, Any], assigns: Map[String, Any], context: AnyRef, strict: Boolean = true ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
@@ -181,7 +181,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], assigns
         case Nil => sys.error( s"filter ${filter.name} not applicable to [${fargs mkString ", "}]" )
         case head :: tail =>
           if (assignable( types, head ))
-            filter.invoke( fargs )
+            filter( settings, fargs )
           else
             applyFilter( tail )
       }
