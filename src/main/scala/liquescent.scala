@@ -13,6 +13,9 @@ package object liquescent {
     override def toString = ""
   }
 
+  def round( n: BigDecimal, scale: Int, settings: Map[Symbol, Any] ) =
+    n.setScale( scale, settings('roundingMode).asInstanceOf[BigDecimal.RoundingMode.Value] )
+
   def truthy( a: Any ) = a != nil && a != false
 
   def falsy( a: Any ) = !truthy( a )

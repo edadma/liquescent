@@ -1,23 +1,23 @@
-import java.io.PrintStream
-
-import scala.collection.mutable
-
-import xyz.hyperreal.liquescent._
-
-
-object Example extends App {
-
-  val input =
-    """
-      |{% assign variable = "stupider" %}
-      |{% ol "stupid", variable, "stupidest" %}
-    """.trim.stripMargin
-
-  val customtag =
-    new Tag( "ol" ) {
-      def apply( vars: mutable.Map[String, Any], out: PrintStream, args: List[Any], context: AnyRef ) =
-        out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
-    }
-
-  new Interpreter( StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Tag(customtag), Map(), Map(), null ).perform( LiquescentParser.parse(io.Source.fromString(input)), Console.out )
-}
+//import java.io.PrintStream
+//
+//import scala.collection.mutable
+//
+//import xyz.hyperreal.liquescent._
+//
+//
+//object Example extends App {
+//
+//  val input =
+//    """
+//      |{% assign variable = "stupider" %}
+//      |{% ol "stupid", variable, "stupidest" %}
+//    """.trim.stripMargin
+//
+//  val customtag =
+//    new Tag( "ol" ) {
+//      def apply( vars: mutable.Map[String, Any], out: PrintStream, args: List[Any], context: AnyRef ) =
+//        out.print( s"<ol>${args map (item => s"<li>$item</li>") mkString}</ol>" )
+//    }
+//
+//  new Interpreter( StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Tag(customtag), Map(), Map(), null ).perform( LiquescentParser.parse(io.Source.fromString(input)), Console.out )
+//}

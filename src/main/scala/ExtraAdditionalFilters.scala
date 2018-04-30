@@ -10,7 +10,7 @@ object ExtraAdditionalFilters {
       new Filter( "asset_url" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[String, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
           args match {
             case List( s: String ) =>
           }
