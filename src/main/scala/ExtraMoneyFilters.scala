@@ -6,8 +6,10 @@ object ExtraMoneyFilters {
 
   val amountRegex = """\{\{amount}}"""r
 
+  def currency( amount: BigDecimal, scale: Int ) = s"%.${scale}f".format(amount)
+
   def money( amount: BigDecimal, scale: Int, format: String ) =
-    amountRegex.replaceAllIn( format, s"%.${scale}f".format( amount ) )
+    amountRegex.replaceAllIn( format, currency(amount, scale) )
 
   val map =
     List(
@@ -67,9 +69,9 @@ object ExtraMoneyFilters {
           val (scale: Int, _) = settings('html_without_currency)
 
           args match {
-            case List( n: Int ) => BigDecimal(n)/BigDecimal(10).pow(scale)
-            case List( n: BigInt ) => BigDecimal(n)/BigDecimal(10).pow(scale)
-            case List( n: BigDecimal ) => round( n, scale, settings )
+            case List( n: Int ) => currency( BigDecimal(n)/BigDecimal(10).pow(scale), scale )
+            case List( n: BigInt ) => currency( BigDecimal(n)/BigDecimal(10).pow(scale), scale )
+            case List( n: BigDecimal ) => currency( round(n, scale, settings), scale )
           }
         }
       }
