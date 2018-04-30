@@ -6,7 +6,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 1.475 | money }}
+        |{{ 34.0 | money_without_currency }}
       """.trim.stripMargin, false
     )
 

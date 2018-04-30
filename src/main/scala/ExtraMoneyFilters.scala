@@ -6,11 +6,8 @@ object ExtraMoneyFilters {
 
   val amountRegex = """\{\{amount}}"""r
 
-  def money( amount: BigDecimal, scale: Int, format: String ) = {
-    val a = s"%.${scale}f".format( amount )
-
-    amountRegex.replaceAllIn( format, a )
-  }
+  def money( amount: BigDecimal, scale: Int, format: String ) =
+    amountRegex.replaceAllIn( format, s"%.${scale}f".format( amount ) )
 
   val map =
     List(
@@ -47,10 +44,10 @@ object ExtraMoneyFilters {
         override def parameters = List( List(NumberType) )
 
         override def apply( settings: Map[Symbol, Any], args: List[Any] ) = {
-          val (scale: Int, format: String) = settings('money_without_trailing_zeros)
+          val (scale: Int, format: String) = settings('html_with_currency)
 
           def output( a: BigDecimal ) =
-            if (a.rounded == a)
+            if (a.setScale( 0, BigDecimal.RoundingMode.HALF_EVEN ) == a)
               money( a, 0, format )
             else
               money( a, scale, format )
@@ -59,6 +56,20 @@ object ExtraMoneyFilters {
             case List( n: Int ) => output( BigDecimal(n)/BigDecimal(10).pow(scale) )
             case List( n: BigInt ) => output( BigDecimal(n)/BigDecimal(10).pow(scale) )
             case List( n: BigDecimal ) => output( round(n, scale, settings) )
+          }
+        }
+      },
+
+      new Filter( "money_without_currency" ) {
+        override def parameters = List( List(NumberType) )
+
+        override def apply( settings: Map[Symbol, Any], args: List[Any] ) = {
+          val (scale: Int, _) = settings('html_without_currency)
+
+          args match {
+            case List( n: Int ) => BigDecimal(n)/BigDecimal(10).pow(scale)
+            case List( n: BigInt ) => BigDecimal(n)/BigDecimal(10).pow(scale)
+            case List( n: BigDecimal ) => round( n, scale, settings )
           }
         }
       }
