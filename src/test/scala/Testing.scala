@@ -8,7 +8,8 @@ trait Testing {
 
   val settings =
     Map(
-      'money_with_currency -> (2, "$%.2f CAD"),
+      'html_without_currency -> (2, "${{amount}}"),
+      'html_with_currency -> (2, "${{amount}} CAD"),
       'roundingMode -> BigDecimal.RoundingMode.HALF_EVEN
     )
 
