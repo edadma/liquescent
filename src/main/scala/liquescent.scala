@@ -53,7 +53,7 @@ package object liquescent {
     a match {
       case l: List[_] => l map display mkString
       case m: collection.Map[_, _] => m map { case (k, v) => qdisplay(k) + "=>" + qdisplay(v) } mkString ("{", ",", "}")
-      case s => s.toString
+      case s => String.valueOf( s )
     }
 
   def qdisplay( a: Any ): String =
