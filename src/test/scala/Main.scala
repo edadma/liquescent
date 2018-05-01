@@ -6,7 +6,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 3410 | money_without_currency }}
+        |{{ '#7ab55c' | color_to_rgb }}
       """.trim.stripMargin, false
     )
 
