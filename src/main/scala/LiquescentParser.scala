@@ -344,7 +344,7 @@ class ElementParser extends RegexParsers with PackratParsers {
 //
 //  def text: Parser[TextElementAST] = """.+?(?=\{\{|\{%|\z)""".r ^^ TextElementAST
 
-  lazy val ident: Parser[String] = """[a-zA-Z]+\w*""".r
+  lazy val ident: Parser[String] = """[a-zA-Z_]+\w*""".r
 
 //  lazy val tagGrammar: PackratParser[StatementAST] = "{%" ~> tags <~ "%}"
 //
