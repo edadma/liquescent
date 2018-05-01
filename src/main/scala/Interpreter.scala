@@ -78,7 +78,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case CustomTagStatementAST( name, args ) =>
 				tags get name match {
 					case None => sys.error( s"unknown tag: $name" )
-					case Some( t ) => t( vars, out, args map eval, context )
+					case Some( t ) => t( settings, vars, out, args map eval, context )
 				}
 			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>

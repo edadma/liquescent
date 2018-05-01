@@ -46,34 +46,34 @@ object LiquescentParser {
     buf.toList
   }
 
-  def whitespace( elems: List[Element] ): List[Element] =
+  def whitespaceControl( elems: List[Element] ): List[Element] =
     elems match {
       case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if tag.startsWith( "{%-" ) =>
-        if (pre.forall( _.isWhitespace ))
-          whitespace( t :: tail )
+        if (pre forall (_.isWhitespace))
+          whitespaceControl( t :: tail )
         else
-          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespace( t :: tail )
+          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespaceControl( t :: tail )
       case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if tag.endsWith( "-%}" ) =>
-        if (post.forall( _.isWhitespace ))
-          whitespace( t :: tail )
+        if (post forall (_.isWhitespace))
+          whitespaceControl( t :: tail )
         else
-          t :: whitespace( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
+          t :: whitespaceControl( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
      case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj.startsWith( "{{-" ) =>
-        if (pre.forall( _.isWhitespace ))
-          whitespace( o :: tail )
+        if (pre forall (_.isWhitespace))
+          whitespaceControl( o :: tail )
         else
-          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespace( o :: tail )
+          TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespaceControl( o :: tail )
       case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if obj.endsWith( "-}}" ) =>
-        if (post.forall( _.isWhitespace ))
-          whitespace( o :: tail )
+        if (post forall (_.isWhitespace))
+          whitespaceControl( o :: tail )
         else
-          o :: whitespace( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
-      case head :: tail => head :: whitespace( tail )
+          o :: whitespaceControl( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
+      case head :: tail => head :: whitespaceControl( tail )
       case Nil => Nil
    }
 
   def parse( template: io.Source ) = {
-    var tokens = whitespace( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
+    var tokens = whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
 
     def peek = tokens.head
 

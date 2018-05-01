@@ -6,7 +6,7 @@ import java.io.PrintStream
 import scala.collection.mutable
 
 
-abstract class Tag( val name: String ) extends ((mutable.Map[String, Any], PrintStream, List[Any], AnyRef) => Unit)
+abstract class Tag( val name: String ) extends ((Map[Symbol, Any], mutable.Map[String, Any], PrintStream, List[Any], AnyRef) => Unit)
 
 object Tag {
 
