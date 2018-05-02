@@ -42,7 +42,8 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 		scopes remove scopes.length - 1
 	}
 
-  def perform( op: StatementAST, out: PrintStream, dolayout: Boolean = true ): Unit = {
+  def render( )
+  def perform( op: StatementAST, out: PrintStream ): Unit = {
     def include( input: File ): Unit = {
       perform( LiquescentParser.parse(io.Source.fromFile(input)), out, false )
       out.println
