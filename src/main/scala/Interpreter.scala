@@ -9,6 +9,11 @@ import xyz.hyperreal.numbers.BigDecimalMath
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
+//        val l = eval( layout ).asInstanceOf[String]
+//        val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), l + ".liquid" )
+//
+//        if (l == "theme" && file.exists && file.isFile && file.canRead || l != "theme")
+//          include( file )
 
 class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef ) {
 
@@ -42,20 +47,20 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 		scopes remove scopes.length - 1
 	}
 
-  def render( )
+  def render( parse: ParseResult, out: PrintStream, dolayout: Boolean ): Unit = {
+    if (dolayout && parse.layout.nonEmpty) {
+
+    } else
+      perform( parse.statement, out )
+  }
+
   def perform( op: StatementAST, out: PrintStream ): Unit = {
     def include( input: File ): Unit = {
-      perform( LiquescentParser.parse(io.Source.fromFile(input)), out, false )
+      perform( LiquescentParser.parse(io.Source.fromFile(input)).statement, out )
       out.println
     }
 
     op match {
-      case LayoutStatementAST( Some(layout) ) if dolayout =>
-        val l = eval( layout ).asInstanceOf[String]
-        val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), l + ".liquid" )
-
-        if (l == "theme" && file.exists && file.isFile && file.canRead || l != "theme")
-          include( file )
       case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
@@ -93,15 +98,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None => sys.error( s"unknown tag: $name" )
 					case Some( t ) => t( settings, vars, out, args map eval, context )
 				}
-			case BlockStatementAST( block ) => block foreach (perform( _, out, dolayout ))
+			case BlockStatementAST( block ) => block foreach (perform( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find { case (expr, _) => truthy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None => 
-							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
+							case Some( elseStatement ) => perform( elseStatement, out )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out, dolayout )
+					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
 			case CaseStatementAST( exp, cases, els ) =>
 				val value = eval( exp )
@@ -110,23 +115,23 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
+							case Some( elseStatement ) => perform( elseStatement, out )
 						}
-					case Some( (_, whenStatement) ) => perform( whenStatement, out, dolayout )
+					case Some( (_, whenStatement) ) => perform( whenStatement, out )
 				}
 			case UnlessStatementAST( cond, els ) =>
 				cond find { case (expr, _) => falsy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
+							case Some( elseStatement ) => perform( elseStatement, out )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out, dolayout )
+					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
 			case CaptureStatementAST( name, body ) =>
 				val bytes = new ByteArrayOutputStream
 
-				perform( body, new PrintStream(bytes), dolayout )
+				perform( body, new PrintStream(bytes) )
 				setVar( name, bytes.toString )
 			case ForStatementAST( name, expr, parameters, body ) =>
 				var list =
@@ -156,7 +161,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						try {
 							setVar( name, elem )
 							setVar( "#idx", idx )
-							perform( body, out, dolayout )
+							perform( body, out )
 						} catch {
 							case _: ContinueException =>
 						}

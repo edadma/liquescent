@@ -58,7 +58,7 @@ object LiquescentParser {
           whitespaceControl( t :: tail )
         else
           t :: whitespaceControl( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
-     case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj startsWith "{{-" =>
+      case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj startsWith "{{-" =>
         if (pre forall (_.isWhitespace))
           whitespaceControl( o :: tail )
         else
@@ -70,11 +70,11 @@ object LiquescentParser {
           o :: whitespaceControl( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
       case head :: tail => head :: whitespaceControl( tail )
       case Nil => Nil
-   }
+    }
 
-  def parse( template: io.Source ): (Option[String], StatementAST) = {
+  def parse( template: io.Source ): ParseResult = {
     var tokens = whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
-    var layout: Option[String] = None
+    var layout: Option[String] = Some( "theme" )
 
     def peek = tokens.head
 
@@ -226,7 +226,6 @@ object LiquescentParser {
               val parser = new ElementParser
 
               parser( parser.layoutTag, s ) match {
-                case LayoutStatementAST( None ) =>
                 case LayoutStatementAST( l ) => layout = l
               }
 
@@ -296,7 +295,7 @@ object LiquescentParser {
     if (!eoi)
       sys.error( s"unexpected element $pop" )
 
-    (layout, block)
+    ParseResult( layout, block )
   }
 
 }
@@ -495,3 +494,5 @@ class ElementParser extends RegexParsers with PackratParsers {
     }
 
 }
+
+case class ParseResult( layout: Option[String], statement: StatementAST )
