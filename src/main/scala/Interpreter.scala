@@ -44,6 +44,9 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
   def perform( op: StatementAST, out: PrintStream ): Unit =
     op match {
+      case LayoutStatementAST( None ) =>
+      case LayoutStatementAST( Some(layout) ) =>
+
       case PlainOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
         out.print(

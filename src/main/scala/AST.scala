@@ -40,6 +40,7 @@ case object BreakStatementAST extends StatementAST
 case object ContinueStatementAST extends StatementAST
 case class CycleStatementAST( items: Vector[ExpressionAST] ) extends StatementAST
 case class CustomTagStatementAST( name: String, args: List[ExpressionAST] ) extends StatementAST
+case class LayoutStatementAST( layout: Option[ExpressionAST] ) extends StatementAST
 
 case class ForGenerator( name: String, expr: ExpressionAST, parameters: List[ForParameter] )
 

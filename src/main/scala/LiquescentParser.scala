@@ -48,22 +48,22 @@ object LiquescentParser {
 
   def whitespaceControl( elems: List[Element] ): List[Element] =
     elems match {
-      case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if tag.startsWith( "{%-" ) =>
+      case TextElement( pre ) :: (t@TagElement( _, tag )) :: tail if tag startsWith "{%-" =>
         if (pre forall (_.isWhitespace))
           whitespaceControl( t :: tail )
         else
           TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespaceControl( t :: tail )
-      case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if tag.endsWith( "-%}" ) =>
+      case (t@TagElement( _, tag )) :: TextElement( post ) :: tail if tag endsWith "-%}" =>
         if (post forall (_.isWhitespace))
           whitespaceControl( t :: tail )
         else
           t :: whitespaceControl( TextElement( post dropWhile (_.isWhitespace) ) :: tail )
-     case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj.startsWith( "{{-" ) =>
+     case TextElement( pre ) :: (o@ObjectElement( obj )) :: tail if obj startsWith "{{-" =>
         if (pre forall (_.isWhitespace))
           whitespaceControl( o :: tail )
         else
           TextElement(pre.reverse dropWhile (_.isWhitespace) reverse) :: whitespaceControl( o :: tail )
-      case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if obj.endsWith( "-}}" ) =>
+      case (o@ObjectElement( obj )) :: TextElement( post ) :: tail if obj endsWith "-}}" =>
         if (post forall (_.isWhitespace))
           whitespaceControl( o :: tail )
         else
@@ -73,7 +73,11 @@ object LiquescentParser {
    }
 
   def parse( template: io.Source ) = {
-    var tokens = whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
+    var tokens =
+      whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform filter new LayoutFilter) match {
+        case t@(TagElement( "layout", _ ) :: _) => t
+        case t => TagElement( "layout", "{% layout 'theme' %}" ) :: t
+      }
 
     def peek = tokens.head
 
@@ -221,6 +225,12 @@ object LiquescentParser {
               advance
               block += parser( parser.cycleTag, s )
               _parseBlock
+            case TagElement( "layout", s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.layoutTag, s )
+              _parseBlock
             case TagElement( "increment", s ) =>
               val parser = new ElementParser
 
@@ -322,6 +332,21 @@ class RawTransform extends (Element => Seq[Element]) {
     }
 }
 
+class LayoutFilter extends (Element => Boolean) {
+  var dropping = false
+
+  def apply( elem: Element ) =
+    elem match {
+      case TextElement( s ) if !dropping && s.forall( _.isWhitespace ) =>
+        false
+      case TagElement( "layout", _ ) if dropping =>
+        false
+      case _ =>
+        dropping = true
+        true
+    }
+}
+
 trait Element
 
 case class TextElement( s: String ) extends Element
@@ -374,6 +399,10 @@ class ElementParser extends RegexParsers with PackratParsers {
     case n ~ a => CustomTagStatementAST( n, a ) }
 
   lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
+
+  lazy val layoutTag: PackratParser[LayoutStatementAST] =
+    tagStart ~> "layout" ~> expression <~ tagEnd ^^ (l => LayoutStatementAST( Some(l) )) |
+    tagStart ~> "layout" ~> "none" <~ tagEnd ^^^ LayoutStatementAST( None )
 
   lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ DecrementStatementAST
 
