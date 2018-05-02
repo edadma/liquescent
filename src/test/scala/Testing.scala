@@ -8,6 +8,7 @@ trait Testing {
 
   val settings =
     Map(
+      'docroot -> "htdocs",
       'html_without_currency -> (2, "${{amount}}"),
       'html_with_currency -> (2, "${{amount}} CAD"),
       'roundingMode -> BigDecimal.RoundingMode.HALF_EVEN

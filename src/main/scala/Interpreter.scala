@@ -1,7 +1,7 @@
 //@
 package xyz.hyperreal.liquescent
 
-import java.io.{ByteArrayOutputStream, PrintStream}
+import java.io.{ByteArrayOutputStream, File, PrintStream}
 
 import xyz.hyperreal.lia.Math
 import xyz.hyperreal.numbers.BigDecimalMath
@@ -10,7 +10,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef, strict: Boolean = true ) {
+class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef ) {
 
   val vars = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
@@ -42,11 +42,20 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 		scopes remove scopes.length - 1
 	}
 
-  def perform( op: StatementAST, out: PrintStream ): Unit =
-    op match {
-      case LayoutStatementAST( None ) =>
-      case LayoutStatementAST( Some(layout) ) =>
+  def perform( op: StatementAST, out: PrintStream, dolayout: Boolean = true ): Unit = {
+    def include( input: File ): Unit = {
+      perform( LiquescentParser.parse(io.Source.fromFile(input)), out, false )
+      out.println
+    }
 
+    op match {
+      case LayoutStatementAST( Some(layout) ) if dolayout =>
+        val l = eval( layout ).asInstanceOf[String]
+        val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), l + ".liquid" )
+
+        if (l == "theme" && file.exists && file.isFile && file.canRead || l != "theme")
+          include( file )
+      case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
         out.print(
@@ -83,15 +92,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None => sys.error( s"unknown tag: $name" )
 					case Some( t ) => t( settings, vars, out, args map eval, context )
 				}
-			case BlockStatementAST( block ) => block foreach (perform( _, out ))
+			case BlockStatementAST( block ) => block foreach (perform( _, out, dolayout ))
 			case IfStatementAST( cond, els ) =>
 				cond find { case (expr, _) => truthy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None => 
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+					case Some( (_, thenStatement) ) => perform( thenStatement, out, dolayout )
 				}
 			case CaseStatementAST( exp, cases, els ) =>
 				val value = eval( exp )
@@ -100,23 +109,23 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
 						}
-					case Some( (_, whenStatement) ) => perform( whenStatement, out )
+					case Some( (_, whenStatement) ) => perform( whenStatement, out, dolayout )
 				}
 			case UnlessStatementAST( cond, els ) =>
 				cond find { case (expr, _) => falsy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case Some( elseStatement ) => perform( elseStatement, out, dolayout )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+					case Some( (_, thenStatement) ) => perform( thenStatement, out, dolayout )
 				}
 			case CaptureStatementAST( name, body ) =>
 				val bytes = new ByteArrayOutputStream
 
-				perform( body, new PrintStream(bytes) )
+				perform( body, new PrintStream(bytes), dolayout )
 				setVar( name, bytes.toString )
 			case ForStatementAST( name, expr, parameters, body ) =>
 				var list =
@@ -146,7 +155,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						try {
 							setVar( name, elem )
 							setVar( "#idx", idx )
-							perform( body, out )
+							perform( body, out, dolayout )
 						} catch {
 							case _: ContinueException =>
 						}
@@ -159,6 +168,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case BreakStatementAST => throw new BreakException
 			case ContinueStatementAST => throw new ContinueException
     }
+  }
 
 //  def assignable( arg: Type, parameter: Type ) =
 //    arg == parameter || (parameter == FloatType)
