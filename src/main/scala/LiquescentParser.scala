@@ -72,8 +72,9 @@ object LiquescentParser {
       case Nil => Nil
    }
 
-  def parse( template: io.Source ) = {
+  def parse( template: io.Source ): (Option[String], StatementAST) = {
     var tokens = whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
+    var layout: Option[String] = None
 
     def peek = tokens.head
 
@@ -224,8 +225,12 @@ object LiquescentParser {
             case TagElement( "layout", s ) =>
               val parser = new ElementParser
 
+              parser( parser.layoutTag, s ) match {
+                case LayoutStatementAST( None ) =>
+                case LayoutStatementAST( l ) => layout = l
+              }
+
               advance
-              block += parser( parser.layoutTag, s )
               _parseBlock
             case TagElement( "increment", s ) =>
               val parser = new ElementParser
@@ -291,7 +296,7 @@ object LiquescentParser {
     if (!eoi)
       sys.error( s"unexpected element $pop" )
 
-    block
+    (layout, block)
   }
 
 }
@@ -397,7 +402,7 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
 
   lazy val layoutTag: PackratParser[LayoutStatementAST] =
-    tagStart ~> "layout" ~> expression <~ tagEnd ^^ (l => LayoutStatementAST( Some(l) )) |
+    tagStart ~> "layout" ~> string <~ tagEnd ^^ (s => LayoutStatementAST( Some(s) )) |
     tagStart ~> "layout" ~> "none" <~ tagEnd ^^^ LayoutStatementAST( None )
 
   lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ DecrementStatementAST
@@ -450,8 +455,11 @@ class ElementParser extends RegexParsers with PackratParsers {
 		("(" ~> primaryExpression <~ "..") ~ (primaryExpression <~ ")") ^^ { case from ~ to => RangeExpressionAST( from, to )} |
 		primaryExpression
 
+  lazy val string: Parser[String] =
+    """('([^']*)')|("([^"]*)")""".r ^^ (s => escapes(s.substring( 1, s.length - 1)) )
+
   lazy val primaryExpression: Parser[ExpressionAST] =
-    """('([^']*)')|("([^"]*)")""".r ^^ (s => LiteralExpressionAST( escapes(s.substring(1, s.length - 1)) )) |
+    string ^^ (s => LiteralExpressionAST( s )) |
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false ) |
     ident ^^ VariableExpressionAST |
