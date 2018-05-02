@@ -13,13 +13,13 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 				|{{ -17 | abs }}
 				|{{ 4 | abs }}
 				|{{ "-19.86" | abs }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|17
 				|4
 				|19.86
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"append" in {
@@ -27,12 +27,12 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ "/my/fancy/url" | append: ".html" }}
 				|{{ "website.com" | append: filename }}
-			""".stripMargin, false, "filename" -> "/index.html"
+			""".trim.stripMargin, false, "filename" -> "/index.html"
 		) shouldBe
 			"""
 				|/my/fancy/url.html
 				|website.com/index.html
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"at_least" in {
@@ -40,12 +40,12 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ 4 | at_least: 5 }}
 				|{{ 4 | at_least: 3 }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|5
 				|4
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"at_most" in {
@@ -53,12 +53,12 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ 4 | at_most: 5 }}
 				|{{ 4 | at_most: 3 }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|4
 				|3
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"capitalize" in {
@@ -66,12 +66,12 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ "title" | capitalize }}
 				|{{ "my great title" | capitalize }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|Title
 				|My great title
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"ceil" in {
@@ -82,7 +82,7 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 				|{{ 2.0 | ceil }}
 				|{{ 183.357 | ceil }}
 				|{{ "3.5" | ceil }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|2
@@ -90,7 +90,7 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 				|2
 				|184
 				|4
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
   "compact" in {
@@ -189,13 +189,13 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 				|{{ article.published_at | date: "%a, %b %d, %y" }}
 				|{{ article.published_at | date: "%Y" }}
 				|{{ "March 14, 2016" | date: "%b %d, %y" }}
-			""".stripMargin, false, "article" -> Map("published_at" -> "2015-07-17")
+			""".trim.stripMargin, false, "article" -> Map("published_at" -> "2015-07-17")
 		) shouldBe
 			"""
 				|Fri, Jul 17, 15
 				|2015
 				|Mar 14, 16
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"default" in {
@@ -241,12 +241,12 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ "Parker Moore" | downcase }}
 				|{{ "apple" | downcase }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|parker moore
 				|apple
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"escape" in {
@@ -254,23 +254,23 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			"""
 				|{{ "Have you read 'James & the Giant Peach'?" | escape }}
 				|{{ "Tetsuro Takara" | escape }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|Have you read &apos;James &amp; the Giant Peach&apos;?
 				|Tetsuro Takara
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"escape_once" in {
 		test(
 			"""
 				|{{ "1 < 2 & 3" | escape_once | escape_once }}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|1 &lt; 2 &amp; 3
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 	"first" in {
@@ -296,7 +296,7 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
         |{{ 2.0 | floor }}
         |{{ 183.357 | floor }}
         |{{ "3.5" | floor }}
-      """.stripMargin, false
+      """.trim.stripMargin, false
     ) shouldBe
       """
         |1
@@ -304,7 +304,7 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
         |2
         |183
         |3
-      """.stripMargin
+      """.trim.stripMargin
   }
 
   "join" in {

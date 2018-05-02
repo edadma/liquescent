@@ -51,13 +51,13 @@ class VariableTests extends FreeSpec with PropertyChecks with Matchers with Test
 				|{% increment my_counter %}
 				|{% increment my_counter %}
 				|{% increment my_counter %}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|0
 				|1
 				|2
-			""".stripMargin
+			""".trim.stripMargin
 		test(
 			"""
 				|{% assign var = 10 %}
@@ -75,13 +75,13 @@ class VariableTests extends FreeSpec with PropertyChecks with Matchers with Test
 				|{% decrement variable %}
 				|{% decrement variable %}
 				|{% decrement variable %}
-			""".stripMargin, false
+			""".trim.stripMargin, false
 		) shouldBe
 			"""
 				|-1
 				|-2
 				|-3
-			""".stripMargin
+			""".trim.stripMargin
 	}
 
 }
