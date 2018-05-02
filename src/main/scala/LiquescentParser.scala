@@ -73,11 +73,7 @@ object LiquescentParser {
    }
 
   def parse( template: io.Source ) = {
-    var tokens =
-      whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform filter new LayoutFilter) match {
-        case t@(TagElement( "layout", _ ) :: _) => t
-        case t => TagElement( "layout", "{% layout 'theme' %}" ) :: t
-      }
+    var tokens = whitespaceControl( elements(template mkString) filterNot new CommentFilter flatMap new RawTransform )
 
     def peek = tokens.head
 
