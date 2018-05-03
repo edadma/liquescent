@@ -34,7 +34,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case Some( scope ) => scope(name)
 		}
 
-  def capture( statement: StatementAST ): Unit = {
+  def capture( statement: StatementAST ) = {
     val bytes = new ByteArrayOutputStream
 
     perform( statement, new PrintStream(bytes) )
@@ -53,7 +53,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
     if (dolayout && parse.layout.nonEmpty) {
       setVar( "content_for_layout", capture(parse.statement) )
 
-      val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), parse.layout + ".liquid" )
+      val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), parse.layout.get + ".liquid" )
 
       if (parse.layout.get == "theme" && file.exists && file.isFile && file.canRead || parse.layout.get != "theme")
         include( file, out )
