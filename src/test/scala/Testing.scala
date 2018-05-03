@@ -24,7 +24,7 @@ trait Testing {
         ExtraMoneyFilters.map ++
         ExtraColorFilters.map,
       Map(), settings, assigns toMap, null ).
-        render( LiquescentParser.parse(io.Source.fromString(input)), new PrintStream(bytes), true )
+        render( LiquescentParser.parse(io.Source.fromString(input)), new PrintStream(bytes), false )
 
 		if (collapse)
 			bytes.toString.trim.replaceAll( """\s+""", " " )
