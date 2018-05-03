@@ -9,11 +9,6 @@ import xyz.hyperreal.numbers.BigDecimalMath
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-//        val l = eval( layout ).asInstanceOf[String]
-//        val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), l + ".liquid" )
-//
-//        if (l == "theme" && file.exists && file.isFile && file.canRead || l != "theme")
-//          include( file )
 
 class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef ) {
 
@@ -39,6 +34,13 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case Some( scope ) => scope(name)
 		}
 
+  def capture( statement: StatementAST ): Unit = {
+    val bytes = new ByteArrayOutputStream
+
+    perform( statement, new PrintStream(bytes) )
+    bytes.toString
+  }
+
 	def enterScope( locals: List[String] ): Unit = {
 		scopes += mutable.HashMap( locals map (_ -> nil): _* )
 	}
@@ -49,17 +51,22 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
   def render( parse: ParseResult, out: PrintStream, dolayout: Boolean ): Unit = {
     if (dolayout && parse.layout.nonEmpty) {
+      setVar( "content_for_layout", capture(parse.statement) )
 
+      val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), parse.layout + ".liquid" )
+
+      if (parse.layout.get == "theme" && file.exists && file.isFile && file.canRead || parse.layout.get != "theme")
+        include( file, out )
+      else
+        perform( parse.statement, out )
     } else
       perform( parse.statement, out )
   }
 
-  def perform( op: StatementAST, out: PrintStream ): Unit = {
-    def include( input: File ): Unit = {
-      perform( LiquescentParser.parse(io.Source.fromFile(input)).statement, out )
-      out.println
-    }
+  def include( input: File, out: PrintStream ) =
+    perform( LiquescentParser.parse(io.Source.fromFile(input)).statement, out )
 
+  def perform( op: StatementAST, out: PrintStream ): Unit = {
     op match {
       case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
@@ -128,11 +135,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						}
 					case Some( (_, thenStatement) ) => perform( thenStatement, out )
 				}
-			case CaptureStatementAST( name, body ) =>
-				val bytes = new ByteArrayOutputStream
-
-				perform( body, new PrintStream(bytes) )
-				setVar( name, bytes.toString )
+			case CaptureStatementAST( name, body ) => setVar( name, capture(body) )
 			case ForStatementAST( name, expr, parameters, body ) =>
 				var list =
 					eval( expr ) match {
