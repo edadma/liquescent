@@ -30,7 +30,7 @@ object ExtraStringFilters {
       new Filter( "camelcase" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
               camelRegex.replaceAllIn( s.head.toUpper + s.tail.toLowerCase, m => m.matched(1).toUpper.toString )
@@ -40,7 +40,7 @@ object ExtraStringFilters {
       new Filter( "handle" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
               val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
@@ -54,7 +54,7 @@ object ExtraStringFilters {
       new Filter( "handleize" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
               val s1 = nonWordRegex.replaceAllIn( s, _ => "-" )
@@ -70,7 +70,7 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => hash( s, md5 ) toUpperCase
           }
@@ -81,7 +81,7 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => hash( s, sha1 )
           }
@@ -92,7 +92,7 @@ object ExtraStringFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => hash( s, sha256 )
           }
@@ -101,7 +101,7 @@ object ExtraStringFilters {
       new Filter( "hmac_sha1" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String, key: String ) => hmac( s, key, "HmacSHA1" )
           }
@@ -110,7 +110,7 @@ object ExtraStringFilters {
       new Filter( "hmac_sha256" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String, key: String ) => hmac( s, key, "HmacSHA256" )
           }
@@ -119,7 +119,7 @@ object ExtraStringFilters {
       new Filter( "pluralize" ) {
         override def parameters = List( List(NumberType, StringType, StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( 1, singular: String, _ ) => singular
             case List( _, _, plural: String ) => plural
@@ -129,7 +129,7 @@ object ExtraStringFilters {
       new Filter( "upcase" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => s toUpperCase
           }
@@ -138,7 +138,7 @@ object ExtraStringFilters {
       new Filter( "url_encode" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => URLEncoder.encode( s, "UTF-8" )
           }
@@ -152,7 +152,7 @@ object ExtraStringFilters {
       new Filter( "" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any] ) =
+        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
           case List( a: String ) =>
         }

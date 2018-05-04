@@ -254,9 +254,10 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       case FilterExpressionAST( operand, name, args ) =>
         filters get name match {
           case None => sys.error( s"unknown filter: $name" )
-          case Some( f ) => applyFilter( eval(operand), f,
-            args filter (_._1 == null) map {case (_, v) => eval(v)},
-            args filterNot (_._1 == null) map {case (k, v) => (k, eval(v))} toMap)
+          case Some( f ) =>
+            applyFilter( eval(operand), f,
+              args filter (_._1 == null) map {case (_, v) => eval(v)},
+              args filterNot (_._1 == null) map {case (k, v) => (k, eval(v))} toMap)
         }
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) => getVar( name )
