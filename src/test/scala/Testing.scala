@@ -11,7 +11,8 @@ trait Testing {
       'docroot -> "htdocs",
       'html_without_currency -> (2, "${{amount}}"),
       'html_with_currency -> (2, "${{amount}} CAD"),
-      'roundingMode -> BigDecimal.RoundingMode.HALF_EVEN
+      'roundingMode -> BigDecimal.RoundingMode.HALF_EVEN,
+      'locale -> "en"
     )
 
 	def test( input: String, collapse: Boolean, assigns: (String, Any)* ) = {
@@ -22,7 +23,8 @@ trait Testing {
         ExtraStringFilters.map ++
         ExtraHTMLFilters.map ++
         ExtraMoneyFilters.map ++
-        ExtraColorFilters.map,
+        ExtraColorFilters.map ++
+        ExtraFilters.map,
       Map(), settings, assigns toMap, null ).
         render( LiquescentParser.parse(io.Source.fromString(input)), new PrintStream(bytes), false )
 

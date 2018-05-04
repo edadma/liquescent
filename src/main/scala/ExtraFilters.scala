@@ -14,19 +14,25 @@ object ExtraFilters {
         var translations: JSON = _
 
         def translate( settings: Map[Symbol, Any], key: String, vars: Map[String, String] ) = {
-          if (translations == null || locale != settings("locale")) {
-            locale = settings("locale").toString
-            translations = DefaultJSONReader.fromFile( docroot(s"locale/$locale", settings) )
+          if (translations == null || locale != settings('locale)) {
+            locale = settings('locale).toString
+            translations = DefaultJSONReader.fromFile( docroot(s"locales/$locale.json", settings) )
           }
 
-          translations getString key
+          def traverse( k: List[String], obj: AnyRef ): String =
+            k match {
+              case Nil => obj.toString
+              case h :: t => traverse( t, obj.asInstanceOf[Map[String, AnyRef]](h) )
+            }
+
+          traverse( key split "\\." toList, translations )
         }
 
         override def parameters = List( List(StringType) )
 
         override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
-            case List( s: String ) =>
+            case List( key: String ) => translate( settings, key, named.asInstanceOf[Map[String, String]] )
           }
       }
 
