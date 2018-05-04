@@ -14,7 +14,7 @@ package object liquescent {
     override def toString = ""
   }
 
-  def docroot( name: String, settings: Map[Symbol, Any] ) = new File( settings('docroot).asInstanceOf[String], name )
+  def docroot( name: String, settings: Map[Symbol, Any] ) = new File( settings('docroot).toString, name )
 
   def round( n: BigDecimal, scale: Int, settings: Map[Symbol, Any] ) =
     n.setScale( scale, settings('roundingMode).asInstanceOf[BigDecimal.RoundingMode.Value] )
