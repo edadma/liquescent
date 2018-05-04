@@ -439,8 +439,14 @@ class ElementParser extends RegexParsers with PackratParsers {
     filterExpression ~ (">=" ~> filterExpression) ^^ { case l ~ r => GteExpressionAST( l, r ) } |
     filterExpression
 
+  lazy val filterArgument: PackratParser[(String, ExpressionAST)] =
+    opt(ident <~ ":") ~ applyExpression ^^ {
+      case Some( k ) ~ v => (k, v)
+      case None ~ v => (null, v)
+    }
+
   lazy val filterExpression: PackratParser[ExpressionAST] =
-    filterExpression ~ ("|" ~> ident <~ ":") ~ rep1sep(applyExpression, ",") ^^
+    filterExpression ~ ("|" ~> ident <~ ":") ~ rep1sep(filterArgument, ",") ^^
       { case o ~ f ~ a => FilterExpressionAST( o, f, a ) } |
     filterExpression ~ ("|" ~> ident) ^^ { case o ~ f => FilterExpressionAST( o, f, Nil ) } |
     applyExpression

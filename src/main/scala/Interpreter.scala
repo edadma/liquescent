@@ -182,7 +182,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //  def assignable( arg: Type, parameter: Type ) =
 //    arg == parameter || (parameter == FloatType)
 
-  def applyFilter( operand: Any, filter: Filter, args: List[Any] ) = {
+  def applyFilter( operand: Any, filter: Filter, args: List[Any], named: Map[String, Any] ) = {
     val fargs = operand :: args
     val types = fargs map typeof
 
@@ -203,7 +203,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
         case Nil => sys.error( s"filter ${filter.name} not applicable to [${fargs mkString ", "}]" )
         case head :: tail =>
           if (assignable( types, head ))
-            filter( settings, fargs )
+            filter( settings, fargs, named )
           else
             applyFilter( tail )
       }
@@ -248,13 +248,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
                 if (!f.dottable)
                   sys.error( s"filter not dottable: $name" )
 
-                applyFilter( o, f, Nil )
+                applyFilter( o, f, Nil, Map() )
             }
         }
       case FilterExpressionAST( operand, name, args ) =>
         filters get name match {
           case None => sys.error( s"unknown filter: $name" )
-          case Some( f ) => applyFilter( eval(operand), f, args map eval )
+          case Some( f ) => applyFilter( eval(operand), f,
+            args filter (_._1 == null) map {case (_, v) => eval(v)},
+            args filterNot (_._1 == null) map {case (k, v) => (k, eval(v))} toMap)
         }
       case LiteralExpressionAST( o ) => o
       case VariableExpressionAST( name ) => getVar( name )

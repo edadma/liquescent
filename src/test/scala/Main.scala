@@ -6,7 +6,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 1.2 | floor }}
+        |{{ 1.2 | floor: 'asdf', first: 'wow' }}
       """.trim.stripMargin, false
     )
 
