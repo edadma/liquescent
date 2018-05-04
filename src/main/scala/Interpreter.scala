@@ -41,19 +41,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
     bytes.toString
   }
 
-	def enterScope( locals: List[String] ): Unit = {
-		scopes += mutable.HashMap( locals map (_ -> nil): _* )
-	}
+	def enterScope( locals: List[String] ): Unit = scopes += mutable.HashMap( locals map (_ -> nil): _* )
 
-	def exitScope: Unit = {
-		scopes remove scopes.length - 1
-	}
+	def exitScope: Unit = scopes remove scopes.length - 1
 
   def render( parse: ParseResult, out: PrintStream, dolayout: Boolean ): Unit = {
     if (dolayout && parse.layout.nonEmpty) {
       setVar( "content_for_layout", capture(parse.statement) )
 
-      val file = new File( new File(settings('docroot).asInstanceOf[String], "layout"), parse.layout.get + ".liquid" )
+      val file = new File( docroot("layout", settings), parse.layout.get + ".liquid" )
 
       if (parse.layout.get == "theme" && file.exists && file.isFile && file.canRead || parse.layout.get != "theme")
         include( file, out )

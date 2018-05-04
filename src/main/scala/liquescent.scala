@@ -1,6 +1,7 @@
 //@
 package xyz.hyperreal
 
+import java.io.File
 import java.time.temporal.TemporalAccessor
 
 
@@ -12,6 +13,8 @@ package object liquescent {
   case object nil {
     override def toString = ""
   }
+
+  def docroot( name: String, settings: Map[Symbol, Any] ) = new File( settings('docroot).asInstanceOf[String], name )
 
   def round( n: BigDecimal, scale: Int, settings: Map[Symbol, Any] ) =
     n.setScale( scale, settings('roundingMode).asInstanceOf[BigDecimal.RoundingMode.Value] )
