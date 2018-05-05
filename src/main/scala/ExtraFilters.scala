@@ -30,9 +30,9 @@ object ExtraFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
           args match {
-            case List( key: String ) => interp.capture( LiquescentParser.parse(io.Source.fromString(translate(settings, key, named.asInstanceOf[Map[String, String]]))).statement )
+            case List( key: String ) => interp.capture( LiquescentParser.parse(io.Source.fromString(translate(settings, key, named.asInstanceOf[Map[String, String]]))).statement, locals )
           }
       }
 

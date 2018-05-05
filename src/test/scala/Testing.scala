@@ -26,7 +26,7 @@ trait Testing {
         ExtraColorFilters.map ++
         ExtraFilters.map,
       Map(), settings, assigns toMap, null ).
-        render( LiquescentParser.parse(io.Source.fromString(input)), new PrintStream(bytes), false )
+        render( LiquescentParser.parse(io.Source.fromString(input)), Map(), new PrintStream(bytes), false )
 
 		if (collapse)
 			bytes.toString.trim.replaceAll( """\s+""", " " )

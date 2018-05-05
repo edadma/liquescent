@@ -66,7 +66,7 @@ object Main extends App {
 			Nil
 		case "--" :: Nil =>
 			new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null ).
-        render( LiquescentParser.parse(io.Source.stdin), Console.out, false )
+        render( LiquescentParser.parse(io.Source.stdin), Map(), Console.out, false )
 			Nil
 		case s :: _ if s startsWith "-" => sys.error( s"invalid switch $s" )
 		case file :: Nil =>
@@ -74,7 +74,7 @@ object Main extends App {
 
 			if (templateFile.exists && templateFile.isFile && templateFile.canRead) {
 				new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null ).
-          render( LiquescentParser.parse(io.Source.fromFile(templateFile)), Console.out, false )
+          render( LiquescentParser.parse(io.Source.fromFile(templateFile)), Map(), Console.out, false )
 				Nil
 			} else
 				sys.error( s"error reading file: $file" )
