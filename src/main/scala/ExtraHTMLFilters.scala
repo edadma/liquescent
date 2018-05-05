@@ -10,7 +10,7 @@ object ExtraHTMLFilters {
       new Filter( "script_tag" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => s"""<script src="$s" type="text/javascript"></script>"""
           }
@@ -19,7 +19,7 @@ object ExtraHTMLFilters {
       new Filter( "stylesheet_tag" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) => s"""<link href="$s" rel="stylesheet" type="text/css" media="all" />"""
           }

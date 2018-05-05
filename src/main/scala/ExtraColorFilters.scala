@@ -12,7 +12,7 @@ object ExtraColorFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
               if (colorRegex.matcher( s ).matches)

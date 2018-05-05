@@ -37,7 +37,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
   def capture( statement: StatementAST ) = {
     val bytes = new ByteArrayOutputStream
 
-    perform( statement, new PrintStream(bytes) )
+    execute( statement, new PrintStream(bytes) )
     bytes.toString
   }
 
@@ -54,15 +54,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       if (parse.layout.get == "theme" && file.exists && file.isFile && file.canRead || parse.layout.get != "theme")
         include( file, out )
       else
-        perform( parse.statement, out )
+        execute( parse.statement, out )
     } else
-      perform( parse.statement, out )
+      execute( parse.statement, out )
   }
 
   def include( input: File, out: PrintStream ) =
-    perform( LiquescentParser.parse(io.Source.fromFile(input)).statement, out )
+    execute( LiquescentParser.parse(io.Source.fromFile(input)).statement, out )
 
-  def perform( op: StatementAST, out: PrintStream ): Unit = {
+  def execute( op: StatementAST, out: PrintStream ): Unit = {
     op match {
       case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
@@ -101,15 +101,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None => sys.error( s"unknown tag: $name" )
 					case Some( t ) => t( settings, vars, out, args map eval, context )
 				}
-			case BlockStatementAST( block ) => block foreach (perform( _, out ))
+			case BlockStatementAST( block ) => block foreach (execute( _, out ))
 			case IfStatementAST( cond, els ) =>
 				cond find { case (expr, _) => truthy( eval(expr) ) } match {
 					case None =>
 						els match {
-							case None => 
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case None =>
+							case Some( elseStatement ) => execute( elseStatement, out )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+					case Some( (_, thenStatement) ) => execute( thenStatement, out )
 				}
 			case CaseStatementAST( exp, cases, els ) =>
 				val value = eval( exp )
@@ -118,18 +118,18 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case Some( elseStatement ) => execute( elseStatement, out )
 						}
-					case Some( (_, whenStatement) ) => perform( whenStatement, out )
+					case Some( (_, whenStatement) ) => execute( whenStatement, out )
 				}
 			case UnlessStatementAST( cond, els ) =>
 				cond find { case (expr, _) => falsy( eval(expr) ) } match {
 					case None =>
 						els match {
 							case None =>
-							case Some( elseStatement ) => perform( elseStatement, out )
+							case Some( elseStatement ) => execute( elseStatement, out )
 						}
-					case Some( (_, thenStatement) ) => perform( thenStatement, out )
+					case Some( (_, thenStatement) ) => execute( thenStatement, out )
 				}
 			case CaptureStatementAST( name, body ) => setVar( name, capture(body) )
 			case ForStatementAST( name, expr, parameters, body ) =>
@@ -160,7 +160,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						try {
 							setVar( name, elem )
 							setVar( "#idx", idx )
-							perform( body, out )
+							execute( body, out )
 						} catch {
 							case _: ContinueException =>
 						}
@@ -199,7 +199,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
         case Nil => sys.error( s"filter ${filter.name} not applicable to [${fargs mkString ", "}]" )
         case head :: tail =>
           if (assignable( types, head ))
-            filter( settings, fargs, named )
+            filter( this, settings, fargs, named )
           else
             applyFilter( tail )
       }
