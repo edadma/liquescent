@@ -1,6 +1,6 @@
 name := "liquescent"
 
-version := "0.2_snapshot_5"
+version := "0.2_snapshot_5.1"
 
 scalaVersion := "2.12.6"
 

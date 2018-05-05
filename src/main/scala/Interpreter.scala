@@ -281,11 +281,17 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case GtExpressionAST( left, right ) => compare( eval(left, locals), eval(right, locals) ) > 0
 			case GteExpressionAST( left, right ) => compare( eval(left, locals), eval(right, locals) ) >= 0
 			case ContainsExpressionAST( left, right ) =>
-				(eval( left, locals ), eval( right, locals )) match {
-					case (seq: Seq[_], str: String) => seq contains str
-					case (s1: String, s2: String) => s1 contains s2
-					case (a, b) => sys.error( s"expected string/array contains string: $a, $b" )
-				}
+        val l = eval( left, locals )
+        val r = eval( right, locals )
+
+        if (l == nil || r == nil)
+          nil
+        else
+          (l, r) match {
+            case (seq: Seq[_], str: String) => seq contains str
+            case (s1: String, s2: String) => s1 contains s2
+            case (a, b) => sys.error( s"expected string/array contains string: $a, $b" )
+          }
     }
 
 	class BreakException extends RuntimeException
