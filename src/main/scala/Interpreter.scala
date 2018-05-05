@@ -263,8 +263,16 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       case VariableExpressionAST( name ) => getVar( name, locals )
 			case OrExpressionAST( left, right ) => truthy( eval(left, locals) ) || truthy( eval(right, locals) )
 			case AndExpressionAST( left, right ) => truthy( eval(left, locals) ) && truthy( eval(right, locals) )
-			case EqExpressionAST( left, right ) => eval( left, locals ) == eval( right, locals )
-			case NeqExpressionAST( left, right ) => eval( left, locals ) != eval( right, locals )
+			case EqExpressionAST( left, right ) =>
+        val l = eval( left, locals )
+        val r = eval( right, locals )
+
+        if (l == nil || r == nil) nil else l == r
+			case NeqExpressionAST( left, right ) =>
+        val l = eval( left, locals )
+        val r = eval( right, locals )
+
+        if (l == nil || r == nil) nil else l != r
 			case LtExpressionAST( left, right ) => compare( eval(left, locals), eval(right, locals) ) < 0
 			case LteExpressionAST( left, right ) => compare( eval(left, locals), eval(right, locals) ) <= 0
 			case GtExpressionAST( left, right ) => compare( eval(left, locals), eval(right, locals) ) > 0
