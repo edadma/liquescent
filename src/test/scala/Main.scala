@@ -6,7 +6,8 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 'theme.css' | asset_url | stylesheet_tag }}
+        |{% assign test = 'cute' %}
+        |{% include 'test' %}
       """.trim.stripMargin, false
     )
 

@@ -231,7 +231,13 @@ object LiquescentParser {
 
               advance
               _parseBlock
-            case TagElement( "increment", s ) =>
+             case TagElement( "include", s ) =>
+              val parser = new ElementParser
+
+              advance
+              block += parser( parser.includeTag, s )
+              _parseBlock
+           case TagElement( "increment", s ) =>
               val parser = new ElementParser
 
               advance
@@ -399,6 +405,19 @@ class ElementParser extends RegexParsers with PackratParsers {
     case n ~ a => CustomTagStatementAST( n, a ) }
 
   lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
+
+  lazy val includeTag: PackratParser[IncludeStatementAST] =
+    (tagStart ~> "include" ~> string) ~ ("with" ~> expression <~ tagEnd) ^^ {
+      case f ~ v => IncludeStatementAST( f, List((f, v)) ) } |
+    (tagStart ~> "include" ~> string) ~ (opt("," ~> rep1sep(includeArgument, ",")) <~ tagEnd) ^^ {
+      case f ~ None => IncludeStatementAST( f, Nil )
+      case f ~ Some( a ) => IncludeStatementAST( f, a )
+    }
+
+  lazy val includeArgument: PackratParser[(String, ExpressionAST)] =
+    (ident <~ ":") ~ expression ^^ {
+      case k ~ v => (k, v)
+    }
 
   lazy val layoutTag: PackratParser[LayoutStatementAST] =
     tagStart ~> "layout" ~> string <~ tagEnd ^^ (s => LayoutStatementAST( Some(s) )) |

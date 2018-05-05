@@ -63,8 +63,9 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       execute( parse.statement, locals, out )
   }
 
-  def include( input: File, locals: Map[String, Any], out: PrintStream ) =
-    execute( LiquescentParser.parse(io.Source.fromFile(input)).statement, locals, out )
+  def include( input: io.Source, locals: Map[String, Any], out: PrintStream ) = execute( LiquescentParser.parse(input).statement, locals, out )
+
+  def include( input: File, locals: Map[String, Any], out: PrintStream ): Unit = include( io.Source.fromFile(input), locals, out )
 
   def execute( op: StatementAST, locals: Map[String, Any], out: PrintStream ): Unit = {
     op match {
@@ -136,6 +137,8 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
 				}
 			case CaptureStatementAST( name, body ) => setVar( name, capture(body, locals) )
+			case IncludeStatementAST( name, args ) =>
+        include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
 			case ForStatementAST( name, expr, parameters, body ) =>
 				var list =
 					eval( expr, locals ) match {
