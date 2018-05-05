@@ -6,7 +6,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 'general.meta.tags' | t: tags: 'wow' }}
+        |{{ 'theme.css' | asset_url | stylesheet_tag }}
       """.trim.stripMargin, false
     )
 
