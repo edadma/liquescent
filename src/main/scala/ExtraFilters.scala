@@ -13,7 +13,7 @@ object ExtraFilters {
         var locale: String = _
         var translations: JSON = _
 
-        def translate( settings: Map[Symbol, Any], key: String, vars: Map[String, String] ) = {
+        def translate( settings: Map[Symbol, Any], key: String ) = {
           if (translations == null || locale != settings('locale)) {
             locale = settings('locale).toString
             translations = DefaultJSONReader.fromFile( docroot(s"locales/$locale.json", settings) )
@@ -30,9 +30,9 @@ object ExtraFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( key: String ) => interp.capture( LiquescentParser.parse(io.Source.fromString(translate(settings, key, named.asInstanceOf[Map[String, String]]))).statement, locals )
+            case List( key: String ) => interp.capture( LiquescentParser.parse(io.Source.fromString(translate(settings, key))).statement, named ++ locals )
           }
       }
 

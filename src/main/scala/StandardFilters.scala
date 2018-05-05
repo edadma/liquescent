@@ -47,7 +47,7 @@ object StandardFilters {
       new NumericFilter( "abs" ) {
         override def parameters = List( List(NumberType), List(StringType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number ) => Math.absFunction( a )
             case List( a: String ) =>
@@ -63,7 +63,7 @@ object StandardFilters {
       new Filter( "append" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r: String ) => l + r
           }
@@ -72,7 +72,7 @@ object StandardFilters {
       new NumericFilter( "at_least" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => if (Math.predicate( '<, a, b )) b else a
           }
@@ -81,7 +81,7 @@ object StandardFilters {
       new NumericFilter( "at_most" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => if (Math.predicate( '>, a, b )) b else a
           }
@@ -90,7 +90,7 @@ object StandardFilters {
       new Filter( "capitalize" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
           case List( s: String ) => s.head.toUpper + s.tail.toLowerCase
         }
@@ -99,7 +99,7 @@ object StandardFilters {
       new NumericFilter( "ceil" ) {
         override def parameters = List( List(NumberType), List(StringType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number ) => Math.ceilFunction( a )
             case List( a: String ) =>
@@ -115,7 +115,7 @@ object StandardFilters {
       new Filter( "compact", true ) {
         override def parameters = List( List(ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l filterNot (_ == nil)
           }
@@ -124,7 +124,7 @@ object StandardFilters {
       new Filter( "concat" ) {
         override def parameters = List( List(ArrayType, ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_], r: List[_] ) => l ++ r
           }
@@ -139,7 +139,7 @@ object StandardFilters {
 
         override def parameters = List(List(StringType, StringType), List(DateTimeType, StringType))
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List("now" | "today", f: String) => Strftime.format(f)
             case List(t: String, f: String) =>
@@ -157,7 +157,7 @@ object StandardFilters {
       new Filter( "default" ) {
         override def parameters = List( List(AnyType, AnyType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Any, b: Any ) => if (truthy( a ) && a != "") a else b
           }
@@ -166,7 +166,7 @@ object StandardFilters {
       new NumericFilter( "divided_by" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) =>
               val quo = Math( '/, a, b )
@@ -181,7 +181,7 @@ object StandardFilters {
       new Filter( "downcase" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s.toLowerCase
           }
@@ -190,7 +190,7 @@ object StandardFilters {
       new Filter( "escape" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => escape( s )
           }
@@ -201,7 +201,7 @@ object StandardFilters {
 
         val regex = """&#?\w+;"""r
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
               val it = regex.findAllIn( s )
@@ -224,7 +224,7 @@ object StandardFilters {
       new Filter( "first", true ) {
         override def parameters = List( List(ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
           }
@@ -233,7 +233,7 @@ object StandardFilters {
       new NumericFilter( "floor" ) {
         override def parameters = List( List(NumberType), List(StringType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number ) => Math.floorFunction( a )
             case List( a: String ) =>
@@ -249,7 +249,7 @@ object StandardFilters {
       new Filter( "join" ) {
         override def parameters = List( List(ArrayType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_], s: String ) => l map display mkString s
           }
@@ -258,7 +258,7 @@ object StandardFilters {
       new Filter( "last", true ) {
         override def parameters = List( List(ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].last
           }
@@ -267,7 +267,7 @@ object StandardFilters {
       new Filter( "lstrip" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s dropWhile (_.isWhitespace)
           }
@@ -276,7 +276,7 @@ object StandardFilters {
       new Filter( "map" ) {
         override def parameters = List( List(ArrayType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_], k: String ) =>
               l map {
@@ -293,7 +293,7 @@ object StandardFilters {
       new NumericFilter( "minus" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => Math( '-, a, b ).asInstanceOf[Number]
           }
@@ -302,7 +302,7 @@ object StandardFilters {
       new NumericFilter( "modulo" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => Math( '%, a, b ).asInstanceOf[Number]
           }
@@ -311,7 +311,7 @@ object StandardFilters {
       new Filter( "newline_to_br" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s replace ("\n", "<br />")
           }
@@ -320,7 +320,7 @@ object StandardFilters {
       new NumericFilter( "plus" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => Math( '+, a, b ).asInstanceOf[Number]
           }
@@ -329,7 +329,7 @@ object StandardFilters {
       new Filter( "remove" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r: String ) => l replace (r, "")
           }
@@ -338,7 +338,7 @@ object StandardFilters {
       new Filter( "remove_first" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r: String ) => l replaceFirst (Matcher.quoteReplacement(r), "")
           }
@@ -347,7 +347,7 @@ object StandardFilters {
       new Filter( "replace" ) {
         override def parameters = List( List(StringType, StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r1: String, r2: String ) => l replace (r1, r2)
           }
@@ -356,7 +356,7 @@ object StandardFilters {
       new Filter( "replace_first" ) {
         override def parameters = List( List(StringType, StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r1: String, r2: String ) => l replaceFirst (Matcher.quoteReplacement(r1), r2)
           }
@@ -365,7 +365,7 @@ object StandardFilters {
       new Filter( "prepend" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r: String ) => r + l
           }
@@ -374,7 +374,7 @@ object StandardFilters {
       new Filter( "reverse", true ) {
         override def parameters = List( List(ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l.asInstanceOf[List[Any]].reverse
           }
@@ -383,7 +383,7 @@ object StandardFilters {
       new NumericFilter( "round", false ) {
         override def parameters = List( List(NumberType), List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( n: Number ) if integer( n ) => n
             case List( n: Number, _ ) if integer( n ) => n
@@ -395,7 +395,7 @@ object StandardFilters {
       new Filter( "rstrip" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s.reverse dropWhile (_.isWhitespace) reverse
           }
@@ -404,7 +404,7 @@ object StandardFilters {
       new NumericFilter( "size", true ) {
         override def parameters = List( List(ArrayType), List(StringType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l.length
             case List( s: String ) => s.length
@@ -420,7 +420,7 @@ object StandardFilters {
           else
             idx
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String, idx: Number ) => s(index(s, idx.intValue)) toString
             case List( s: String, idx: Number, len: Number ) =>
@@ -439,7 +439,7 @@ object StandardFilters {
           else
             a.toString < b.toString
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l sortWith lt
           }
@@ -454,7 +454,7 @@ object StandardFilters {
           else
             (a.toString compareToIgnoreCase b.toString) < 0
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l sortWith lt
           }
@@ -463,7 +463,7 @@ object StandardFilters {
       new Filter( "split" ) {
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: String, r: String ) => l split Matcher.quoteReplacement(r) toList
           }
@@ -472,7 +472,7 @@ object StandardFilters {
       new Filter( "strip" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s.trim
           }
@@ -481,7 +481,7 @@ object StandardFilters {
       new Filter( "strip_html" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s replaceAll ("""</?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[\^'">\s]+))?)+\s*|\s*)/?>""", "")
           }
@@ -490,7 +490,7 @@ object StandardFilters {
       new Filter( "strip_newlines" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) => s replace ("\n", "")
           }
@@ -499,7 +499,7 @@ object StandardFilters {
       new NumericFilter( "times" ) {
         override def parameters = List( List(NumberType, NumberType) )
 
-        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def compute( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) => Math( '*, a, b ).asInstanceOf[Number]
           }
@@ -514,7 +514,7 @@ object StandardFilters {
           else
             s.substring( 0, len - ellipsis.length ) + ellipsis
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String, n: Number ) => truncate( s, n.intValue, "..." )
             case List( s: String, n: Number, ellipsis: String ) => truncate( s, n.intValue, ellipsis )
@@ -539,7 +539,7 @@ object StandardFilters {
           }
         }
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String, n: Number ) => truncate( s, n.intValue, "..." )
             case List( s: String, n: Number, ellipsis: String ) => truncate( s, n.intValue, ellipsis )
@@ -549,7 +549,7 @@ object StandardFilters {
       new Filter( "uniq", true ) {
         override def parameters = List( List(ArrayType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, String] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( l: List[_] ) => l.asInstanceOf[List[Any]].distinct
           }

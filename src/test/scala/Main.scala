@@ -6,7 +6,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ 'general.404.title' | t }}
+        |{{ 'general.meta.tags' | t: tags: 'wow' }}
       """.trim.stripMargin, false
     )
 

@@ -24,7 +24,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case Some( scope ) => scope(name) = value
 		}
 
-	def getVar( name: String, locals: Map[String, String] ) =
+	def getVar( name: String, locals: Map[String, Any] ) =
 		scopes.view.reverse find (_ contains name) match {
 			case None =>
         locals get name match {
@@ -38,7 +38,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case Some( scope ) => scope(name)
 		}
 
-  def capture( statement: StatementAST, locals: Map[String, String] ) = {
+  def capture( statement: StatementAST, locals: Map[String, Any] ) = {
     val bytes = new ByteArrayOutputStream
 
     execute( statement, locals, new PrintStream(bytes) )
@@ -49,7 +49,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
 	def exitScope: Unit = scopes remove scopes.length - 1
 
-  def render( parse: ParseResult, locals: Map[String, String], out: PrintStream, dolayout: Boolean ): Unit = {
+  def render( parse: ParseResult, locals: Map[String, Any], out: PrintStream, dolayout: Boolean ): Unit = {
     if (dolayout && parse.layout.nonEmpty) {
       setVar( "content_for_layout", capture(parse.statement, locals) )
 
@@ -63,10 +63,10 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       execute( parse.statement, locals, out )
   }
 
-  def include( input: File, locals: Map[String, String], out: PrintStream ) =
+  def include( input: File, locals: Map[String, Any], out: PrintStream ) =
     execute( LiquescentParser.parse(io.Source.fromFile(input)).statement, locals, out )
 
-  def execute( op: StatementAST, locals: Map[String, String], out: PrintStream ): Unit = {
+  def execute( op: StatementAST, locals: Map[String, Any], out: PrintStream ): Unit = {
     op match {
       case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
@@ -182,7 +182,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //  def assignable( arg: Type, parameter: Type ) =
 //    arg == parameter || (parameter == FloatType)
 
-  def applyFilter( operand: Any, filter: Filter, args: List[Any], named: Map[String, Any], locals: Map[String, String] ) = {
+  def applyFilter( operand: Any, filter: Filter, args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
     val fargs = operand :: args
     val types = fargs map typeof
 
@@ -218,7 +218,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case _ => sys.error( s"expected two numbers or two strings: $a, $b" )
 		}
 
-  def eval( expr: ExpressionAST, locals: Map[String, String] ): Any =
+  def eval( expr: ExpressionAST, locals: Map[String, Any] ): Any =
     expr match {
 			case RangeExpressionAST( from, to ) =>
 				((eval( from, locals ), eval( to, locals )) match {
