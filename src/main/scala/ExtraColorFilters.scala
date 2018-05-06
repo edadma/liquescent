@@ -4,6 +4,9 @@ package xyz.hyperreal.liquescent
 
 object ExtraColorFilters {
 
+  val hslRegex = """hsl\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)"""r
+  val hslaRegex = """hsl\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*,\s*(\d+(?:\.\d*)?)\s*\)"""r
+
   val map =
     List(
 
