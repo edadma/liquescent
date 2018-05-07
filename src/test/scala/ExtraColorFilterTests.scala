@@ -22,4 +22,8 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 		test( "{{ 'rgb(122, 181, 92)' | color_to_hex }}", true ) shouldBe "#7ab55c"
 	}
 
+  "color_extract" in {
+		test( "{{ '#7ab55c' | color_extract: 'red' }}", true ) shouldBe "122"
+	}
+
 }

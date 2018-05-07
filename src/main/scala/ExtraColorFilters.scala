@@ -6,6 +6,8 @@ import xyz.hyperreal.hsl.HSL
 
 object ExtraColorFilters {
 
+  def brightness( r: Int, g: Int, b: Int ) = (r*299 + g*587 + b*114)/1000
+
   val hslRegex = """hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*\)"""r
   val hslaRegex = """hsla\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*\)"""r
   val rgbRegex = """rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)"""r
@@ -80,6 +82,62 @@ object ExtraColorFilters {
                   val (r, g, b) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
 
                   f"#${r.toInt}%02x${g.toInt}%02x${b.toInt}%02x"
+                case _ => sys.error( s"color doesn't match known format: $c" )
+              }
+          }
+      },
+
+      new Filter( "color_extract" ) {
+        def extract( h: Double, s: Double, l: Double, r: Int, g: Int, b: Int, a: Option[Double], f: String ) =
+          f match {
+            case "hue" => h.toString
+            case "saturation" => s.toString
+            case "luminosity" => l.toString
+            case "red" => r.toString
+            case "green" => g.toString
+            case "blue" => b.toString
+            case "alpha" => a.get.toString
+          }
+
+        override def parameters = List( List(StringType, StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( c: String, f: String ) =>
+              c match {
+                case rgbRegex( r, g, b ) =>
+                  val red = r.toInt
+                  val green = g.toInt
+                  val blue = b.toInt
+                  val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
+
+                  extract( h, s, l, red, green, blue, None, f )
+                case rgbaRegex( r, g, b, a ) =>
+                  val red = r.toInt
+                  val green = g.toInt
+                  val blue = b.toInt
+                  val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
+
+                  extract( h, s, l, red, green, blue, Some(a.toDouble), f )
+                case hslRegex( h, s, l ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  extract( hue, sat, lum, r, g, b, None, f )
+                case hslaRegex( h, s, l, a ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  extract( hue, sat, lum, r, g, b, Some(a.toDouble), f )
+                case colorRegex( hex ) =>
+                  val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
+                  val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
+
+                  extract( h, s, l, r, g, b, None, f )
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
