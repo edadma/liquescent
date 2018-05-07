@@ -6,10 +6,10 @@ import xyz.hyperreal.hsl.HSL
 
 object ExtraColorFilters {
 
-  val hslRegex = """hsl\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*\)"""r
-  val hslaRegex = """hsla\(\s*(\d+)\s*,\s*(\d+)\s*%\s*,\s*(\d+)\s*%\s*,\s*(\d+(?:\.\d*)?)\s*\)"""r
+  val hslRegex = """hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*\)"""r
+  val hslaRegex = """hsla\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*\)"""r
   val rgbRegex = """rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)"""r
-  val rgbaRegex = """rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+(?:\.\d*)?)\s*\)"""r
+  val rgbaRegex = """rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+(?:\.\d+)?)\s*\)"""r
   val colorRegex = "#([0-9a-fA-F]{6})".r
   val map =
     List(
@@ -46,18 +46,18 @@ object ExtraColorFilters {
                   val HSL( h, s, l ) = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
                   val (hue, sat, lum) = (h*360, s*100, l*100)
 
-                  f"hsl($hue%.2f, $sat%.2f, $lum%.2f)"
+                  f"hsl($hue%.1f, $sat%.1f%%, $lum%.1f%%)"
                 case rgbaRegex( r, g, b, a ) =>
                   val HSL( h, s, l ) = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
                   val alpha = a.toDouble
 
-                  f"hsla($h%.2f, $s%.2f, $l%.2f, $alpha%.3f)"
+                  f"hsla($h%.1f, $s%.1f%%, $l%.1f%%, $alpha%.3f)"
                 case colorRegex( hex ) =>
                   val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
                   val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
                   val (hue, sat, lum) = (h*360, s*100, l*100)
 
-                  f"hsl($hue%.2f, $sat%.2f, $lum%.2f)"
+                  f"hsl($hue%.1f, $sat%.1f%%, $lum%.1f%%)"
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
