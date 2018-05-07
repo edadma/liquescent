@@ -24,6 +24,8 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 
   "color_extract" in {
 		test( "{{ '#7ab55c' | color_extract: 'red' }}", true ) shouldBe "122"
+		test( "{{ '#7ab55c' | color_extract: 'saturation' }}", true ) shouldBe "37.6"
+		test( "{{ '#7ab55c' | color_extract: 'hue' }}", true ) shouldBe "99.8"
 	}
 
 }

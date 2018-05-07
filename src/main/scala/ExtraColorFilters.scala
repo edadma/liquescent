@@ -90,13 +90,13 @@ object ExtraColorFilters {
       new Filter( "color_extract" ) {
         def extract( h: Double, s: Double, l: Double, r: Int, g: Int, b: Int, a: Option[Double], f: String ) =
           f match {
-            case "hue" => h.toString
-            case "saturation" => s.toString
-            case "luminosity" => l.toString
+            case "hue" => f"$h%.1f"
+            case "saturation" => f"$s%.1f"
+            case "luminosity" => f"$l%.1f"
             case "red" => r.toString
             case "green" => g.toString
             case "blue" => b.toString
-            case "alpha" => a.get.toString
+            case "alpha" => f"${a.get}%.3f"
           }
 
         override def parameters = List( List(StringType, StringType) )
@@ -111,14 +111,14 @@ object ExtraColorFilters {
                   val blue = b.toInt
                   val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
 
-                  extract( h, s, l, red, green, blue, None, f )
+                  extract( h*360, s*100, l*100, red, green, blue, None, f )
                 case rgbaRegex( r, g, b, a ) =>
                   val red = r.toInt
                   val green = g.toInt
                   val blue = b.toInt
                   val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
 
-                  extract( h, s, l, red, green, blue, Some(a.toDouble), f )
+                  extract( h*360, s*100, l*100, red, green, blue, Some(a.toDouble), f )
                 case hslRegex( h, s, l ) =>
                   val hue = h.toDouble
                   val sat = s.toDouble
@@ -137,7 +137,7 @@ object ExtraColorFilters {
                   val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
                   val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
 
-                  extract( h, s, l, r, g, b, None, f )
+                  extract( h*360, s*100, l*100, r, g, b, None, f )
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
