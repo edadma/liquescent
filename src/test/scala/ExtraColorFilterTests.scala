@@ -14,6 +14,7 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 
   "color_to_hsl" in {
 		test( "{{ '#7ab55c' | color_to_hsl }}", true ) shouldBe "hsl(99.8, 37.6%, 53.5%)"
+		test( "{{ 'rgb(122, 181, 92)' | color_to_hsl }}", true ) shouldBe "hsl(99.8, 37.6%, 53.5%)"
 	}
 
 }
