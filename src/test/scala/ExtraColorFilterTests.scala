@@ -33,7 +33,8 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 	}
 
   "color_modify" in {
-		test( "{{ '#7ab55c' | color_modify: 'red', 255 }}", true ) shouldBe "153"
+		test( "{{ '#7ab55c' | color_modify: 'red', 255 }}", true ) shouldBe "#ffb55c"
+		test( "{{ '#7ab55c' | color_modify: 'alpha', 0.85 }}", true ) shouldBe "rgba(122, 181, 92, 0.85)"
 	}
 
 }
