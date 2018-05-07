@@ -44,17 +44,20 @@ object ExtraColorFilters {
               c match {
                 case rgbRegex( r, g, b ) =>
                   val HSL( h, s, l ) = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
+                  val (hue, sat, lum) = (h*360, s*100, l*100)
 
-                  s"hsl($h, $s, $l)"
+                  f"hsl($hue%.2f, $sat%.2f, $lum%.2f)"
                 case rgbaRegex( r, g, b, a ) =>
                   val HSL( h, s, l ) = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
+                  val alpha = a.toDouble
 
-                  s"hsla($h, $s, $l, $a)"
+                  f"hsla($h%.2f, $s%.2f, $l%.2f, $alpha%.3f)"
                 case colorRegex( hex ) =>
                   val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
                   val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
+                  val (hue, sat, lum) = (h*360, s*100, l*100)
 
-                  s"hsl($h, $s, $l)"
+                  f"hsl($hue%.2f, $sat%.2f, $lum%.2f)"
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
