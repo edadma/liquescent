@@ -28,4 +28,8 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 		test( "{{ '#7ab55c' | color_extract: 'hue' }}", true ) shouldBe "99.8"
 	}
 
+  "color_brightness" in {
+		test( "{{ '#7ab55c' | color_brightness }}", true ) shouldBe "153"
+	}
+
 }

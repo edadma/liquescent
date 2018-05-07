@@ -6,8 +6,6 @@ import xyz.hyperreal.hsl.HSL
 
 object ExtraColorFilters {
 
-  def brightness( r: Int, g: Int, b: Int ) = (r*299 + g*587 + b*114)/1000
-
   val hslRegex = """hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*\)"""r
   val hslaRegex = """hsla\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*%\s*,\s*(\d+(?:\.\d+)?)\s*\)"""r
   val rgbRegex = """rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)"""r
@@ -138,6 +136,41 @@ object ExtraColorFilters {
                   val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
 
                   extract( h*360, s*100, l*100, r, g, b, None, f )
+                case _ => sys.error( s"color doesn't match known format: $c" )
+              }
+          }
+      },
+
+      new Filter( "color_brightness" ) {
+
+        def brightness( r: Int, g: Int, b: Int ) = (r*299 + g*587 + b*114)/1000
+
+        override def parameters = List( List(StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( c: String ) =>
+              c match {
+                case rgbRegex( r, g, b ) => brightness( r.toInt, g.toInt, b.toInt )
+                case rgbaRegex( r, g, b, _ ) => brightness( r.toInt, g.toInt, b.toInt )
+                case hslRegex( h, s, l ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  brightness( r, g, b )
+                case hslaRegex( h, s, l, _ ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  brightness( r, g, b )
+                case colorRegex( hex ) =>
+                  val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
+
+                  brightness( r, g, b )
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
