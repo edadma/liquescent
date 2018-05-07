@@ -61,6 +61,28 @@ object ExtraColorFilters {
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
+      },
+
+      new Filter( "color_to_hex" ) {
+        override def parameters = List( List(StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( c: String ) =>
+              c match {
+                case rgbRegex( r, g, b ) => f"#${r.toInt}%02x${g.toInt}%02x${b.toInt}%02x"
+                case rgbaRegex( r, g, b, _ ) => f"#${r.toInt}%02x${g.toInt}%02x${b.toInt}%02x"
+                case hslRegex( h, s, l ) =>
+                  val (r, g, b) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+
+                  f"#${r.toInt}%02x${g.toInt}%02x${b.toInt}%02x"
+                case hslaRegex( h, s, l, _ ) =>
+                  val (r, g, b) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+
+                  f"#${r.toInt}%02x${g.toInt}%02x${b.toInt}%02x"
+                case _ => sys.error( s"color doesn't match known format: $c" )
+              }
+          }
       }
 
     ) map {f => (f.name, f)} toMap
