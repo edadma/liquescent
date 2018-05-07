@@ -174,6 +174,68 @@ object ExtraColorFilters {
                 case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
+      },
+
+      new Filter( "color_modify" ) {
+        def modify( h: Double, s: Double, l: Double, r: Int, g: Int, b: Int, a: Option[Double], f: String, v: Number ) =
+          (a, f) match {
+            case (None, "hue") => f"hsl(${v.doubleValue}%.1f, $s%.1f%%, $l%.1f%%)"
+            case (Some( alpha ), "hue") => f"hsla(${v.doubleValue}%.1f, $s%.1f%%, $l%.1f%%, $alpha%.3f)"
+            case (None, "saturation") => f"hsl($h%.1f, ${v.doubleValue}%.1f%%, $l%.1f%%)"
+            case (Some( alpha ), "saturation") => f"hsl($h%.1f, ${v.doubleValue}%.1f%%, $l%.1f%%, $alpha%.3f)"
+            case (None, "luminosity") => f"hsl($h%.1f, $s%.1f%%, ${v.doubleValue}%.1f%%)"
+            case (Some( alpha ), "luminosity") => f"hsl($h%.1f, $s%.1f%%, ${v.doubleValue}%.1f%%, $alpha%.3f)"
+            case (None, "red") => f"#${v.intValue}%02x$g%02x$b%02x"
+            case (Some( alpha ), "red") => s"rgba(${v.intValue}, $g, $b, $alpha)"
+            case (None, "green") => f"#$r%02x${v.intValue}%02x$b%02x"
+            case (Some( alpha ), "green") => s"rgba($r, ${v.intValue}, $b, $alpha)"
+            case (None, "blue") => f"#$r%02x$g%02x${v.intValue}%02x"
+            case (Some( alpha ), "blue") => s"rgba($r, $g, ${v.intValue}, $alpha)"
+            case (_, "alpha") => s"rgba($r, $g, $b, ${v.doubleValue})"
+          }
+
+        override def parameters = List( List(StringType, StringType, NumberType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( c: String, f: String, v: Number ) =>
+              c match {
+                case rgbRegex( r, g, b ) =>
+                  val red = r.toInt
+                  val green = g.toInt
+                  val blue = b.toInt
+                  val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
+
+                  modify( h*360, s*100, l*100, red, green, blue, None, f, v )
+                case rgbaRegex( r, g, b, a ) =>
+                  val red = r.toInt
+                  val green = g.toInt
+                  val blue = b.toInt
+                  val HSL( h, s, l ) = HSL.fromRGB( red, green, blue )
+
+                  modify( h*360, s*100, l*100, red, green, blue, Some(a.toDouble), f, v )
+                case hslRegex( h, s, l ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  modify( hue, sat, lum, r, g, b, None, f, v )
+                case hslaRegex( h, s, l, a ) =>
+                  val hue = h.toDouble
+                  val sat = s.toDouble
+                  val lum = l.toDouble
+                  val (r, g, b) = HSL( hue/360, sat/100, lum/100 ).toRGB
+
+                  modify( hue, sat, lum, r, g, b, Some(a.toDouble), f, v )
+                case colorRegex( hex ) =>
+                  val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
+                  val HSL( h, s, l ) = HSL.fromRGB( r, g, b )
+
+                  modify( h*360, s*100, l*100, r, g, b, None, f, v )
+                case _ => sys.error( s"color doesn't match known format: $c" )
+              }
+          }
       }
 
     ) map {f => (f.name, f)} toMap
