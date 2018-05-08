@@ -274,6 +274,44 @@ object ExtraColorFilters {
                  case _ => sys.error( s"color doesn't match known format: $c" )
               }
           }
+      },
+
+      new Filter( "color_darken" ) {
+        override def parameters = List( List(StringType, NumberType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( c: String, v: Number ) =>
+              c match {
+                case rgbRegex( r, g, b ) =>
+                  val hsl = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
+                  val (nr, ng, nb) = hsl.luminosity( hsl.l - v.intValue/100.0 ).toRGB
+
+                  s"rgb($nr, $ng, $nb)"
+                case rgbaRegex( r, g, b, a ) =>
+                  val hsl = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
+                  val (nr, ng, nb) = hsl.luminosity( hsl.l - v.intValue/100.0 ).toRGB
+
+                  s"rgba($nr, $ng, $nb, $a)"
+                case hslRegex( h, s, l ) =>
+                  val hsl = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 )
+                  val HSL( hue, sat, lum ) = hsl.luminosity( hsl.l - v.intValue/100.0 )
+
+                  f"hsl(${hue*360}%.1f, ${sat*100}%.1f%%, ${lum*100}%.1f%%)"
+                case hslaRegex( h, s, l, a ) =>
+                  val hsl = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 )
+                  val HSL( hue, sat, lum ) = hsl.luminosity( hsl.l - v.intValue/100.0 )
+
+                  f"hsla(${hue*360}%.1f, ${sat*100}%.1f%%, ${lum*100}%.1f%%, ${a.toDouble}%.3f)"
+                case colorRegex( hex ) =>
+                  val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
+                  val hsl = HSL.fromRGB( r.toInt, g.toInt, b.toInt )
+                  val (nr, ng, nb) = hsl.luminosity( hsl.l - v.intValue/100.0 ).toRGB
+
+                  f"#$nr%02x$ng%02x$nb%02x"
+                 case _ => sys.error( s"color doesn't match known format: $c" )
+              }
+          }
       }
 
     ) map {f => (f.name, f)} toMap
