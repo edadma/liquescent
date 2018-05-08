@@ -47,4 +47,14 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 		test( "{{ 'hsl(99.8, 37.6%, 53.5%)' | color_darken: 30 }}", true ) shouldBe "hsl(99.8, 37.6%, 23.5%)"
 	}
 
+  "color_saturate" in {
+		test( "{{ '#7ab55c' | color_saturate: 30 }}", true ) shouldBe "#6ed938"
+		test( "{{ 'hsl(99.8, 37.6%, 53.5%)' | color_saturate: 30 }}", true ) shouldBe "hsl(99.8, 67.6%, 53.5%)"
+	}
+
+  "color_desaturate" in {
+		test( "{{ '#7ab55c' | color_desaturate: 30 }}", true ) shouldBe "#869180"
+		test( "{{ 'hsl(99.8, 37.6%, 53.5%)' | color_desaturate: 30 }}", true ) shouldBe "hsl(99.8, 7.6%, 53.5%)"
+	}
+
 }
