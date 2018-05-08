@@ -37,4 +37,9 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
 		test( "{{ '#7ab55c' | color_modify: 'alpha', 0.85 }}", true ) shouldBe "rgba(122, 181, 92, 0.85)"
 	}
 
+  "color_lighten" in {
+		test( "{{ '#7ab55c' | color_lighten: 30 }}", true ) shouldBe "#d0e5c5"
+		test( "{{ 'hsl(99.8, 37.6%, 53.5%)' | color_lighten: 30 }}", true ) shouldBe "hsl(99.8, 37.6%, 83.5%)"
+	}
+
 }
