@@ -395,19 +395,27 @@ object ExtraColorFilters {
 
         def color( c: String ) =
           c match {
-            case rgbRegex( r, g, b ) => (r.toInt, g.toInt, b.toInt)
-            case hslRegex( h, s, l ) => HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+            case rgbRegex( r, g, b ) => (r.toInt, g.toInt, b.toInt, 1.0)
+            case rgbaRegex( r, g, b, a ) => (r.toInt, g.toInt, b.toInt, a.toDouble)
+            case hslRegex( h, s, l ) =>
+              val (r, g, b) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+
+              (r, g, b, 1.0)
+            case hslaRegex( h, s, l, a ) =>
+              val (r, g, b) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+
+              (r, g, b, a.toDouble)
             case colorRegex( hex ) =>
               val List( r: Int, g: Int, b: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
 
-              (r, g, b)
+              (r, g, b, 1.0)
           }
 
         def mix( r1: Int, g1: Int, b1: Int, a1: Double, r2: Int, g2: Int, b2: Int, a2: Double, factor: Int ) = {
           val f1 = factor/100.0
           val f2 = 1 - f1
 
-          def mix( c1: Int, c2: Int ) = (c1*f1*a1 + c2*f2*a2).round.toInt
+          def mix( c1: Int, c2: Int ) = (c1*f1 + c2*f2).round.toInt
 
           (mix( r1, r2 ), mix( g1, g2 ), mix( b1, b2 ), f1*a1 + f2*a2)
         }
@@ -417,31 +425,33 @@ object ExtraColorFilters {
             case List( c1: String, c2: String, v: Number ) =>
               c1 match {
                 case rgbRegex( r, g, b ) =>
-                  val (r2, g2, b2) = color( c2 )
-                  val (nr, ng, nb, _) = mix( r.toInt, g.toInt, b.toInt, 1, r2, g2, b2, 1, v.intValue )
+                  val (r2, g2, b2, a2) = color( c2 )
+                  val (nr, ng, nb, _) = mix( r.toInt, g.toInt, b.toInt, 1, r2, g2, b2, a2, v.intValue )
 
                   s"rgb($nr, $ng, $nb)"
                 case rgbaRegex( r, g, b, a ) =>
-                  val (r2, g2, b2) = color( c2 )
-                  val (nr, ng, nb, na) = mix( r.toInt, g.toInt, b.toInt, a.toDouble, r2, g2, b2, 1, v.intValue )
+                  val (r2, g2, b2, a2) = color( c2 )
+                  val (nr, ng, nb, na) = mix( r.toInt, g.toInt, b.toInt, a.toDouble, r2, g2, b2, a2, v.intValue )
 
                   s"rgba($nr, $ng, $nb, $na)"
                 case hslRegex( h, s, l ) =>
                   val (r1, g1, b1) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
-                  val (r2, g2, b2) = color( c2 )
-                  val (nr, ng, nb, _) = mix( r1, g1, b1, 1, r2, g2, b2, 1, v.intValue )
+                  val (r2, g2, b2, a2) = color( c2 )
+                  val (nr, ng, nb, _) = mix( r1, g1, b1, 1, r2, g2, b2, a2, v.intValue )
                   val HSL( hue, sat, lum ) = HSL.fromRGB( nr, ng, nb )
 
                   f"hsl(${hue*360}%.1f, ${sat*100}%.1f%%, ${lum*100}%.1f%%)"
-//                case hslaRegex( h, s, l, a ) =>
-//                  val hsl = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 )
-//                  val HSL( hue, sat, lum ) = hsl.saturation( hsl.s - v.intValue/100.0 )
-//
-//                  f"hsla(${hue*360}%.1f, ${sat*100}%.1f%%, ${lum*100}%.1f%%, ${a.toDouble}%.3f)"
+                case hslaRegex( h, s, l, a ) =>
+                  val (r1, g1, b1) = HSL( h.toDouble/360, s.toDouble/100, l.toDouble/100 ).toRGB
+                  val (r2, g2, b2, a2) = color( c2 )
+                  val (nr, ng, nb, _) = mix( r1, g1, b1, a.toDouble, r2, g2, b2, a2, v.intValue )
+                  val HSL( hue, sat, lum ) = HSL.fromRGB( nr, ng, nb )
+
+                  f"hsla(${hue*360}%.1f, ${sat*100}%.1f%%, ${lum*100}%.1f%%, ${a.toDouble}%.3f)"
                 case colorRegex( hex ) =>
                   val List( r1: Int, g1: Int, b1: Int ) = hex grouped 2 map (Integer.parseInt(_, 16)) toList
-                  val (r2, g2, b2) = color( c2 )
-                  val (nr, ng, nb, _) = mix( r1, g1, b1, 1, r2, g2, b2, 1, v.intValue )
+                  val (r2, g2, b2, a2) = color( c2 )
+                  val (nr, ng, nb, _) = mix( r1, g1, b1, 1, r2, g2, b2, a2, v.intValue )
 
                   f"#$nr%02x$ng%02x$nb%02x"
                  case _ => sys.error( s"color doesn't match known format: $c1" )

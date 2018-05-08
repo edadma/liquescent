@@ -60,7 +60,7 @@ class ExtraColorFilterTests extends FreeSpec with PropertyChecks with Matchers w
   "color_mix" in {
 		test( "{{ '#7ab55c' | color_mix: '#ffc0cb', 50 }}", true ) shouldBe "#bdbb94"
 		test( "{{ 'hsl(99.8, 37.6%, 53.5%)' | color_mix: '#808080', 25 }}", true ) shouldBe "hsl(98.2, 8.8%, 51.0%)"
-//		test( "{{ 'rgba(122, 181, 92, 0.75)' | color_mix: '#ffc0cb', 50 }}", true ) shouldBe "rgba(189, 187, 148, 0.875)"
+		test( "{{ 'rgba(122, 181, 92, 0.75)' | color_mix: '#ffc0cb', 50 }}", true ) shouldBe "rgba(189, 187, 148, 0.875)"
 	}
 
 }
