@@ -1,3 +1,5 @@
+import java.time.OffsetDateTime
+
 import xyz.hyperreal.liquescent.Testing
 
 
@@ -6,8 +8,8 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ '#7ab55c' | color_to_hsl }}
-      """.trim.stripMargin, false
+        |{{ time | time_tag }}
+      """.trim.stripMargin, false, "time" -> OffsetDateTime.parse("2018-05-09T13:09:49.721-04:00")
     )
 
   println( s"|$res|" )

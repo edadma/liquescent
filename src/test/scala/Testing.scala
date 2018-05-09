@@ -25,6 +25,7 @@ trait Testing {
         ExtraMoneyFilters.map ++
         ExtraColorFilters.map ++
         ExtraUrlFilters.map ++
+        ExtraAdditionalFilters.map ++
         ExtraFilters.map,
       Map(), settings, assigns toMap, null ).
         render( LiquescentParser.parse(io.Source.fromString(input)), Map(), new PrintStream(bytes), false )
