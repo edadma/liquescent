@@ -137,7 +137,7 @@ object StandardFilters {
         val ISO_DATE_REGEX = """\d\d\d\d-\d\d-\d\d""" r
         val ISO_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        override def parameters = List(List(StringType, StringType), List(DateTimeType, StringType))
+        override def parameters = List(List(StringType, StringType), List(TimestampType, StringType))
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {

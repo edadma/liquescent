@@ -49,7 +49,7 @@ package object liquescent {
       case _: String => StringType
       case _: Boolean => BooleanType
       case `nil` => NilType
-      case _: TemporalAccessor => DateTimeType
+      case _: TemporalAccessor => TimestampType
     }
 
   def display( a: Any ): String =

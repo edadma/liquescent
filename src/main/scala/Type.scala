@@ -10,4 +10,4 @@ case object NilType extends Type
 case object BooleanType extends Type
 
 case object AnyType extends Type
-case object DateTimeType extends Type
+case object TimestampType extends Type
