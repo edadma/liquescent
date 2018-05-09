@@ -11,11 +11,11 @@ class ExtraAdditionalFilterTests extends FreeSpec with PropertyChecks with Match
 
   "time_tag" in {
 		test( "{{ time | time_tag }}", true,
-      "time" -> OffsetDateTime.parse("2016-02-24T19:47:51-05:00") ) shouldBe
-      """<time datetime="2018-05-09T17:09:49.721Z">Wed, 24 Feb 2016 09:47:51 -05:00</time>"""
+      "time" -> OffsetDateTime.parse("2016-02-24T09:47:51-05:00") ) shouldBe
+      """<time datetime="2016-02-24T14:47:51Z">Wed, 24 Feb 2016 09:47:51 -05:00</time>"""
 		test( "{{ time | time_tag: '%b %d, %Y' }}", true,
-      "time" -> OffsetDateTime.parse("2016-02-24T19:47:51-05:00") ) shouldBe
-      """<time datetime="2018-05-09T17:09:49.721Z">Feb 24, 2016</time>"""
+      "time" -> OffsetDateTime.parse("2016-02-24T09:47:51-05:00") ) shouldBe
+      """<time datetime="2016-02-24T14:47:51Z">Feb 24, 2016</time>"""
 	}
 
 }

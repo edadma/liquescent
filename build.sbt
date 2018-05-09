@@ -17,18 +17,18 @@ resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/release
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
 libraryDependencies ++= Seq(
-	"org.scalatest" %% "scalatest" % "3.0.0" % "test",
-	"org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 
 libraryDependencies ++= Seq(
-	"org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
+	"org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.0"
 //	"org.scala-lang.modules" %% "scala-xml" % "1.0.6"
-//	"org.scala-lang.modules" %% "scala-swing" % "2.0.0"
+//	"org.scala-lang.modules" %% "scala-swing" % "2.0.3"
 )
 
 //libraryDependencies ++= Seq(
-//  "com.typesafe" % "config" % "1.3.1"
+//  "com.typesafe" % "config" % "1.3.3"
 //)
 
 libraryDependencies ++= Seq(
