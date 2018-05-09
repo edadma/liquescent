@@ -1,6 +1,6 @@
 name := "liquescent"
 
-version := "0.2_snapshot_6"
+version := "0.2_snapshot_7"
 
 scalaVersion := "2.12.6"
 
@@ -34,7 +34,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
 	"xyz.hyperreal" %% "strftime" % "0.2.1",
 	"xyz.hyperreal" %% "lia" % "0.22.2",
-	"xyz.hyperreal" %% "json" % "0.7",
+	"xyz.hyperreal" %% "json" % "0.7.1",
 	"xyz.hyperreal" %% "args" % "0.1",
   "xyz.hyperreal" %% "hsl" % "0.3.1"
 )
