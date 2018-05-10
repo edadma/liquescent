@@ -49,7 +49,7 @@ object JekyllFilters {
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( path: String ) =>
-              concatPaths( globals("baseurl").toString, path )
+              concatPaths( interp.getVar("baseurl", locals).toString, path )
           }
       },
 
@@ -59,7 +59,7 @@ object JekyllFilters {
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( path: String ) =>
-              concatPaths( globals("url").toString, concatPaths(globals("baseurl").toString, path) )
+              concatPaths( interp.getVar("url", locals).toString, concatPaths(globals("baseurl").toString, path) )
           }
       }
 
