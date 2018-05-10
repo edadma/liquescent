@@ -26,7 +26,8 @@ trait Testing {
         ExtraColorFilters.map ++
         ExtraUrlFilters.map ++
         ExtraAdditionalFilters.map ++
-        ExtraFilters.map,
+        ExtraFilters.map ++
+        JekyllFilters.map,
       Map(), settings, assigns toMap, null ).
         render( LiquescentParser.parse(io.Source.fromString(input)), Map(), new PrintStream(bytes), false )
 
