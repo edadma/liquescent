@@ -1,6 +1,8 @@
 //@
 package xyz.hyperreal.liquescent
 
+import scala.collection.mutable
+
 import xyz.hyperreal.json.{DefaultJSONReader, JSON}
 
 
@@ -30,7 +32,7 @@ object ExtraFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( key: String ) => interp.capture( LiquescentParser.parse(io.Source.fromString(translate(settings, key))).statement, named ++ locals )
           }

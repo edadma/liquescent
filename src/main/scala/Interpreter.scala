@@ -12,7 +12,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef ) {
 
-  val vars = new mutable.HashMap[String, Any] ++ assigns
+  val globals = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
 	val incdec = new mutable.HashMap[String, BigInt]
 
@@ -20,7 +20,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
 	def setVar( name: String, value: Any ): Unit =
 		scopes.view.reverse find (_ contains name) match {
-			case None => vars(name) = value
+			case None => globals(name) = value
 			case Some( scope ) => scope(name) = value
 		}
 
@@ -29,7 +29,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case None =>
         locals get name match {
           case None =>
-            vars get name match {
+            globals get name match {
               case None => nil
               case Some( v ) => v
             }
@@ -104,7 +104,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case CustomTagStatementAST( name, args ) =>
 				tags get name match {
 					case None => sys.error( s"unknown tag: $name" )
-					case Some( t ) => t( settings, vars, out, args map (a => eval(a, locals)), context )
+					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
 				}
 			case BlockStatementAST( block ) => block foreach (execute( _, locals, out ))
 			case IfStatementAST( cond, els ) =>
@@ -206,7 +206,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
         case Nil => sys.error( s"filter ${filter.name} not applicable to [${fargs mkString ", "}]" )
         case head :: tail =>
           if (assignable( types, head ))
-            filter( this, settings, fargs, named, locals )
+            filter( this, settings, globals, fargs, named, locals )
           else
             applyFilter( tail )
       }

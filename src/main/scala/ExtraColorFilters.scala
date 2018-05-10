@@ -1,6 +1,8 @@
 //@
 package xyz.hyperreal.liquescent
 
+import scala.collection.mutable
+
 import xyz.hyperreal.hsl.HSL
 
 
@@ -17,7 +19,7 @@ object ExtraColorFilters {
       new Filter( "color_to_rgb" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String ) =>
               c match {
@@ -38,7 +40,7 @@ object ExtraColorFilters {
       new Filter( "color_to_hsl" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String ) =>
               c match {
@@ -66,7 +68,7 @@ object ExtraColorFilters {
       new Filter( "color_to_hex" ) {
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String ) =>
               c match {
@@ -99,7 +101,7 @@ object ExtraColorFilters {
 
         override def parameters = List( List(StringType, StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, f: String ) =>
               c match {
@@ -147,7 +149,7 @@ object ExtraColorFilters {
 
         override def parameters = List( List(StringType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String ) =>
               c match {
@@ -196,7 +198,7 @@ object ExtraColorFilters {
 
         override def parameters = List( List(StringType, StringType, NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, f: String, v: Number ) =>
               c match {
@@ -241,7 +243,7 @@ object ExtraColorFilters {
       new Filter( "color_lighten" ) {
         override def parameters = List( List(StringType, NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, v: Number ) =>
               c match {
@@ -279,7 +281,7 @@ object ExtraColorFilters {
       new Filter( "color_darken" ) {
         override def parameters = List( List(StringType, NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, v: Number ) =>
               c match {
@@ -317,7 +319,7 @@ object ExtraColorFilters {
       new Filter( "color_saturate" ) {
         override def parameters = List( List(StringType, NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, v: Number ) =>
               c match {
@@ -355,7 +357,7 @@ object ExtraColorFilters {
       new Filter( "color_desaturate" ) {
         override def parameters = List( List(StringType, NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c: String, v: Number ) =>
               c match {
@@ -420,7 +422,7 @@ object ExtraColorFilters {
           (mix( r1, r2 ), mix( g1, g2 ), mix( b1, b2 ), f1*a1 + f2*a2)
         }
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( c1: String, c2: String, v: Number ) =>
               c1 match {

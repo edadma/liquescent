@@ -1,6 +1,8 @@
 //@
 package xyz.hyperreal.liquescent
 
+import scala.collection.mutable
+
 
 object ExtraMoneyFilters {
 
@@ -17,7 +19,7 @@ object ExtraMoneyFilters {
       new Filter( "money_with_currency" ) {
         override def parameters = List( List(NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
           val (scale: Int, format: String) = settings('html_with_currency)
 
           args match {
@@ -31,7 +33,7 @@ object ExtraMoneyFilters {
       new Filter( "money" ) {
         override def parameters = List( List(NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
           val (scale: Int, format: String) = settings('html_without_currency)
 
           args match {
@@ -45,7 +47,7 @@ object ExtraMoneyFilters {
       new Filter( "money_without_trailing_zeros" ) {
         override def parameters = List( List(NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
           val (scale: Int, format: String) = settings('html_with_currency)
 
           def output( a: BigDecimal ) =
@@ -65,7 +67,7 @@ object ExtraMoneyFilters {
       new Filter( "money_without_currency" ) {
         override def parameters = List( List(NumberType) )
 
-        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
           val (scale: Int, _) = settings('html_without_currency)
 
           args match {
