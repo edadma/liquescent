@@ -313,7 +313,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String ) => s replace ("\n", "<br />")
+            case List( s: String ) => s replaceAll ("\r?\n", "<br />")
           }
       },
 
@@ -492,7 +492,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String ) => s replace ("\n", "")
+            case List( s: String ) => s replaceAll ("\r?\n", "")
           }
       },
 
