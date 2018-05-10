@@ -72,12 +72,12 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
       case LayoutStatementAST( _ ) =>
       case PlainOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
-        out.print(
-					eval( expr, locals ) match {
-            case l: List[_] => l map display mkString
-            case s => display( s )
-          }
-				)
+        out.print( display(eval( expr, locals )) )
+//					eval( expr, locals ) match {
+//            case l: List[_] => l map display mkString
+//            case s => display( s )
+//          }
+//				)
 			case AssignStatementAST( name, expr ) => setVar( name, eval(expr, locals) )
 			case IncrementStatementAST( name ) =>
 				out.print( incdec get name match {

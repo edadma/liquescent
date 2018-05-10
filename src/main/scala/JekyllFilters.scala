@@ -29,7 +29,7 @@ object JekyllFilters {
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( array: List[_], prop: String ) =>
-              array groupBy (_.asInstanceOf[Map[String, Any]] getOrElse (prop, null))
+              (array groupBy (_.asInstanceOf[Map[String, Any]] getOrElse (prop, null)) toList) map {case (k, v) => Map("name" -> k, "items" -> v)}
           }
       }
 
