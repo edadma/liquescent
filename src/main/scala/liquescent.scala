@@ -50,6 +50,7 @@ package object liquescent {
       case _: Boolean => BooleanType
       case `nil` => NilType
       case _: TemporalAccessor => TimestampType
+      case _: collection.Map[_, _] => MapType
     }
 
   def display( a: Any ): String =

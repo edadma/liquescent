@@ -11,3 +11,4 @@ case object BooleanType extends Type
 
 case object AnyType extends Type
 case object TimestampType extends Type
+case object MapType extends Type

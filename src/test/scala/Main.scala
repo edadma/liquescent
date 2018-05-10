@@ -8,8 +8,8 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{{ array | where: "a", "b" }}
-      """.trim.stripMargin, false, "array" -> List( Map("a" -> "b", "x" -> 123), Map("u" -> 789), Map("a" -> "b", "y" -> 456) )
+        |{{ a | json }}
+      """.trim.stripMargin, false, "a" -> Map("a" -> "b", "x" -> List[Number](123, 2.5))
     )
 
   println( s"|$res|" )
