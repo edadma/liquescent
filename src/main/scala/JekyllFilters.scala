@@ -12,7 +12,7 @@ object JekyllFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( array: List[Map[_, _]], prop: String, v: Any ) =>
+            case List( array: List[_], prop: String, v: Any ) =>
               array.filter {
                 m =>
                   m.asInstanceOf[Map[String, Any]] get prop match {
@@ -20,6 +20,16 @@ object JekyllFilters {
                     case Some( a ) => a == v
                   }
               }
+          }
+      },
+
+      new Filter( "group_by" ) {
+        override def parameters = List( List(ArrayType, StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( array: List[_], prop: String ) =>
+              array groupBy (_.asInstanceOf[Map[String, Any]] getOrElse (prop, null))
           }
       }
 
