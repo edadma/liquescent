@@ -1,21 +1,49 @@
 //@
 package xyz.hyperreal.liquescent
 
+import java.io.File
+
 import scala.collection.mutable
 
 
 object ExtraUrlFilters {
 
+  val sizeRegex = """(\d*)x(\d*)"""r
+
   val map =
     List(
+
+      new Filter( "asset_img_url" ) {
+        override def parameters = List( List(StringType, StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( s: String, size: String ) =>
+              size match {
+                case sizeRegex( x, y ) if x.nonEmpty || y.nonEmpty =>
+                  val in = s"${settings('docroot)}${File.separator}assets${File.separator}$s"
+
+                case _ => sys.error( s"expected image size parameter (<width>x<height>): $size" )
+              }
+
+          }
+      },
 
       new Filter( "asset_url" ) {
         override def parameters = List( List(StringType) )
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String ) =>
-              "assets/" + s
+            case List( s: String ) => s"assets${File.separator}$s"
+          }
+      },
+
+      new Filter( "file_url" ) {
+        override def parameters = List( List(StringType) )
+
+        override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
+          args match {
+            case List( s: String ) => s"files${File.separator}$s"
           }
       },
 
