@@ -70,7 +70,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
   def execute( op: StatementAST, locals: Map[String, Any], out: PrintStream ): Unit = {
     op match {
       case LayoutStatementAST( _ ) =>
-      case PlainOutputStatementAST( s ) => out.print( s )
+      case TextOutputStatementAST( s ) => out.print( s )
       case ExpressionOutputStatementAST( expr ) =>
         out.print( display(eval( expr, locals )) )
 //					eval( expr, locals ) match {

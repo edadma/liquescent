@@ -7,7 +7,7 @@ trait AST
 case class SourceAST( elems: List[StatementAST]) extends AST
 
 trait StatementAST extends AST
-case class PlainOutputStatementAST( s: String ) extends StatementAST
+case class TextOutputStatementAST( s: String ) extends StatementAST
 case class ExpressionOutputStatementAST( expr: ExpressionAST ) extends StatementAST
 
 trait ExpressionAST extends AST
@@ -31,6 +31,7 @@ case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option
 case class CaseStatementAST( expr: ExpressionAST, cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
 case class UnlessStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
 case class BlockStatementAST( block: Seq[StatementAST] ) extends StatementAST
+case class GroupStatementAST( group: Seq[StatementAST] ) extends StatementAST
 case class AssignStatementAST( name: String, expr: ExpressionAST ) extends StatementAST
 case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST
 case class IncrementStatementAST( name: String ) extends StatementAST
