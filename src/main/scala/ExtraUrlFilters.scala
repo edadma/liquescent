@@ -18,10 +18,10 @@ object ExtraUrlFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String, size: String ) =>
+            case List( file: String, size: String ) =>
               size match {
                 case sizeRegex( x, y ) if x.nonEmpty || y.nonEmpty =>
-                  val in = s"${settings('docroot)}${File.separator}assets${File.separator}$s"
+                  val in = s"${File.separator}assets${File.separator}$s"
 
                 case _ => sys.error( s"expected image size parameter (<width>x<height>): $size" )
               }
