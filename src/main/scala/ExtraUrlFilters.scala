@@ -21,7 +21,7 @@ object ExtraUrlFilters {
             case List( file: String, size: String ) =>
               size match {
                 case sizeRegex( x, y ) if x.nonEmpty || y.nonEmpty =>
-                  val in = s"${File.separator}assets${File.separator}$s"
+                  val in = s"${File.separator}assets${File.separator}$file"
 
                 case _ => sys.error( s"expected image size parameter (<width>x<height>): $size" )
               }

@@ -3,13 +3,11 @@ package xyz.hyperreal.liquescent
 
 import java.util.Scanner
 
-import Main.obj
-
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
 
-object LiquescentParser {
+//object LiquescentParser {
 
 //  val objectRegex = """\{\{.*}}"""r
 //  val tagRegex = """\{%.*%}"""r
@@ -391,7 +389,7 @@ class ElementParser extends RegexParsers with PackratParsers {
 //  lazy val tags: PackratParser[StatementAST] =
 //    ifTag
 
-  lazy val tagStart = "\\{%-?"r
+  lazy val tagStart = """\{%-?"""r
 
   lazy val tagEnd = "-?%}"r
 
