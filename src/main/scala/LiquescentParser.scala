@@ -428,7 +428,10 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val tag: PackratParser[StatementAST] =
     assignTag |
-    conditional
+    conditional |
+    cycleTag |
+    incrementTag |
+    decrementTag
 
   lazy val tagStart = """\{%-?\s*"""r
 
@@ -448,8 +451,8 @@ class ElementParser extends RegexParsers with PackratParsers {
 
 	lazy val elsePart: PackratParser[StatementAST] = (tagStart <~ "else") ~> tagEnd ~> block
 
-//  lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector ) }
-//
+  lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector, false, false ) }
+
 //  lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
 //
 //  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) ~ rep(forParameters) <~ tagEnd ^^ {
@@ -459,30 +462,30 @@ class ElementParser extends RegexParsers with PackratParsers {
 //    "reversed" ^^^ ReversedForParameter |
 //    "offset" ~> ":" ~> expression ^^ OffsetForParameter |
 //    "limit" ~> ":" ~> expression ^^ LimitForParameter
-//
-//  lazy val customTag: PackratParser[CustomTagStatementAST] = tagStart ~> (ident ~ repsep(expression, ",")) <~ tagEnd ^^ {
-//    case n ~ a => CustomTagStatementAST( n, a ) }
-//
-//  lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ IncrementStatementAST
-//
-//  lazy val includeTag: PackratParser[IncludeStatementAST] =
-//    (tagStart ~> "include" ~> string) ~ ("with" ~> expression <~ tagEnd) ^^ {
-//      case f ~ v => IncludeStatementAST( f, List((f, v)) ) } |
-//    (tagStart ~> "include" ~> string) ~ (opt("," ~> rep1sep(includeArgument, ",")) <~ tagEnd) ^^ {
-//      case f ~ None => IncludeStatementAST( f, Nil )
-//      case f ~ Some( a ) => IncludeStatementAST( f, a )
-//    }
-//
-//  lazy val includeArgument: PackratParser[(String, ExpressionAST)] =
-//    (ident <~ ":") ~ expression ^^ {
-//      case k ~ v => (k, v)
-//    }
-//
+
+  lazy val customTag: PackratParser[CustomTagStatementAST] = tagStart ~> (ident ~ repsep(expression, ",")) <~ tagEnd ^^ {
+    case n ~ a => CustomTagStatementAST( n, a, false, false ) }
+
+  lazy val incrementTag: PackratParser[IncrementStatementAST] = tagStart ~> "increment" ~> ident <~ tagEnd ^^ (v => IncrementStatementAST( v, false, false ))
+
+  lazy val includeTag: PackratParser[IncludeStatementAST] =
+    (tagStart ~> "include" ~> string) ~ ("with" ~> expression <~ tagEnd) ^^ {
+      case f ~ v => IncludeStatementAST( f, List((f, v)), false, false ) } |
+    (tagStart ~> "include" ~> string) ~ (opt("," ~> rep1sep(includeArgument, ",")) <~ tagEnd) ^^ {
+      case f ~ None => IncludeStatementAST( f, Nil, false, false )
+      case f ~ Some( a ) => IncludeStatementAST( f, a, false, false )
+    }
+
+  lazy val includeArgument: PackratParser[(String, ExpressionAST)] =
+    (ident <~ ":") ~ expression ^^ {
+      case k ~ v => (k, v)
+    }
+
 //  lazy val layoutTag: PackratParser[LayoutStatementAST] =
 //    tagStart ~> "layout" ~> string <~ tagEnd ^^ (s => LayoutStatementAST( Some(s) )) |
 //    tagStart ~> "layout" ~> "none" <~ tagEnd ^^^ LayoutStatementAST( None )
-//
-//  lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ DecrementStatementAST
+
+  lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ (v => DecrementStatementAST( v, false, false ))
 
   lazy val unlessTag: PackratParser[ExpressionAST] = tagStart ~> "unless" ~> expression <~ tagEnd
 

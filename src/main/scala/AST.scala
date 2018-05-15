@@ -42,15 +42,15 @@ case class BlockStatementAST( block: Seq[StatementAST], var ls: Boolean, var rs:
 //case class GroupStatementAST( group: Seq[StatementAST] ) extends StatementAST
 case class AssignStatementAST( name: String, expr: ExpressionAST, var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST
-//case class IncrementStatementAST( name: String ) extends StatementAST
-//case class DecrementStatementAST( name: String ) extends StatementAST
+case class IncrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class DecrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class ForStatementAST( name: String, expr: ExpressionAST, parameters: List[ForParameter], body: StatementAST ) extends StatementAST
 //case object BreakStatementAST extends StatementAST
 //case object ContinueStatementAST extends StatementAST
-//case class CycleStatementAST( items: Vector[ExpressionAST] ) extends StatementAST
-//case class CustomTagStatementAST( name: String, args: List[ExpressionAST] ) extends StatementAST
+case class CycleStatementAST( items: Vector[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class CustomTagStatementAST( name: String, args: List[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class LayoutStatementAST( layout: Option[String] ) extends StatementAST
-//case class IncludeStatementAST( name: String, vars: List[(String, ExpressionAST)] ) extends StatementAST
+case class IncludeStatementAST( name: String, vars: List[(String, ExpressionAST)], var ls: Boolean, var rs: Boolean ) extends StatementAST
 
 case class ForGenerator( name: String, expr: ExpressionAST, parameters: List[ForParameter] )
 

@@ -79,33 +79,33 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //          }
 //				)
 			case AssignStatementAST( name, expr, _, _ ) => setVar( name, eval(expr, locals) )
-//			case IncrementStatementAST( name ) =>
-//				out.print( incdec get name match {
-//					case None =>
-//						incdec(name) = 0
-//						0
-//					case Some( v ) =>
-//						val res = v + 1
-//
-//						incdec(name) = res
-//						res
-//				} )
-//			case DecrementStatementAST( name ) =>
-//				out.print( incdec get name match {
-//					case None =>
-//						incdec(name) = -1
-//						-1
-//					case Some( v ) =>
-//						val res = v - 1
-//
-//						incdec(name) = res
-//						res
-//				} )
-//			case CustomTagStatementAST( name, args ) =>
-//				tags get name match {
-//					case None => sys.error( s"unknown tag: $name" )
-//					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
-//				}
+			case IncrementStatementAST( name, _, _ ) =>
+				out.print( incdec get name match {
+					case None =>
+						incdec(name) = 0
+						0
+					case Some( v ) =>
+						val res = v + 1
+
+						incdec(name) = res
+						res
+				} )
+			case DecrementStatementAST( name, _, _ ) =>
+				out.print( incdec get name match {
+					case None =>
+						incdec(name) = -1
+						-1
+					case Some( v ) =>
+						val res = v - 1
+
+						incdec(name) = res
+						res
+				} )
+			case CustomTagStatementAST( name, args, _, _ ) =>
+				tags get name match {
+					case None => sys.error( s"unknown tag: $name" )
+					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
+				}
 			case BlockStatementAST( block, _, _ ) => block foreach (execute( _, locals, out ))
 			case ConditionalAST( cond, els, _, _ ) =>
 				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
@@ -137,8 +137,8 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
 //				}
 //			case CaptureStatementAST( name, body ) => setVar( name, capture(body, locals) )
-//			case IncludeStatementAST( name, args ) =>
-//        include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
+			case IncludeStatementAST( name, args, _, _ ) =>
+        include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
 //			case ForStatementAST( name, expr, parameters, body ) =>
 //				var list =
 //					eval( expr, locals ) match {
