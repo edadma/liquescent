@@ -107,7 +107,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
 				}
 			case BlockStatementAST( block, _, _ ) => block foreach (execute( _, locals, out ))
-			case ConditionalAST( cond, els, _, _ ) =>
+			case IfStatementAST( cond, els, _, _ ) =>
 				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
 					case None =>
 						els match {
@@ -116,27 +116,27 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						}
 					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
 				}
-//			case CaseStatementAST( exp, cases, els ) =>
-//				val value = eval( exp, locals )
-//
-//				cases find { case (expr, _) => eval( expr, locals ) == value } match {
-//					case None =>
-//						els match {
-//							case None =>
-//							case Some( elseStatement ) => execute( elseStatement, locals, out )
-//						}
-//					case Some( (_, whenStatement) ) => execute( whenStatement, locals, out )
-//				}
-//			case UnlessStatementAST( cond, els ) =>
-//				cond find { case (expr, _) => falsy( eval(expr, locals) ) } match {
-//					case None =>
-//						els match {
-//							case None =>
-//							case Some( elseStatement ) => execute( elseStatement, locals, out )
-//						}
-//					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
-//				}
-//			case CaptureStatementAST( name, body ) => setVar( name, capture(body, locals) )
+			case CaseStatementAST( exp, cases, els, _, _ ) =>
+				val value = eval( exp, locals )
+
+				cases find { case (expr, _) => eval( expr, locals ) == value } match {
+					case None =>
+						els match {
+							case None =>
+							case Some( elseStatement ) => execute( elseStatement, locals, out )
+						}
+					case Some( (_, whenStatement) ) => execute( whenStatement, locals, out )
+				}
+			case UnlessStatementAST( cond, els, _, _ ) =>
+				cond find { case (expr, _) => falsy( eval(expr, locals) ) } match {
+					case None =>
+						els match {
+							case None =>
+							case Some( elseStatement ) => execute( elseStatement, locals, out )
+						}
+					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
+				}
+			case CaptureStatementAST( name, body, _, _ ) => setVar( name, capture(body, locals) )
 			case IncludeStatementAST( name, args, _, _ ) =>
         include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
 //			case ForStatementAST( name, expr, parameters, body ) =>

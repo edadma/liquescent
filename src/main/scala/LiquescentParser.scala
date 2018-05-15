@@ -428,10 +428,13 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val tag: PackratParser[StatementAST] =
     assignTag |
-    conditional |
+    ifTag |
+    unlessTag |
     cycleTag |
     incrementTag |
-    decrementTag
+    decrementTag |
+    captureTag |
+    caseTag
 
   lazy val tagStart = """\{%-?\s*"""r
 
@@ -440,9 +443,14 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val assignTag: PackratParser[StatementAST] = (tagStart <~ "assign") ~ (ident <~ "=") ~ expression ~ tagEnd ^^ {
     case ts ~ n ~ e ~ te => AssignStatementAST( n, e, ts contains '-', te contains '-' ) }
 
-  lazy val conditional: PackratParser[StatementAST] =
+  lazy val captureTag: PackratParser[StatementAST] =
+    (tagStart <~ "capture") ~ ident ~ tagEnd ~ block ~ (tagStart <~ "endcapture") ~ tagEnd ^^ {
+      case its ~ v ~ ite ~ b ~ ets ~ ete => CaptureStatementAST( v, b, its contains '-', ete contains '-' )
+    }
+
+  lazy val ifTag: PackratParser[StatementAST] =
     (tagStart <~ "if") ~ expression ~ tagEnd ~ block ~ rep(elsif) ~ opt(elsePart) ~ (tagStart <~ "endif") ~ tagEnd ^^ {
-      case its ~ e ~ ite ~ b ~ eis ~ els ~ ets ~ ete => ConditionalAST( (e, b) +: eis, els, its contains '-', ete contains '-' )
+      case its ~ e ~ ite ~ b ~ eis ~ els ~ ets ~ ete => IfStatementAST( (e, b) +: eis, els, its contains '-', ete contains '-' )
     }
 
 	lazy val elsif: PackratParser[(ExpressionAST, StatementAST)] = ((tagStart <~ "elsif") ~> expression <~ tagEnd) ~ block ^^ {
@@ -451,10 +459,22 @@ class ElementParser extends RegexParsers with PackratParsers {
 
 	lazy val elsePart: PackratParser[StatementAST] = (tagStart <~ "else") ~> tagEnd ~> block
 
+  lazy val unlessTag: PackratParser[StatementAST] =
+    (tagStart <~ "unless") ~ expression ~ tagEnd ~ block ~ rep(elsif) ~ opt(elsePart) ~ (tagStart <~ "endunless") ~ tagEnd ^^ {
+      case its ~ e ~ ite ~ b ~ eis ~ els ~ ets ~ ete => UnlessStatementAST( (e, b) +: eis, els, its contains '-', ete contains '-' )
+    }
+
+  lazy val caseTag: PackratParser[StatementAST] =
+    (tagStart <~ "case") ~ expression ~ tagEnd ~ block ~ rep(when) ~ opt(elsePart) ~ (tagStart <~ "endcase") ~ tagEnd ^^ {
+      case its ~ e ~ ite ~ b ~ eis ~ els ~ ets ~ ete => CaseStatementAST( e, eis, els, its contains '-', ete contains '-' )
+    }
+
+	lazy val when: PackratParser[(ExpressionAST, StatementAST)] = ((tagStart <~ "when") ~> expression <~ tagEnd) ~ block ^^ {
+    case e ~ b => (e, b)
+  }
+
   lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector, false, false ) }
 
-//  lazy val captureTag: PackratParser[String] = tagStart ~> "capture" ~> ident <~ tagEnd
-//
 //  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) ~ rep(forParameters) <~ tagEnd ^^ {
 //    case n ~ e ~ p => ForGenerator( n, e, p ) }
 //
@@ -486,14 +506,6 @@ class ElementParser extends RegexParsers with PackratParsers {
 //    tagStart ~> "layout" ~> "none" <~ tagEnd ^^^ LayoutStatementAST( None )
 
   lazy val decrementTag: PackratParser[DecrementStatementAST] = tagStart ~> "decrement" ~> ident <~ tagEnd ^^ (v => DecrementStatementAST( v, false, false ))
-
-  lazy val unlessTag: PackratParser[ExpressionAST] = tagStart ~> "unless" ~> expression <~ tagEnd
-
-  lazy val elsifTag: PackratParser[ExpressionAST] = tagStart ~> "elsif" ~> expression <~ tagEnd
-
-  lazy val caseTag: PackratParser[ExpressionAST] = tagStart ~> "case" ~> expression <~ tagEnd
-
-  lazy val whenTag: PackratParser[ExpressionAST] = tagStart ~> "when" ~> expression <~ tagEnd
 
   lazy val objectOutput: PackratParser[ExpressionOutputStatementAST] =
     """\{\{-?\s*""".r ~ expression ~ "-?}}".r ^^ {

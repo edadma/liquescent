@@ -35,13 +35,13 @@ case class ContainsExpressionAST( left: ExpressionAST, right: ExpressionAST ) ex
 case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List[(String, ExpressionAST)] ) extends ExpressionAST
 case class RangeExpressionAST( from: ExpressionAST, to: ExpressionAST ) extends ExpressionAST
 
-case class ConditionalAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
-//case class CaseStatementAST( expr: ExpressionAST, cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
-//case class UnlessStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
+case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class CaseStatementAST( expr: ExpressionAST, cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class UnlessStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class BlockStatementAST( block: Seq[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class GroupStatementAST( group: Seq[StatementAST] ) extends StatementAST
 case class AssignStatementAST( name: String, expr: ExpressionAST, var ls: Boolean, var rs: Boolean ) extends StatementAST
-//case class CaptureStatementAST( name: String, body: StatementAST ) extends StatementAST
+case class CaptureStatementAST( name: String, body: StatementAST, var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class IncrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class DecrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class ForStatementAST( name: String, expr: ExpressionAST, parameters: List[ForParameter], body: StatementAST ) extends StatementAST
