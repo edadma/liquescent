@@ -107,15 +107,15 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
 //				}
 			case BlockStatementAST( block, _, _ ) => block foreach (execute( _, locals, out ))
-//			case IfStatementAST( cond, els ) =>
-//				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
-//					case None =>
-//						els match {
-//							case None =>
-//							case Some( elseStatement ) => execute( elseStatement, locals, out )
-//						}
-//					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
-//				}
+			case ConditionalAST( cond, els, _, _ ) =>
+				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
+					case None =>
+						els match {
+							case None =>
+							case Some( elseStatement ) => execute( elseStatement, locals, out )
+						}
+					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
+				}
 //			case CaseStatementAST( exp, cases, els ) =>
 //				val value = eval( exp, locals )
 //

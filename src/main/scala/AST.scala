@@ -35,7 +35,7 @@ case class ContainsExpressionAST( left: ExpressionAST, right: ExpressionAST ) ex
 case class FilterExpressionAST( operand: ExpressionAST, name: String, args: List[(String, ExpressionAST)] ) extends ExpressionAST
 case class RangeExpressionAST( from: ExpressionAST, to: ExpressionAST ) extends ExpressionAST
 
-case class IfStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class ConditionalAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class CaseStatementAST( expr: ExpressionAST, cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
 //case class UnlessStatementAST( cond: Seq[(ExpressionAST, StatementAST)], els: Option[StatementAST] ) extends StatementAST
 case class BlockStatementAST( block: Seq[StatementAST], var ls: Boolean, var rs: Boolean ) extends StatementAST

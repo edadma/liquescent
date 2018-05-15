@@ -7,7 +7,7 @@ object Main extends Testing with App {
 
   val res =
     test(
-      """{% if true %}{{ 'asdf' }}{% endif %}""", false, "asdf" -> "qwer" )
+      """rtyu {% if false %}asdf{% else %}zxvc{% endif %} fdgh""", false, "asdf" -> "qwer" )
 
   println( s"|$res|" )
 

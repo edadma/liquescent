@@ -18,7 +18,6 @@ trait Testing {
 	def test( input: String, collapse: Boolean, assigns: (String, Any)* ) = {
 		val bytes = new ByteArrayOutputStream
 
-    println( LiquescentParser.parse(io.Source.fromString(input)) )
 		new Interpreter(
       StandardFilters.map ++
         ExtraStringFilters.map ++

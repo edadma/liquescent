@@ -10,7 +10,7 @@ object LiquescentParser {
   def parse( template: io.Source ): ParseResult = {
     val parser = new ElementParser
     var layout: Option[String] = Some( "theme" )
-    val block = parser( parser.block, template.mkString )
+    val block = parser( parser.source, template.mkString )
 
     ParseResult( layout, block )
   }
@@ -410,18 +410,21 @@ class ElementParser extends RegexParsers with PackratParsers {
       }
     }
 
-  lazy val block: PackratParser[BlockStatementAST] = rep( statement ) ^^ (l => BlockStatementAST( l, l.head.ls, l.last.rs ))
+  lazy val source: PackratParser[StatementAST] = block ~ opt(endTextOutput) ^^ {
+    case b ~ None => b
+    case BlockStatementAST( b, _, _ ) ~ Some( t ) => BlockStatementAST( b :+ t, false, false )
+    case s ~ Some( t ) => BlockStatementAST( List(s, t), false, false )
+  }
+
+  lazy val block: PackratParser[StatementAST] = rep(statement) ^^ (l => if (l.length == 1) l.head else BlockStatementAST( l, l.head.ls, l.last.rs ))
 
   lazy val statement: PackratParser[StatementAST] = tag | objectOutput | textOutput
 
-  lazy val textOutput: PackratParser[TextOutputStatementAST] = """(?s).+?(?=\{\{|\{%)|.+""".r ^^ TextOutputStatementAST
+  lazy val textOutput: PackratParser[TextOutputStatementAST] = guard(not("{{" | "{%")) ~> """(?s).+?(?=\{\{|\{%)""".r ^^ TextOutputStatementAST
+
+  lazy val endTextOutput: PackratParser[TextOutputStatementAST] = """(?s).+""".r ^^ TextOutputStatementAST
 
   lazy val ident: PackratParser[String] = """[a-zA-Z_]+\w*\s*""".r ^^ (_.trim)
-
-//  lazy val tagGrammar: PackratParser[StatementAST] = "{%" ~> tags <~ "%}"
-//
-//  lazy val tags: PackratParser[StatementAST] =
-//    ifTag
 
   lazy val tag: PackratParser[StatementAST] =
     assignTag |
@@ -435,9 +438,15 @@ class ElementParser extends RegexParsers with PackratParsers {
     case ts ~ n ~ e ~ te => AssignStatementAST( n, e, ts contains '-', te contains '-' ) }
 
   lazy val conditional: PackratParser[StatementAST] =
-    (tagStart <~ "if") ~ expression ~ tagEnd ~ block ~ (tagStart <~ "endif") ~ tagEnd ^^ {
-      case its ~ e ~ ite ~ b ~ ets ~ ete => IfStatementAST( List((e, b)), None, its contains '-', ete contains '-' )
+    (tagStart <~ "if") ~ expression ~ tagEnd ~ block ~ rep(elsif) ~ opt(elsePart) ~ (tagStart <~ "endif") ~ tagEnd ^^ {
+      case its ~ e ~ ite ~ b ~ eis ~ els ~ ets ~ ete => ConditionalAST( (e, b) +: eis, els, its contains '-', ete contains '-' )
     }
+
+	lazy val elsif: PackratParser[(ExpressionAST, StatementAST)] = ((tagStart <~ "elsif") ~> expression <~ tagEnd) ~ block ^^ {
+    case e ~ b => (e, b)
+  }
+
+	lazy val elsePart: PackratParser[StatementAST] = (tagStart <~ "else") ~> tagEnd ~> block
 
 //  lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector ) }
 //
