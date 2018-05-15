@@ -6,6 +6,15 @@ import java.util.Scanner
 import scala.collection.mutable.ListBuffer
 import scala.util.parsing.combinator._
 
+object LiquescentParser {
+  def parse( template: io.Source ): ParseResult = {
+    val parser = new ElementParser
+    var layout: Option[String] = Some( "theme" )
+    val block = parser( parser.block, template.mkString )
+
+    ParseResult( layout, block )
+  }
+}
 
 //object LiquescentParser {
 
@@ -376,13 +385,38 @@ import scala.util.parsing.combinator._
  */
 class ElementParser extends RegexParsers with PackratParsers {
 
-  def source: Parser[SourceAST] = rep( statement ) ^^ SourceAST
+  override val skipWhitespace = false
 
-  def statement: Parser[StatementAST] = textOutput | objectOutput
+  override implicit def literal(s: String): Parser[String] = (in: Input) => {
+      val source = in.source
+      val offset = in.offset
+      val start = handleWhiteSpace(source, offset)
+      var i = 0
+      var j = start
+
+      while (i < s.length && j < source.length && s.charAt(i) == source.charAt(j)) {
+        i += 1
+        j += 1
+      }
+
+      if (i == s.length) {
+        while (j < source.length && source.charAt(j).isWhitespace)
+          j += 1
+
+        Success(source.subSequence(start, j).toString, in.drop(j - offset))
+      } else  {
+        val found = if (start == source.length()) "end of source" else "`"+source.charAt(start)+"'"
+        Failure("`"+s+"' expected but "+found+" found", in.drop(start - offset))
+      }
+    }
+
+  def block: Parser[BlockStatementAST] = rep( statement ) ^^ BlockStatementAST
+
+  def statement: Parser[StatementAST] = objectOutput | textOutput
 
   def textOutput: Parser[TextOutputStatementAST] = """(?s).+?(?=\{\{|\{%)|.+""".r ^^ TextOutputStatementAST
 
-  lazy val ident: Parser[String] = """[a-zA-Z_]+\w*""".r
+  lazy val ident: Parser[String] = """[a-zA-Z_]+\w*\s*""".r ^^ (_.trim)
 
 //  lazy val tagGrammar: PackratParser[StatementAST] = "{%" ~> tags <~ "%}"
 //
@@ -447,6 +481,8 @@ class ElementParser extends RegexParsers with PackratParsers {
       case "{{" ~ e ~ "}}" => ExpressionOutputStatementAST( e )
     }
 
+  lazy val ws = "\\s*".r
+
   lazy val expression: PackratParser[ExpressionAST] =
     orExpression
 
@@ -490,15 +526,19 @@ class ElementParser extends RegexParsers with PackratParsers {
 		primaryExpression
 
   lazy val string: Parser[String] =
-    """('([^']*)')|("([^"]*)")""".r ^^ (s => escapes(s.substring( 1, s.length - 1)) )
+    """(('([^']*)')|("([^"]*)"))\s*""".r ^^ {s =>
+      val trimed = s.trim
+
+      escapes(trimed.substring( 1, trimed.length - 1))
+    }
 
   lazy val primaryExpression: Parser[ExpressionAST] =
     string ^^ (s => LiteralExpressionAST( s )) |
     "true" ^^^ LiteralExpressionAST( true ) |
     "false" ^^^ LiteralExpressionAST( false ) |
     ident ^^ VariableExpressionAST |
-    floatRegex ^^ { n => LiteralExpressionAST( BigDecimal(n) ) } |
-    integerRegex ^^ { n =>
+    (floatRegex <~ ws) ^^ { n => LiteralExpressionAST( BigDecimal(n) ) } |
+    (integerRegex <~ ws) ^^ { n =>
       val x = BigInt( n )
 
       if (x.isValidInt)
