@@ -1,12 +1,13 @@
 import java.time.OffsetDateTime
 
-import xyz.hyperreal.liquescent.{LiquescentParser, Testing}
+import xyz.hyperreal.liquescent.Testing
 
 
 object Main extends Testing with App {
 
   val res =
-    test( """{{ "-19.86" }}""", false, "asdf" -> "qwer" )
+    test(
+      """{% if true %}{{ 'asdf' }}{% endif %}""", false, "asdf" -> "qwer" )
 
   println( s"|$res|" )
 

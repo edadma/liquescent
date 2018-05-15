@@ -69,116 +69,116 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
   def execute( op: StatementAST, locals: Map[String, Any], out: PrintStream ): Unit = {
     op match {
-      case LayoutStatementAST( _ ) =>
+//      case LayoutStatementAST( _ ) =>
       case TextOutputStatementAST( s ) => out.print( s )
-      case ExpressionOutputStatementAST( expr ) =>
+      case ExpressionOutputStatementAST( expr, _, _ ) =>
         out.print( display(eval( expr, locals )) )
 //					eval( expr, locals ) match {
 //            case l: List[_] => l map display mkString
 //            case s => display( s )
 //          }
 //				)
-			case AssignStatementAST( name, expr ) => setVar( name, eval(expr, locals) )
-			case IncrementStatementAST( name ) =>
-				out.print( incdec get name match {
-					case None =>
-						incdec(name) = 0
-						0
-					case Some( v ) =>
-						val res = v + 1
-
-						incdec(name) = res
-						res
-				} )
-			case DecrementStatementAST( name ) =>
-				out.print( incdec get name match {
-					case None =>
-						incdec(name) = -1
-						-1
-					case Some( v ) =>
-						val res = v - 1
-
-						incdec(name) = res
-						res
-				} )
-			case CustomTagStatementAST( name, args ) =>
-				tags get name match {
-					case None => sys.error( s"unknown tag: $name" )
-					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
-				}
-			case BlockStatementAST( block ) => block foreach (execute( _, locals, out ))
-			case IfStatementAST( cond, els ) =>
-				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
-					case None =>
-						els match {
-							case None =>
-							case Some( elseStatement ) => execute( elseStatement, locals, out )
-						}
-					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
-				}
-			case CaseStatementAST( exp, cases, els ) =>
-				val value = eval( exp, locals )
-
-				cases find { case (expr, _) => eval( expr, locals ) == value } match {
-					case None =>
-						els match {
-							case None =>
-							case Some( elseStatement ) => execute( elseStatement, locals, out )
-						}
-					case Some( (_, whenStatement) ) => execute( whenStatement, locals, out )
-				}
-			case UnlessStatementAST( cond, els ) =>
-				cond find { case (expr, _) => falsy( eval(expr, locals) ) } match {
-					case None =>
-						els match {
-							case None =>
-							case Some( elseStatement ) => execute( elseStatement, locals, out )
-						}
-					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
-				}
-			case CaptureStatementAST( name, body ) => setVar( name, capture(body, locals) )
-			case IncludeStatementAST( name, args ) =>
-        include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
-			case ForStatementAST( name, expr, parameters, body ) =>
-				var list =
-					eval( expr, locals ) match {
-						case s: Seq[_] => s
-						case x => sys.error( s"expected array: $x" )
-					}
-
-				parameters foreach {
-					case ReversedForParameter => list = list.reverse
-					case LimitForParameter( limit ) =>
-						eval( limit, locals ) match {
-							case n: Number => list = list take n.intValue
-							case v => sys.error( s"number was expected: $v" )
-						}
-					case OffsetForParameter( offset ) =>
-						eval( offset, locals ) match {
-							case n: Number => list = list drop n.intValue
-							case v => sys.error( s"number was expected: $v" )
-						}
-				}
-
-				enterScope( List(name, "#idx") )
-
-				try {
-					for ((elem, idx) <- list zipWithIndex)
-						try {
-							setVar( name, elem )
-							setVar( "#idx", idx )
-							execute( body, locals, out )
-						} catch {
-							case _: ContinueException =>
-						}
-				} catch {
-					case _: BreakException =>
-				}
-
-				exitScope
-			case CycleStatementAST( items ) => out.print( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
-			case BreakStatementAST => throw new BreakException
-			case ContinueStatementAST => throw new ContinueException
+			case AssignStatementAST( name, expr, _, _ ) => setVar( name, eval(expr, locals) )
+//			case IncrementStatementAST( name ) =>
+//				out.print( incdec get name match {
+//					case None =>
+//						incdec(name) = 0
+//						0
+//					case Some( v ) =>
+//						val res = v + 1
+//
+//						incdec(name) = res
+//						res
+//				} )
+//			case DecrementStatementAST( name ) =>
+//				out.print( incdec get name match {
+//					case None =>
+//						incdec(name) = -1
+//						-1
+//					case Some( v ) =>
+//						val res = v - 1
+//
+//						incdec(name) = res
+//						res
+//				} )
+//			case CustomTagStatementAST( name, args ) =>
+//				tags get name match {
+//					case None => sys.error( s"unknown tag: $name" )
+//					case Some( t ) => t( settings, globals, out, args map (a => eval(a, locals)), context )
+//				}
+			case BlockStatementAST( block, _, _ ) => block foreach (execute( _, locals, out ))
+//			case IfStatementAST( cond, els ) =>
+//				cond find { case (expr, _) => truthy( eval(expr, locals) ) } match {
+//					case None =>
+//						els match {
+//							case None =>
+//							case Some( elseStatement ) => execute( elseStatement, locals, out )
+//						}
+//					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
+//				}
+//			case CaseStatementAST( exp, cases, els ) =>
+//				val value = eval( exp, locals )
+//
+//				cases find { case (expr, _) => eval( expr, locals ) == value } match {
+//					case None =>
+//						els match {
+//							case None =>
+//							case Some( elseStatement ) => execute( elseStatement, locals, out )
+//						}
+//					case Some( (_, whenStatement) ) => execute( whenStatement, locals, out )
+//				}
+//			case UnlessStatementAST( cond, els ) =>
+//				cond find { case (expr, _) => falsy( eval(expr, locals) ) } match {
+//					case None =>
+//						els match {
+//							case None =>
+//							case Some( elseStatement ) => execute( elseStatement, locals, out )
+//						}
+//					case Some( (_, thenStatement) ) => execute( thenStatement, locals, out )
+//				}
+//			case CaptureStatementAST( name, body ) => setVar( name, capture(body, locals) )
+//			case IncludeStatementAST( name, args ) =>
+//        include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
+//			case ForStatementAST( name, expr, parameters, body ) =>
+//				var list =
+//					eval( expr, locals ) match {
+//						case s: Seq[_] => s
+//						case x => sys.error( s"expected array: $x" )
+//					}
+//
+//				parameters foreach {
+//					case ReversedForParameter => list = list.reverse
+//					case LimitForParameter( limit ) =>
+//						eval( limit, locals ) match {
+//							case n: Number => list = list take n.intValue
+//							case v => sys.error( s"number was expected: $v" )
+//						}
+//					case OffsetForParameter( offset ) =>
+//						eval( offset, locals ) match {
+//							case n: Number => list = list drop n.intValue
+//							case v => sys.error( s"number was expected: $v" )
+//						}
+//				}
+//
+//				enterScope( List(name, "#idx") )
+//
+//				try {
+//					for ((elem, idx) <- list zipWithIndex)
+//						try {
+//							setVar( name, elem )
+//							setVar( "#idx", idx )
+//							execute( body, locals, out )
+//						} catch {
+//							case _: ContinueException =>
+//						}
+//				} catch {
+//					case _: BreakException =>
+//				}
+//
+//				exitScope
+//			case CycleStatementAST( items ) => out.print( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
+//			case BreakStatementAST => throw new BreakException
+//			case ContinueStatementAST => throw new ContinueException
     }
   }
 

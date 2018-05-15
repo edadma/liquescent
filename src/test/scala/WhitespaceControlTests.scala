@@ -7,7 +7,7 @@ import prop.PropertyChecks
 
 class WhitespaceControlTests extends FreeSpec with PropertyChecks with Matchers with Testing {
 
-  "hyphen" in {
+  "no-hyphen" in {
     test(
       """
         |{% assign my_variable = "tomato" %}
