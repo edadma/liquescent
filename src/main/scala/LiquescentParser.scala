@@ -475,13 +475,14 @@ class ElementParser extends RegexParsers with PackratParsers {
 
   lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector, false, false ) }
 
-//  lazy val forTag: PackratParser[ForGenerator] = tagStart ~> "for" ~> ((ident <~ "in") ~ expression) ~ rep(forParameters) <~ tagEnd ^^ {
-//    case n ~ e ~ p => ForGenerator( n, e, p ) }
-//
-//  lazy val forParameters: PackratParser[ForParameter] =
-//    "reversed" ^^^ ReversedForParameter |
-//    "offset" ~> ":" ~> expression ^^ OffsetForParameter |
-//    "limit" ~> ":" ~> expression ^^ LimitForParameter
+  lazy val forTag: PackratParser[ForStatementAST] =
+    (tagStart ~> "for" ~> ((ident <~ "in") ~ expression)) ~ (rep(forParameters) <~ tagEnd) ~ block ~ (tagStart <~ "endcase") ~ tagEnd ^^ {
+      case n ~ e ~ p ~ b => ForStatementAST( n, e, p, b, false, false ) }
+
+  lazy val forParameters: PackratParser[ForParameter] =
+    "reversed" ^^^ ReversedForParameter |
+    "offset" ~> ":" ~> expression ^^ OffsetForParameter |
+    "limit" ~> ":" ~> expression ^^ LimitForParameter
 
   lazy val customTag: PackratParser[CustomTagStatementAST] = tagStart ~> (ident ~ repsep(expression, ",")) <~ tagEnd ^^ {
     case n ~ a => CustomTagStatementAST( n, a, false, false ) }
