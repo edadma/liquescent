@@ -434,11 +434,22 @@ class ElementParser extends RegexParsers with PackratParsers {
     incrementTag |
     decrementTag |
     captureTag |
-    caseTag
+    caseTag |
+    forTag |
+    breakTag |
+    continueTag
 
   lazy val tagStart = """\{%-?\s*"""r
 
   lazy val tagEnd = "-?%}"r
+
+  lazy val breakTag: PackratParser[StatementAST] = (tagStart <~ "break") ~ tagEnd ^^ {
+    case ts ~ te => BreakStatementAST( ts contains '-', te contains '-' )
+  }
+
+  lazy val continueTag: PackratParser[StatementAST] = (tagStart <~ "continue") ~ tagEnd ^^ {
+    case ts ~ te => ContinueStatementAST( ts contains '-', te contains '-' )
+  }
 
   lazy val assignTag: PackratParser[StatementAST] = (tagStart <~ "assign") ~ (ident <~ "=") ~ expression ~ tagEnd ^^ {
     case ts ~ n ~ e ~ te => AssignStatementAST( n, e, ts contains '-', te contains '-' ) }
@@ -476,8 +487,9 @@ class ElementParser extends RegexParsers with PackratParsers {
   lazy val cycleTag: PackratParser[StatementAST] = tagStart ~> "cycle" ~> rep1sep(expression, ",") <~ tagEnd ^^ { xs => CycleStatementAST( xs.toVector, false, false ) }
 
   lazy val forTag: PackratParser[ForStatementAST] =
-    (tagStart ~> "for" ~> ((ident <~ "in") ~ expression)) ~ (rep(forParameters) <~ tagEnd) ~ block ~ (tagStart <~ "endcase") ~ tagEnd ^^ {
-      case n ~ e ~ p ~ b => ForStatementAST( n, e, p, b, false, false ) }
+    (tagStart <~ "for") ~ (ident <~ "in") ~ expression ~ rep(forParameters) ~ tagEnd ~ block ~ (tagStart <~ "endfor") ~ tagEnd ^^ {
+      case fts ~ n ~ e ~ p ~ fte ~ b ~ ets ~ ete => ForStatementAST( n, e, p, b, false, false )
+    }
 
   lazy val forParameters: PackratParser[ForParameter] =
     "reversed" ^^^ ReversedForParameter |

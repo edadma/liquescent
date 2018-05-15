@@ -7,7 +7,12 @@ object Main extends Testing with App {
 
   val res =
     test(
-      """rtyu {% if false %}asdf{% else %}zxvc{% endif %} fdgh""", false, "asdf" -> "qwer" )
+      """
+        |{% for x in list %}
+        |  {{ x }}
+        |{% endfor %}
+      """.stripMargin, false, "list" -> List( 3, 4, 5 )
+    )
 
   println( s"|$res|" )
 

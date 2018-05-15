@@ -139,46 +139,46 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 			case CaptureStatementAST( name, body, _, _ ) => setVar( name, capture(body, locals) )
 			case IncludeStatementAST( name, args, _, _ ) =>
         include( docroot(s"snippets/$name.liquid", settings), locals ++ (args map {case (k, v) => (k, eval(v, locals))}), out )
-//			case ForStatementAST( name, expr, parameters, body ) =>
-//				var list =
-//					eval( expr, locals ) match {
-//						case s: Seq[_] => s
-//						case x => sys.error( s"expected array: $x" )
-//					}
-//
-//				parameters foreach {
-//					case ReversedForParameter => list = list.reverse
-//					case LimitForParameter( limit ) =>
-//						eval( limit, locals ) match {
-//							case n: Number => list = list take n.intValue
-//							case v => sys.error( s"number was expected: $v" )
-//						}
-//					case OffsetForParameter( offset ) =>
-//						eval( offset, locals ) match {
-//							case n: Number => list = list drop n.intValue
-//							case v => sys.error( s"number was expected: $v" )
-//						}
-//				}
-//
-//				enterScope( List(name, "#idx") )
-//
-//				try {
-//					for ((elem, idx) <- list zipWithIndex)
-//						try {
-//							setVar( name, elem )
-//							setVar( "#idx", idx )
-//							execute( body, locals, out )
-//						} catch {
-//							case _: ContinueException =>
-//						}
-//				} catch {
-//					case _: BreakException =>
-//				}
-//
-//				exitScope
-//			case CycleStatementAST( items ) => out.print( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
-//			case BreakStatementAST => throw new BreakException
-//			case ContinueStatementAST => throw new ContinueException
+			case ForStatementAST( name, expr, parameters, body, _, _ ) =>
+				var list =
+					eval( expr, locals ) match {
+						case s: Seq[_] => s
+						case x => sys.error( s"expected array: $x" )
+					}
+
+				parameters foreach {
+					case ReversedForParameter => list = list.reverse
+					case LimitForParameter( limit ) =>
+						eval( limit, locals ) match {
+							case n: Number => list = list take n.intValue
+							case v => sys.error( s"number was expected: $v" )
+						}
+					case OffsetForParameter( offset ) =>
+						eval( offset, locals ) match {
+							case n: Number => list = list drop n.intValue
+							case v => sys.error( s"number was expected: $v" )
+						}
+				}
+
+				enterScope( List(name, "#idx") )
+
+				try {
+					for ((elem, idx) <- list zipWithIndex)
+						try {
+							setVar( name, elem )
+							setVar( "#idx", idx )
+							execute( body, locals, out )
+						} catch {
+							case _: ContinueException =>
+						}
+				} catch {
+					case _: BreakException =>
+				}
+
+				exitScope
+			case CycleStatementAST( items, _, _ ) => out.print( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
+			case BreakStatementAST( _, _ ) => throw new BreakException
+			case ContinueStatementAST( _, _ ) => throw new ContinueException
     }
   }
 

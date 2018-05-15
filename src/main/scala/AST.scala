@@ -45,8 +45,8 @@ case class CaptureStatementAST( name: String, body: StatementAST, var ls: Boolea
 case class IncrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class DecrementStatementAST( name: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class ForStatementAST( name: String, expr: ExpressionAST, parameters: List[ForParameter], body: StatementAST, var ls: Boolean, var rs: Boolean ) extends StatementAST
-//case object BreakStatementAST extends StatementAST
-//case object ContinueStatementAST extends StatementAST
+case class BreakStatementAST( var ls: Boolean, var rs: Boolean ) extends StatementAST
+case class ContinueStatementAST( var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class CycleStatementAST( items: Vector[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class CustomTagStatementAST( name: String, args: List[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 //case class LayoutStatementAST( layout: Option[String] ) extends StatementAST
