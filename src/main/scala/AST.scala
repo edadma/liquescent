@@ -49,7 +49,7 @@ case class BreakStatementAST( var ls: Boolean, var rs: Boolean ) extends Stateme
 case class ContinueStatementAST( var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class CycleStatementAST( items: Vector[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class CustomTagStatementAST( name: String, args: List[ExpressionAST], var ls: Boolean, var rs: Boolean ) extends StatementAST
-//case class LayoutStatementAST( layout: Option[String] ) extends StatementAST
+case class LayoutStatementAST( layout: Option[String], var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class IncludeStatementAST( name: String, vars: List[(String, ExpressionAST)], var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class RawStatementAST( s: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
 case class CommentStatementAST( s: String, var ls: Boolean, var rs: Boolean ) extends StatementAST
