@@ -14,7 +14,7 @@ Examples
 
 ### Library
 
-This example program shows how to create a custom tag to output an HTML ordered list.
+This example program shows how to create a custom tag to output an HTML unordered list, and also demonstrates a Liquid `for` loop.
 
 ```scala
 import java.io.PrintStream
