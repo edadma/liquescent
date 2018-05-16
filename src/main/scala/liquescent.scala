@@ -36,9 +36,9 @@ package object liquescent {
       val x = BigInt( a )
 
       if (x.isValidInt)
-        LiteralExpressionAST( x.toInt )
+        Some( x.toInt )
       else
-        LiteralExpressionAST( x )
+        Some( x )
     } else
       None
 

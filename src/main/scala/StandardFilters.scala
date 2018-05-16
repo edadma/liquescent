@@ -117,7 +117,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l filterNot (_ == nil)
+            case List( l: Seq[_] ) => l filterNot (_ == nil)
           }
       },
 
@@ -126,7 +126,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_], r: List[_] ) => l ++ r
+            case List( l: Seq[_], r: Seq[_] ) => l ++ r
           }
       },
 
@@ -226,7 +226,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].head
+            case List( l: Seq[_] ) => l.asInstanceOf[List[AnyRef]].head
           }
       },
 
@@ -251,7 +251,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_], s: String ) => l map display mkString s
+            case List( l: Seq[_], s: String ) => l map display mkString s
           }
       },
 
@@ -260,7 +260,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l.asInstanceOf[List[AnyRef]].last
+            case List( l: Seq[_] ) => l.asInstanceOf[List[AnyRef]].last
           }
       },
 
@@ -278,7 +278,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_], k: String ) =>
+            case List( l: Seq[_], k: String ) =>
               l map {
                 case m: collection.Map[_, _] =>
                   m.asInstanceOf[collection.Map[String, Any]] get k match {
@@ -376,7 +376,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l.asInstanceOf[List[Any]].reverse
+            case List( l: Seq[_] ) => l.asInstanceOf[Seq[Any]].reverse
           }
       },
 
@@ -406,7 +406,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l.length
+            case List( l: Seq[_] ) => l.length
             case List( s: String ) => s.length
           }
       },
@@ -441,7 +441,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l sortWith lt
+            case List( l: Seq[_] ) => l sortWith lt
           }
       },
 
@@ -456,7 +456,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l sortWith lt
+            case List( l: Seq[_] ) => l sortWith lt
           }
       },
 
@@ -551,7 +551,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( l: List[_] ) => l.asInstanceOf[List[Any]].distinct
+            case List( l: Seq[_] ) => l.asInstanceOf[List[Any]].distinct
           }
       }
 
