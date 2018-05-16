@@ -437,11 +437,23 @@ class ElementParser extends RegexParsers with PackratParsers {
     caseTag |
     forTag |
     breakTag |
-    continueTag
+    continueTag |
+    rawTag |
+    commentTag
 
   lazy val tagStart = """\{%-?\s*"""r
 
   lazy val tagEnd = "-?%}"r
+
+  lazy val rawTag: PackratParser[StatementAST] =
+    (tagStart <~ "raw") ~ tagEnd ~ """(?s).*?(?=\{%\s*endraw\s*%})""".r ~ (tagStart <~ "endraw") ~ tagEnd ^^ {
+      case rts ~ rte ~ t ~ ets ~ ete => RawStatementAST( t, rts contains '-', ete contains '-' )
+    }
+
+  lazy val commentTag: PackratParser[StatementAST] =
+    (tagStart <~ "comment") ~ tagEnd ~ """(?s).*?(?=\{%\s*endcomment\s*%})""".r ~ (tagStart <~ "endcomment") ~ tagEnd ^^ {
+      case rts ~ rte ~ t ~ ets ~ ete => CommentStatementAST( t, rts contains '-', ete contains '-' )
+    }
 
   lazy val breakTag: PackratParser[StatementAST] = (tagStart <~ "break") ~ tagEnd ^^ {
     case ts ~ te => BreakStatementAST( ts contains '-', te contains '-' )

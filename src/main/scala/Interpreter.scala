@@ -71,6 +71,8 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
     op match {
 //      case LayoutStatementAST( _ ) =>
       case TextOutputStatementAST( s ) => out.print( s )
+			case RawStatementAST( s, _, _ ) => out.print( s )
+      case CommentStatementAST( _, _, _) =>
       case ExpressionOutputStatementAST( expr, _, _ ) =>
         out.print( display(eval( expr, locals )) )
 //					eval( expr, locals ) match {
