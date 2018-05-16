@@ -136,8 +136,8 @@ Building
 ### Requirements
 
 - Java 8
-- SBT 1.1.4+
-- Scala 2.12.5+
+- SBT 1.1.5+
+- Scala 2.12.6+
 
 ### Clone and Assemble Executable
 
