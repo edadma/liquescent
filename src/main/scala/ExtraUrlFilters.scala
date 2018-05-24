@@ -34,7 +34,7 @@ object ExtraUrlFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String ) => s"assets${File.separator}$s"
+            case List( s: String ) => s"/assets/$s"
           }
       },
 
@@ -43,7 +43,7 @@ object ExtraUrlFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( s: String ) => s"files${File.separator}$s"
+            case List( s: String ) => s"/files/$s"
           }
       },
 
