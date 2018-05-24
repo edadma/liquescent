@@ -71,6 +71,8 @@ class LiquescentParser extends RegexParsers with PackratParsers {
     continueTag |
     commentTag |
     rawTag |
+    includeTag |
+    layoutTag |
     customTag
 
   lazy val tagStart = """\{%-?\s*"""r
@@ -142,7 +144,7 @@ class LiquescentParser extends RegexParsers with PackratParsers {
 
   lazy val customTag: PackratParser[CustomTagStatementAST] =
     tagStart ~> ((guard(not(
-      "for"|"endfor"|"if"|"endif"|"else"|"elsif"|"case"|"when"|"endcase"|"unless"|"endunless"|"capture"|"endcapture"|"raw"|"endraw"|"comment"|"endcomment"
+      "for"|"endfor"|"if"|"endif"|"else"|"elsif"|"case"|"when"|"endcase"|"unless"|"endunless"|"capture"|"endcapture"|"raw"|"endraw"|"comment"|"endcomment"|"include"|"layout"
       )) ~> ident) ~ repsep(expression, ",")) <~ tagEnd ^^ {
     case n ~ a => CustomTagStatementAST( n, a, false, false ) }
 

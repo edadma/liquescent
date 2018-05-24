@@ -8,9 +8,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{% for x in list %}
-        |  {{ x }}
-        |{% endfor %}
+        |{% include 'asdf' %}
       """.stripMargin, false, "list" -> List( 3, 4, 5 )
     )
 
