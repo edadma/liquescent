@@ -8,7 +8,7 @@ object Main extends Testing with App {
   val res =
     test(
       """
-        |{% include 'asdf' %}
+        |
       """.stripMargin, false, "list" -> List( 3, 4, 5 )
     )
 

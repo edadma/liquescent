@@ -43,11 +43,16 @@ class LiquescentParser extends RegexParsers with PackratParsers {
 
   lazy val source: PackratParser[StatementAST] = block ~ opt(endTextOutput) ^^ {
     case b ~ None => b
+    case BlockStatementAST( Nil, _, _ ) ~ Some( t ) => t
     case BlockStatementAST( b, _, _ ) ~ Some( t ) => BlockStatementAST( b :+ t, false, false )
     case s ~ Some( t ) => BlockStatementAST( List(s, t), false, false )
   }
 
-  lazy val block: PackratParser[StatementAST] = rep(statement) ^^ (l => if (l.length == 1) l.head else BlockStatementAST( l, l.head.ls, l.last.rs ))
+  lazy val block: PackratParser[StatementAST] = rep(statement) ^^ {
+    case Nil => BlockStatementAST( Nil, false, false )
+    case List( s ) => s
+    case l => BlockStatementAST( l, l.head.ls, l.last.rs )
+  }
 
   lazy val statement: PackratParser[StatementAST] = tag | objectOutput | textOutput
 
