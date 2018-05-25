@@ -2,6 +2,7 @@
 package xyz.hyperreal.liquescent
 
 import java.io.{ByteArrayOutputStream, PrintStream}
+import java.nio.charset.Charset
 
 
 trait Testing {
@@ -28,7 +29,7 @@ trait Testing {
         ExtraAdditionalFilters.map ++
         ExtraFilters.map ++
         JekyllFilters.map,
-      Map(), settings, assigns toMap, null ).
+      Map(), settings, assigns toMap, null, Charset.forName("UTF-8") ).
         render( LiquescentParser.parse(io.Source.fromString(input)), Map(), new PrintStream(bytes), false )
 
 		if (collapse)

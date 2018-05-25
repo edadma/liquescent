@@ -1,9 +1,9 @@
 package xyz.hyperreal.liquescent
 
 import java.io.File
+import java.nio.charset.Charset
 
 import scala.collection.mutable
-
 import xyz.hyperreal.args.Options
 import xyz.hyperreal.json.DefaultJSONReader
 
@@ -15,9 +15,9 @@ object Main extends App {
 
 	def usage {
 		"""
-			|liquescent v0.2.3
+			|liquescent v0.2.4
 			|
-			|Usage:  java -jar liquescent-0.2.3.jar <options> <liquid template>
+			|Usage:  java -jar liquescent-0.2.4.jar <options> <liquid template>
 			|
 			|Options:  --help              display this help and exit
 			|          -s <name> <string>  assign <string> to variable <name>
@@ -65,7 +65,7 @@ object Main extends App {
 			usage
 			Nil
 		case "--" :: Nil =>
-			new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null ).
+			new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null, Charset.defaultCharset ).
         render( LiquescentParser.parse(io.Source.stdin), Map(), Console.out, false )
 			Nil
 		case s :: _ if s startsWith "-" => sys.error( s"invalid switch $s" )
@@ -73,7 +73,7 @@ object Main extends App {
 			templateFile = new File( file )
 
 			if (templateFile.exists && templateFile.isFile && templateFile.canRead) {
-				new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null ).
+				new Interpreter(StandardFilters.map ++ ExtraStringFilters.map ++ ExtraHTMLFilters.map, Map(), Map(), assigns toMap, null, Charset.defaultCharset ).
           render( LiquescentParser.parse(io.Source.fromFile(templateFile)), Map(), Console.out, false )
 				Nil
 			} else

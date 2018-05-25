@@ -2,6 +2,7 @@
 package xyz.hyperreal.liquescent
 
 import java.io.{ByteArrayOutputStream, File, PrintStream}
+import java.nio.charset.Charset
 
 import xyz.hyperreal.lia.Math
 import xyz.hyperreal.numbers.BigDecimalMath
@@ -10,7 +11,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef ) {
+class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], settings: Map[Symbol, Any], assigns: Map[String, Any], context: AnyRef, charset: Charset ) {
 
   val globals = new mutable.HashMap[String, Any] ++ assigns
 	val scopes = new ArrayBuffer[mutable.HashMap[String, Any]]
@@ -40,8 +41,10 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
   def capture( statement: StatementAST, locals: Map[String, Any] ) = {
     val bytes = new ByteArrayOutputStream
+    val ps = new PrintStream( bytes, false, charset.name )
 
-    execute( statement, locals, new PrintStream(bytes) )
+    execute( statement, locals, ps )
+    ps.flush
     bytes.toString
   }
 
@@ -68,13 +71,18 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
   def include( input: File, locals: Map[String, Any], out: PrintStream ): Unit = include( io.Source.fromFile(input), locals, out )
 
   def execute( op: StatementAST, locals: Map[String, Any], out: PrintStream ): Unit = {
+    def output( a: Any ) = {
+        out.print( a )
+        out.flush
+    }
+
     op match {
 //      case LayoutStatementAST( _ ) =>
-      case TextOutputStatementAST( s ) => out.print( s )
-			case RawStatementAST( s, _, _ ) => out.print( s )
+      case TextOutputStatementAST( s ) => output( s )
+			case RawStatementAST( s, _, _ ) => output( s )
       case CommentStatementAST( _, _, _) =>
       case ExpressionOutputStatementAST( expr, _, _ ) =>
-        out.print( display(eval( expr, locals )) )
+        output( display(eval( expr, locals )) )
 //					eval( expr, locals ) match {
 //            case l: List[_] => l map display mkString
 //            case s => display( s )
@@ -82,7 +90,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 //				)
 			case AssignStatementAST( name, expr, _, _ ) => setVar( name, eval(expr, locals) )
 			case IncrementStatementAST( name, _, _ ) =>
-				out.print( incdec get name match {
+				output( incdec get name match {
 					case None =>
 						incdec(name) = 0
 						0
@@ -93,7 +101,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 						res
 				} )
 			case DecrementStatementAST( name, _, _ ) =>
-				out.print( incdec get name match {
+				output( incdec get name match {
 					case None =>
 						incdec(name) = -1
 						-1
@@ -178,7 +186,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 				}
 
 				exitScope
-			case CycleStatementAST( items, _, _ ) => out.print( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
+			case CycleStatementAST( items, _, _ ) => output( display(eval(items(getVar("#idx", locals).asInstanceOf[Int]%items.length), locals)) )
 			case BreakStatementAST( _, _ ) => throw new BreakException
 			case ContinueStatementAST( _, _ ) => throw new ContinueException
     }
