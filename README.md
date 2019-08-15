@@ -4,7 +4,7 @@ Liquescent
 [![Build Status](https://www.travis-ci.org/edadma/liquescent.svg?branch=master)](https://www.travis-ci.org/edadma/liquescent)
 [![Coverage Status](https://coveralls.io/repos/github/edadma/liquescent/badge.svg?branch=master)](https://coveralls.io/github/edadma/liquescent?branch=master)
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/edadma/liquescent/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/latest_release-v0.2.5-orange.svg)](https://github.com/edadma/liquescent/releases/tag/v0.2.5)
+[![Version](https://img.shields.io/badge/latest_release-v0.3-orange.svg)](https://github.com/edadma/liquescent/releases/tag/v0.3)
 
 *Liquescent* is an implementation of the [Liquid](https://shopify.github.io/liquid/) templating language for the [Scala](http://scala-lang.org) programming language.
 
@@ -96,7 +96,7 @@ This program prints
 This next example shows how to use *Liquescent* as an executable on the command line.
 
 ```bash
-echo "{{ v | join: \", \" }}" | java -jar liquescent-0.2.5.jar -j "{v: [\"one\", \"two\", \"three\"]}" --
+echo "{{ v | join: \", \" }}" | java -jar liquescent-0.3.jar -j "{v: [\"one\", \"two\", \"three\"]}" --
 ```
 
 The above command prints
@@ -118,7 +118,7 @@ Use the following definition to use Liquescent in your Maven project:
 <dependency>
   <groupId>xyz.hyperreal</groupId>
   <artifactId>liquescent</artifactId>
-  <version>0.2.5</version>
+  <version>0.3</version>
 </dependency>
 ```
 
@@ -127,7 +127,7 @@ Add the following to your `build.sbt` file to use Liquescent in your SBT project
 ```sbt
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
-libraryDependencies += "xyz.hyperreal" %% "liquescent" % "0.2.5"
+libraryDependencies += "xyz.hyperreal" %% "liquescent" % "0.3"
 ```
 
 Building

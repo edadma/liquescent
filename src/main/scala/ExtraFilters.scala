@@ -16,9 +16,9 @@ object ExtraFilters {
         var translations: JSON = _
 
         def translate( settings: Map[Symbol, Any], key: String ) = {
-          if (translations == null || locale != settings('locale)) {
-            locale = settings('locale).toString
-            translations = DefaultJSONReader.fromFile( docroot(s"locales/$locale.json", settings) )
+          if (translations == null || locale != settings(Symbol("locale"))) {
+            locale = settings(Symbol("locale")).toString
+            translations = DefaultJSONReader.fromFile( docroot(s"locales/$locale.json", settings) ).asInstanceOf[JSON]
           }
 
           def traverse( k: List[String], obj: AnyRef ): String =

@@ -2,10 +2,10 @@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
-import prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class OperatorTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class OperatorTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers with Testing {
 
   "connectives" in {
     test(

@@ -2,10 +2,10 @@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class TagTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class TagTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers with Testing {
 
 	"comment" in {
 		test(

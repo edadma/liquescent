@@ -1,8 +1,8 @@
 name := "liquescent"
 
-version := "0.2.5"
+version := "0.3"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.13.0"
 
 scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials" )
 
@@ -13,20 +13,20 @@ resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/release
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 
 libraryDependencies ++= Seq(
-	"org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.0"
+	"org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 )
 
 libraryDependencies ++= Seq(
-	"xyz.hyperreal" %% "strftime" % "0.2.3",
-	"xyz.hyperreal" %% "lia" % "0.22.2",
-	"xyz.hyperreal" %% "json" % "0.7.4",
-	"xyz.hyperreal" %% "args" % "0.1",
-  "xyz.hyperreal" %% "hsl" % "0.3.1"
+	"xyz.hyperreal" %% "strftime" % "0.3",
+	"xyz.hyperreal" %% "lia" % "0.23",
+	"xyz.hyperreal" %% "json" % "0.8.0",
+	"xyz.hyperreal" %% "args" % "0.2",
+  "xyz.hyperreal" %% "hsl" % "0.4"
 )
 
 coverageExcludedPackages := ".*Main;.*nil;.*package;.*Tag;.*Filter"

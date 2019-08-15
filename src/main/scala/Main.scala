@@ -5,7 +5,7 @@ import java.nio.charset.Charset
 
 import scala.collection.mutable
 import xyz.hyperreal.args.Options
-import xyz.hyperreal.json.DefaultJSONReader
+import xyz.hyperreal.json.{DefaultJSONReader, JSON}
 
 
 object Main extends App {
@@ -13,23 +13,24 @@ object Main extends App {
 	val assigns = new mutable.HashMap[String, Any]
 	var templateFile: File = _
 
-	def usage {
-		"""
-			|liquescent v0.2.5
-			|
-			|Usage:  java -jar liquescent-0.2.5.jar <options> <liquid template>
-			|
-			|Options:  --help              display this help and exit
-			|          -s <name> <string>  assign <string> to variable <name>
-			|          -n <name> <number>  assign <number> to variable <name>
-			|
-			|Note:  <liquid template> may be -- meaning read from standard input
-		""".trim.stripMargin.lines foreach println
+	def usage: Unit = {
+		println(
+			"""
+				|liquescent v0.3
+				|
+				|Usage:  java -jar liquescent-0.3.jar <options> <liquid template>
+				|
+				|Options:  --help              display this help and exit
+				|          -s <name> <string>  assign <string> to variable <name>
+				|          -n <name> <number>  assign <number> to variable <name>
+				|
+				|Note:  <liquid template> may be -- meaning read from standard input
+			""" )
 		sys.exit
 	}
 
 	def json( src: io.Source ) =
-		for ((k: String, v) <- DefaultJSONReader.fromString( src mkString ))
+		for ((k: String, v) <- DefaultJSONReader.fromString( src mkString ).asInstanceOf[JSON])
 			assigns(k) = v
 
 	if (args isEmpty)

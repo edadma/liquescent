@@ -35,7 +35,7 @@ object ExtraStringFilters {
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( s: String ) =>
-              camelRegex.replaceAllIn( s.head.toUpper + s.tail.toLowerCase, m => m.matched(1).toUpper.toString )
+              camelRegex.replaceAllIn( s"${s.head.toUpper}${s.tail.toLowerCase}", m => m.matched(1).toUpper.toString )
           }
       },
 

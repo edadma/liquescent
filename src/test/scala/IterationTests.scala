@@ -2,10 +2,10 @@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
-import prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class IterationTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class IterationTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers with Testing {
 
 	"for" in {
 		test(

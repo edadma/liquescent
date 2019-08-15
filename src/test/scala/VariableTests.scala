@@ -2,10 +2,10 @@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
-import prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class VariableTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class VariableTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers with Testing {
 
 	"assign" in {
 		test(

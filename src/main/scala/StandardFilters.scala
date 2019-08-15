@@ -6,7 +6,6 @@ import java.time.{LocalDate, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
 
-import math._
 import xyz.hyperreal.lia.Math
 import xyz.hyperreal.strftime.Strftime
 
@@ -74,7 +73,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => if (Math.predicate( '<, a, b )) b else a
+            case List( a: Number, b: Number ) => if (Math.predicate( Symbol("<"), a, b )) b else a
           }
       },
 
@@ -83,7 +82,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => if (Math.predicate( '>, a, b )) b else a
+            case List( a: Number, b: Number ) => if (Math.predicate( Symbol(">"), a, b )) b else a
           }
       },
 
@@ -92,7 +91,7 @@ object StandardFilters {
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-          case List( s: String ) => s.head.toUpper + s.tail.toLowerCase
+          case List( s: String ) => s"${s.head.toUpper}${s.tail.toLowerCase}"
         }
       },
 
@@ -169,7 +168,7 @@ object StandardFilters {
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
             case List( a: Number, b: Number ) =>
-              val quo = Math( '/, a, b )
+              val quo = Math( Symbol("/"), a, b )
 
               if (integer( b ))
                 Math.floorFunction( quo )
@@ -295,7 +294,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => Math( '-, a, b ).asInstanceOf[Number]
+            case List( a: Number, b: Number ) => Math( Symbol("-"), a, b ).asInstanceOf[Number]
           }
       },
 
@@ -304,7 +303,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => Math( '%, a, b ).asInstanceOf[Number]
+            case List( a: Number, b: Number ) => Math( Symbol("%"), a, b ).asInstanceOf[Number]
           }
       },
 
@@ -322,7 +321,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => Math( '+, a, b ).asInstanceOf[Number]
+            case List( a: Number, b: Number ) => Math( Symbol("+"), a, b ).asInstanceOf[Number]
           }
       },
 
@@ -435,7 +434,7 @@ object StandardFilters {
 
         def lt( a: Any, b: Any ) =
           if (a.isInstanceOf[Number] && b.isInstanceOf[Number])
-            Math.predicate( '<, a, b )
+            Math.predicate( Symbol("<"), a, b )
           else
             a.toString < b.toString
 
@@ -450,7 +449,7 @@ object StandardFilters {
 
         def lt( a: Any, b: Any ) =
           if (a.isInstanceOf[Number] && b.isInstanceOf[Number])
-            Math.predicate( '<, a, b )
+            Math.predicate( Symbol("<"), a, b )
           else
             (a.toString compareToIgnoreCase b.toString) < 0
 
@@ -501,7 +500,7 @@ object StandardFilters {
 
         override def compute( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) =
           args match {
-            case List( a: Number, b: Number ) => Math( '*, a, b ).asInstanceOf[Number]
+            case List( a: Number, b: Number ) => Math( Symbol("*"), a, b ).asInstanceOf[Number]
           }
       },
 

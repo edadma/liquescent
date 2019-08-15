@@ -20,7 +20,7 @@ object ExtraMoneyFilters {
         override def parameters = List( List(NumberType) )
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
-          val (scale: Int, format: String) = settings('html_with_currency)
+          val (scale: Int, format: String) = settings(Symbol("html_with_currency"))
 
           args match {
             case List( n: Int ) => money( BigDecimal(n)/BigDecimal(10).pow(scale), scale, format )
@@ -34,7 +34,7 @@ object ExtraMoneyFilters {
         override def parameters = List( List(NumberType) )
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
-          val (scale: Int, format: String) = settings('html_without_currency)
+          val (scale: Int, format: String) = settings(Symbol("html_without_currency"))
 
           args match {
             case List( n: Int ) => money( BigDecimal(n)/BigDecimal(10).pow(scale), scale, format )
@@ -48,7 +48,7 @@ object ExtraMoneyFilters {
         override def parameters = List( List(NumberType) )
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
-          val (scale: Int, format: String) = settings('html_with_currency)
+          val (scale: Int, format: String) = settings(Symbol("html_with_currency"))
 
           def output( a: BigDecimal ) =
             if (a.setScale( 0, BigDecimal.RoundingMode.HALF_EVEN ) == a)
@@ -68,7 +68,7 @@ object ExtraMoneyFilters {
         override def parameters = List( List(NumberType) )
 
         override def apply( interp: Interpreter, settings: Map[Symbol, Any], globals: mutable.Map[String, Any], args: List[Any], named: Map[String, Any], locals: Map[String, Any] ) = {
-          val (scale: Int, _) = settings('html_without_currency)
+          val (scale: Int, _) = settings(Symbol("html_without_currency"))
 
           args match {
             case List( n: Int ) => currency( BigDecimal(n)/BigDecimal(10).pow(scale), scale )

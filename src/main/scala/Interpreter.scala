@@ -226,7 +226,7 @@ class Interpreter( filters: Map[String, Filter], tags: Map[String, Tag], setting
 
 	def compare( a: Any, b: Any ) =
 		(a, b) match {
-			case (x: Number, y: Number) => Math( '+, Math('-, x, y), BigDecimal(0) ).asInstanceOf[BigDecimal].signum
+			case (x: Number, y: Number) => Math( Symbol("+"), Math(Symbol("-"), x, y), BigDecimal(0) ).asInstanceOf[BigDecimal].signum
 			case (x: String, y: String) => x compareTo y
 			case _ => sys.error( s"expected two numbers or two strings: $a, $b" )
 		}

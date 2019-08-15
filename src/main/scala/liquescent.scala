@@ -14,10 +14,10 @@ package object liquescent {
     override def toString = ""
   }
 
-  def docroot( name: String, settings: Map[Symbol, Any] ) = new File( settings('docroot).toString, name )
+  def docroot( name: String, settings: Map[Symbol, Any] ) = new File( settings(Symbol("docroot")).toString, name )
 
   def round( n: BigDecimal, scale: Int, settings: Map[Symbol, Any] ) =
-    n.setScale( scale, settings('roundingMode).asInstanceOf[BigDecimal.RoundingMode.Value] )
+    n.setScale( scale, settings(Symbol("roundingMode")).asInstanceOf[BigDecimal.RoundingMode.Value] )
 
   def truthy( a: Any ) = a != nil && a != false
 
@@ -62,7 +62,7 @@ package object liquescent {
 
   def qdisplay( a: Any ): String =
     a match {
-      case s: String => '"' + s + '"'
+      case s: String => s""""$s""""
       case _ => display( a )
     }
 

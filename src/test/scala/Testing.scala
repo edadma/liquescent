@@ -9,11 +9,11 @@ trait Testing {
 
   val settings =
     Map(
-      'docroot -> "htdocs",
-      'html_without_currency -> (2, "${{amount}}"),
-      'html_with_currency -> (2, "${{amount}} CAD"),
-      'roundingMode -> BigDecimal.RoundingMode.HALF_EVEN,
-      'locale -> "en"
+      Symbol("docroot") -> "htdocs",
+      Symbol("html_without_currency") -> (2, "${{amount}}"),
+      Symbol("html_with_currency") -> (2, "${{amount}} CAD"),
+      Symbol("roundingMode") -> BigDecimal.RoundingMode.HALF_EVEN,
+      Symbol("locale") -> "en"
     )
 
 	def test( input: String, collapse: Boolean, assigns: (String, Any)* ) = {

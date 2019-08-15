@@ -194,6 +194,7 @@ object ExtraColorFilters {
             case (None, "blue") => f"#$r%02x$g%02x${v.intValue}%02x"
             case (Some( alpha ), "blue") => s"rgba($r, $g, ${v.intValue}, $alpha)"
             case (_, "alpha") => s"rgba($r, $g, $b, ${v.doubleValue})"
+            case (None, _)|(Some(_), _) => sys.error( s"unknown color: $f" )
           }
 
         override def parameters = List( List(StringType, StringType, NumberType) )

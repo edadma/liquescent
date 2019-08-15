@@ -2,10 +2,10 @@
 package xyz.hyperreal.liquescent
 
 import org.scalatest._
-import prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers with Testing {
+class StandardFilterTests extends FreeSpec with ScalaCheckPropertyChecks with Matchers with Testing {
 	
 	"abs" in {
 		test(
@@ -192,9 +192,9 @@ class StandardFilterTests extends FreeSpec with PropertyChecks with Matchers wit
 			""".trim.stripMargin, false, "article" -> Map("published_at" -> "2015-07-17")
 		) shouldBe
 			"""
-				|Fri, Jul 17, 15
+				|Fri., Jul. 17, 15
 				|2015
-				|Mar 14, 16
+				|Mar. 14, 16
 			""".trim.stripMargin
 	}
 
