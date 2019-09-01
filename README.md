@@ -135,9 +135,9 @@ Building
 
 ### Requirements
 
-- Java 8
-- SBT 1.1.5+
-- Scala 2.12.6+
+- Java 11+
+- SBT 1.2.8+
+- Scala 2.13.0+
 
 ### Clone and Assemble Executable
 
@@ -153,4 +153,4 @@ The command `sbt assembly` also runs all the unit tests.
 License
 -------
 
-ISC © 2018 Edward Maxedon
+ISC © 2019 Edward Maxedon
